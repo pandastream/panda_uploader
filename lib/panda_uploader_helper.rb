@@ -1,8 +1,6 @@
 module PandaUploaderHelper
   
   def js_panda_uploader_init(pu_options={})
-    api_host = PANDA_CONFIG['api_host'].to_s
-    api_port = PANDA_CONFIG['api_port'].to_s
     
     options = { 
       :name => "swfu",
@@ -12,7 +10,7 @@ module PandaUploaderHelper
       :button_height => "22",
       :button_placeholder_id => "spanButtonPlaceholder",
       :flash_url => "/swfupload.swf",
-      :upload_url => "http://#{api_host}:#{api_port}/v2/videos.json",
+      :upload_url => Panda.api_url + "/videos.json",
       :upload_post_params => {},
       :server_data_id => "video",
       :submit_id => 'btnSubmit',
