@@ -1,6 +1,6 @@
 var formChecker = null;
 function swfUploadLoaded() {
-	var btnSubmit = document.getElementById("btnSubmit");
+	var btnSubmit = document.getElementById(this.customSettings.submit_id)
 	
 	btnSubmit.onclick = doSubmit;
 	btnSubmit.disabled = true;
@@ -15,15 +15,15 @@ function swfUploadLoaded() {
 	validateForm();
 }
 
-function validateForm() {
+function validateForm(params) {
 	var txtFileName = document.getElementById("txtFileName");
 	
 	var isValid = true;
 	if (txtFileName.value === "") {
 		isValid = false;
 	}
-	
-	document.getElementById("btnSubmit").disabled = !isValid;
+	customSettings = swfu.getCustomSettings()
+	document.getElementById(customSettings.submit_id).disabled = !isValid;
 
 }
 
@@ -131,6 +131,7 @@ function uploadSuccess(file, serverData) {
 			this.customSettings.upload_successful = false;
 		} else {
 			this.customSettings.upload_successful = true;
+			this.customSettings.upload_data
 			document.getElementById("video").value = serverData;
 		}
 		
