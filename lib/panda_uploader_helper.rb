@@ -1,7 +1,7 @@
 module PandaUploaderHelper
   
   def js_panda_uploader_init(pu_options={})
-    
+
     options = { 
       :name => "swfu",
       :button_image_url => "/images/DefaultUploaderButton.png",
@@ -17,9 +17,12 @@ module PandaUploaderHelper
       :debug => false
     }.merge(pu_options)
     
-    option_post = options[:upload_post_params].map {|k,v| "'#{k}' : '#{v}'"}.join(', ') 
-    
      src = <<-end_eval
+
+
+     SWFUpload.prototype.getCustomSettings = function () {
+     	return this.customSettings
+     };
 
       var #{options[:name]};
       window.onload = function () {
@@ -68,26 +71,34 @@ module PandaUploaderHelper
       		// Debug settings
       		debug: #{options[:debug]}
 
-
       	});
       };
 
       function uploadStart(file) {
-      		var params = {};
-
-      	  jQuery.ajax({
-      	           dataType:"json",
-                   url:    '/authentication_params?'
-                   + 'authenticity_token=#{form_authenticity_token}&'
-                   + 'method=post&'
-                   + 'request_uri=/videos.json&',
-                   async:   false,
+      		var req_params = {
+      		  'authenticity_token': '#{form_authenticity_token}',
+      		  'request_uri': '/videos.json',
+      		  'method': 'post',
+      		};
+      		var flash_params = {}
+      		
+      		profiles = getPandaVideoProfiles()
+      		
+      		jQuery.extend(req_params, prefix_query('request_params[profiles]',profiles))
+      		jQuery.extend(flash_params, prefix_query('profiles',profiles))
+          
+          jQuery.ajax({
+      	           dataType: "json",
+                   url: '/authentication_params',
+                   data: req_params,
+                   async: false,
                    success: function(data) {
-                     params=data
+                     jQuery.extend(flash_params, data)
                    }
           });
 
-          this.setPostParams(params);
+          
+          this.setPostParams(flash_params);
           return true;
       }
 
@@ -110,16 +121,10 @@ module PandaUploaderHelper
       	}
       }
 
-
       function uploadDone(file) {
         serverData = document.getElementById("#{options[:server_data_id]}").value
-        window.location = "/videos/"+JSON.parse(serverData).id+"/processing";  		
+        window.location = "/videos/"+JSON.parse(serverData).id+"/processing";     
       }
-
-
-      SWFUpload.prototype.getCustomSettings = function () {
-      	return this.customSettings
-      };
 
       end_eval
     
@@ -127,15 +132,23 @@ module PandaUploaderHelper
     
   end
   
-  def panda_uploader_filename_container(pu_options={})
-    options = { 
-      :name => "swfu",
-    }.merge(pu_options)
-    
-    src = <<-end_eval
-    end_eval
-    
+  def panda_uploader_profile_selector()
+    profiles_json = Panda.get("/profiles.json")
+    profiles = JSON.parse(profiles_json)
+
+    src=''
+    if profiles
+  		profiles.each do |p|
+  		  src += <<-end_eval
+  			<p>
+  				<input type="checkbox" panda_input_type="profile_input" profile_id="#{p['id']}"> #{p['title']}
+  			</p>
+			  end_eval
+  		end
+  	end
+    src
   end
+  
   
   def panda_uploader_file_selector(pu_options={})
     options = { 
@@ -152,7 +165,7 @@ module PandaUploaderHelper
 	
 	
   def javascript_include_panda_uploader
-    javascript_include_tag 'panda_uploader/fileprogress', 'panda_uploader/swfupload', 'panda_uploader/handlers', 'panda_uploader/swfupload.swfobject', 'panda_uploader/monitor_progress'
+    javascript_include_tag 'panda_uploader/panda_uploader.js', 'panda_uploader/fileprogress', 'panda_uploader/swfupload', 'panda_uploader/handlers', 'panda_uploader/swfupload.swfobject', 'panda_uploader/monitor_progress'
   end
   
 end
