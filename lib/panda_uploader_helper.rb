@@ -16,22 +16,24 @@ module PandaUploaderHelper
       :submit_id => 'btnSubmit',
       :debug => false
     }.merge(pu_options)
-      
+
+    plugins = []
+    state_update_url_include = <<-end_eval
+      addParamsToPanda('state_update_url', "#{options[:state_update_url]}")
+    end_eval
     
-      state_update_url_include = <<-end_eval
-  	    req_params['request_params[state_update_url]']="#{options[:state_update_url]}"
-  	    flash_params['state_update_url']="#{options[:state_update_url]}"
-      end_eval
+    plugins << state_update_url_include unless options[:state_update_url].to_s.empty?
     
+    src = <<-end_eval
     
-     src = <<-end_eval
+     // Hack to get CustomSetting ... maybe a better way
      SWFUpload.prototype.getCustomSettings = function () {
      	return this.customSettings
      };
 
-      var #{options[:name]};
+      var swfu;
       window.onload = function () {
-      	#{options[:name]} = new SWFUpload({
+      	swfu = new SWFUpload({
       		upload_url: "#{options[:upload_url]}",
       		file_post_name: "file",
       		post_params : {},
@@ -80,31 +82,43 @@ module PandaUploaderHelper
       };
 
       function uploadStart(file) {
+
+          // required params to authenticate
       		var req_params = {
       		  'authenticity_token': '#{form_authenticity_token}',
       		  'request_uri': '/videos.json',
       		  'method': 'post',
       		};
-      		var flash_params = {
+      		
+      		var flash_params = {}
+      		
+      		// Use to add params to panda api post request
+      		addParamsToPanda = function (key, value) {
+        		jQuery.extend(req_params, prefix_query('request_params['+key+']',value))
+        		jQuery.extend(flash_params, prefix_query(key, value))            
+          }
+          
+      		// Get authentication params
+      		getAuthParams = function() {
+      		  jQuery.ajax({
+        	           dataType: "json",
+                     url: '/authentication_params',
+                     data: req_params,
+                     async: false,
+                     success: function(data) {
+                       jQuery.extend(flash_params, data)
+                     }
+            });
       		}
       		
-      		profiles = getPandaVideoProfiles()
-      		
-      		jQuery.extend(req_params, prefix_query('request_params[profiles]',profiles))		      
-      		jQuery.extend(flash_params, prefix_query('profiles', profiles))
-      		
-          #{state_update_url_include}
-          		      
-          jQuery.ajax({
-      	           dataType: "json",
-                   url: '/authentication_params',
-                   data: req_params,
-                   async: false,
-                   success: function(data) {
-                     jQuery.extend(flash_params, data)
-                   }
-          });
+          // plugins to add params for example 
+          #{plugins.join(' ')}
+          
+      		// Add selected encodings
+      		addParamsToPanda('profiles', getPandaVideoProfiles())
 
+          // get panda auth params
+          getAuthParams()
           
           this.setPostParams(flash_params);
           return true;
@@ -122,6 +136,8 @@ module PandaUploaderHelper
       			this.customSettings.upload_successful = false;
       		} else {
       			this.customSettings.upload_successful = true;
+      			
+      			// Insert the server Data inside an input
       			document.getElementById("#{options[:server_data_id]}").value = serverData;
       		}
 
@@ -129,6 +145,8 @@ module PandaUploaderHelper
       	}
       }
 
+      
+      // Can be overided to appy a different behaviour
       function uploadDone(file) {
         serverData = document.getElementById("#{options[:server_data_id]}").value
         window.location = "/videos/"+JSON.parse(serverData).id+"/processing";     

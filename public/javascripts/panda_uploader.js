@@ -9,10 +9,14 @@ getPandaVideoProfiles = function () {
 	return profiles;
 }
 
-prefix_query = function (prefix, ahash) {
+prefix_query = function (prefix, value) {
 	rhash = {}
-	for (i in ahash) {
-		rhash[prefix+'['+i+']'] = ahash[i]
+	if(typeof(value) == "object"){
+		for (i in value) {
+			rhash[prefix+'['+i+']'] = value[i]
+		}		
+	}else{
+		rhash[prefix] = value
 	}
 	return rhash;
 }
