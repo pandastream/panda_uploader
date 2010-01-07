@@ -16,10 +16,15 @@ module PandaUploaderHelper
       :submit_id => 'btnSubmit',
       :debug => false
     }.merge(pu_options)
+      
+    
+      state_update_url_include = <<-end_eval
+  	    req_params['request_params[state_update_url]']="#{options[:state_update_url]}"
+  	    flash_params['state_update_url']="#{options[:state_update_url]}"
+      end_eval
+    
     
      src = <<-end_eval
-
-
      SWFUpload.prototype.getCustomSettings = function () {
      	return this.customSettings
      };
@@ -80,13 +85,16 @@ module PandaUploaderHelper
       		  'request_uri': '/videos.json',
       		  'method': 'post',
       		};
-      		var flash_params = {}
+      		var flash_params = {
+      		}
       		
       		profiles = getPandaVideoProfiles()
       		
-      		jQuery.extend(req_params, prefix_query('request_params[profiles]',profiles))
-      		jQuery.extend(flash_params, prefix_query('profiles',profiles))
-          
+      		jQuery.extend(req_params, prefix_query('request_params[profiles]',profiles))		      
+      		jQuery.extend(flash_params, prefix_query('profiles', profiles))
+      		
+          #{state_update_url_include}
+          		      
           jQuery.ajax({
       	           dataType: "json",
                    url: '/authentication_params',
@@ -134,19 +142,22 @@ module PandaUploaderHelper
   
   def panda_uploader_profile_selector()
     profiles_json = Panda.get("/profiles.json")
-    profiles = JSON.parse(profiles_json)
 
-    src=''
-    if profiles
-  		profiles.each do |p|
-  		  src += <<-end_eval
-  			<p>
-  				<input type="checkbox" panda_input_type="profile_input" profile_id="#{p['id']}"> #{p['title']}
-  			</p>
-			  end_eval
-  		end
-  	end
-    src
+    unless profiles_json.nil?
+      profiles = JSON.parse(profiles_json)
+      
+      src=''
+      if profiles
+    		profiles.each_with_index do |p,i|
+    		  src += <<-end_eval
+    			<p>
+    				<input type="checkbox" name="profiles[#{i}]" panda_input_type="profile_input" profile_id="#{p['id']}" value="#{p['id']}" > #{p['title']}
+    			</p>
+  			  end_eval
+    		end
+    	end
+      src
+    end
   end
   
   
