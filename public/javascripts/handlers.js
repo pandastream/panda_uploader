@@ -17,10 +17,10 @@ function swfUploadLoaded() {
 
 function validateForm(params) {
 	customSettings = swfu.getCustomSettings();
-	var txtFileName = document.getElementById(customSettings.txtFileName);
+	var upload_filenameName = document.getElementById(customSettings.upload_filenameName);
 	
 	var isValid = true;
-	if (txtFileName.value === "") {
+	if (upload_filenameName.value === "") {
 		isValid = false;
 	}
 	document.getElementById(customSettings.submit_button).disabled = !isValid;
@@ -59,8 +59,8 @@ function uploadDone() {
 
 function fileDialogStart() {
   customSettings = swfu.getCustomSettings();
-	var txtFileName = document.getElementById(customSettings.txtFileName);
-	txtFileName.value = "";
+	var upload_filenameName = document.getElementById(customSettings.upload_filenameName);
+	upload_filenameName.value = "";
 
 	this.cancelUpload();
 }
@@ -98,8 +98,8 @@ function fileQueueError(file, errorCode, message)  {
 function fileQueued(file) {
 	try {
 	  customSettings = swfu.getCustomSettings();
-		var txtFileName = document.getElementById(customSettings.txtFileName);
-		txtFileName.value = file.name;
+		var upload_filenameName = document.getElementById(customSettings.upload_filenameName);
+		upload_filenameName.value = file.name;
 	} catch (e) {
 	}
 
@@ -153,8 +153,8 @@ function uploadComplete(file) {
 			progress.setStatus("File rejected");
 			progress.toggleCancel(false);
 			
-			var txtFileName = document.getElementById(this.customSettings.txtFileName);
-			txtFileName.value = "";
+			var upload_filenameName = document.getElementById(this.customSettings.upload_filenameName);
+			upload_filenameName.value = "";
 			validateForm();
 
 			alert("There was a problem with the upload.\nThe server did not accept it.");
@@ -172,8 +172,8 @@ function uploadError(file, errorCode, message) {
 		}
 		
 		customSettings = swfu.getCustomSettings();
-		var txtFileName = document.getElementById(customSettings.txtFileName);
-		txtFileName.value = "";
+		var upload_filenameName = document.getElementById(customSettings.upload_filenameName);
+		upload_filenameName.value = "";
 		validateForm();
 		
 		// Handle this error separately because we don't want to create a FileProgress element for it.

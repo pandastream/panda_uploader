@@ -15,6 +15,7 @@ module PandaUploaderHelper
       :returned_video_id_dest => "returned_video_id",
       :submit_button => 'submit_button',
       :upload_progress => 'upload_progress',
+      :upload_filename => 'upload_filename',
       :debug => false
     }.merge(pu_options)
 
