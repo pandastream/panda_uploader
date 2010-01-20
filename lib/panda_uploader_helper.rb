@@ -139,7 +139,8 @@ module PandaUploaderHelper
       			this.customSettings.upload_successful = true;
       			
       			// Insert the server Data inside an input
-      			document.getElementById("#{options[:returned_video_id_dest]}").value = serverData;
+      			var video_data = eval("(" + serverData + ")");
+      			document.getElementById("#{options[:returned_video_id_dest]}").value = video_data['id'];
       		}
 
       	} catch (e) {
