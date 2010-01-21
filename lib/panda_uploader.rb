@@ -1,5 +1,4 @@
 # PandaUploader
-require "panda"
 
 module PandaUploader
   module ClassMethods
