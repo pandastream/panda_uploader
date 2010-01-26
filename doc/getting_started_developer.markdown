@@ -1,28 +1,49 @@
-PandaUploader
-=============
+Integrate Panda Cloud into a Rails application
+================================================
 
-This Rails plugin provides helpers for creating an upload form for use with the [Panda](http://pandastream.com) video encoding platform.
+*** Install Panda Gem
 
-Example usage
--------------
+Install panda gem from github and use the Sinatra branch
+git://github.com/newbamboo/panda_gem.git
 
-    <%= js_panda_uploader_init :returned_video_id_dest => "server_data_video", :submit_button => 'mysubmit', :state_update_url => "http://0.0.0.0:4444/$id/callback" %>
-    
-    <h2>Upload Video</h2>
-    <form id="form1" action="" enctype="multipart/form-data" method="post">
-    	<%= panda_uploader_file_selector %>
-    	<%= panda_uploader_profile_selector %>
-    	<input type="hidden" name="video" id="server_data_video" value="" />
-    	<input type="submit" value="Upload video" id="mysubmit" />
-    </form>
+Look at Panda Gem documentation	for more information
 
-Copyright (c) 2010 New Bamboo Web Development Ltd, released under the MIT license
+*** Authentication
+To authenticate to Panda Cloud you have to provide the following hash:
 
+auth_hash = { 
+	'access_key' => 'myaccesskey',  
+	'secret_key' => "mysecretkey", 
+	'api_host' => "myapihost",
+	'api_port' => "myapiport"
+}
 
+The Hash can be load from a YAML file.
 
+connection_params = Panda.connect!(auth_hash)
 
+*** Get Video details
+Use Panda get video details
 
+Get Video details – JSON:
+video_json = Panda.get("/videos/#{your_video_id}.json")
 
+Get Encodings details – JSON:
+encodings_json = Panda.get("/videos/#{your_video_id}/encodings.json")
+
+Get all your profiles – JSON:
+profiles_json = Panda.get("/profiles.json")
+
+Looks to the API to know more details
+
+*** Video Uploader
+Panda cloud video uploader use SwfUpload.
+
+For a Rails application just install the plugin on github
+script/plugin install git://github.com/newbamboo/panda_uploader.git
+
+rake panda_uploader:scripts:install
+Javascript files, images and the Flash widget will be installed
 
 In your layouts insert the helper method to load all javascript files required.
 <head>
@@ -34,13 +55,13 @@ In your page you will need to generate the SwfUploader Javascript Object with th
 
 <%= js_panda_uploader_init %>
 
-or <%= js_panda_uploader_init :returned_video_id_dest => "server_data_video" %>
+or <%= js_panda_uploader_init :server_data_id => "server_data_video" %>
 
 
 You can define some options
-- :returned_video_id_dest 				Input id where is returned the server data (JSON dump of the video record)
+- :server_data_id 				Input id where is returned the server data (JSON dump of the video record)
 								"video" is by default 
-- :submit_button					Submit input id to start the upload
+- :submit_id					Submit input id to start the upload
 - :debug 						(sfwUpload debug mode)
 - :button_image_url 	 		Image Button
 - :button_width					Button width
@@ -67,7 +88,7 @@ Include the following Javascript files:
 'panda_uploader/swfupload'
 'panda_uploader/handlers'
 'panda_uploader/swfupload.swfobject'
-'panda_uploader/panda_uploader'
+'panda_uploader/panda_uploader.js'
 
 Load the PandaUploaderHelper class
 
