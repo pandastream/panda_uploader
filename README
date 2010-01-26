@@ -1,88 +1,11 @@
-PandaUploader
-=============
+# PandaUploader
 
 This Rails plugin provides helpers for creating an upload form for use with the [Panda](http://pandastream.com) video encoding platform.
 
-Example usage
--------------
+**This service is currently in beta and only available to a limited number of users**
 
-    <%= js_panda_uploader_init :returned_video_id_dest => "server_data_video", :submit_button => 'mysubmit', :state_update_url => "http://0.0.0.0:4444/$id/callback" %>
-    
-    <h2>Upload Video</h2>
-    <form id="form1" action="" enctype="multipart/form-data" method="post">
-    	<%= panda_uploader_file_selector %>
-    	<%= panda_uploader_profile_selector %>
-    	<input type="hidden" name="video" id="server_data_video" value="" />
-    	<input type="submit" value="Upload video" id="mysubmit" />
-    </form>
+Please refer to the [Integrating with Ruby on Rails](http://account.pandastream.com/docs/integrate_with_rails) guide for details on setting up and using this plugin.
+
+Example application here: <http://github.com/newbamboo/panda_example_rails/tree/panda_beta>
 
 Copyright (c) 2010 New Bamboo Web Development Ltd, released under the MIT license
-
-
-
-
-
-
-
-In your layouts insert the helper method to load all javascript files required.
-<head>
-	....
-	<%= javascript_include_panda_uploader %>
-</head>
-
-In your page you will need to generate the SwfUploader Javascript Object with the helper:
-
-<%= js_panda_uploader_init %>
-
-or <%= js_panda_uploader_init :returned_video_id_dest => "server_data_video" %>
-
-
-You can define some options
-- :returned_video_id_dest 				Input id where is returned the server data (JSON dump of the video record)
-								"video" is by default 
-- :submit_button					Submit input id to start the upload
-- :debug 						(sfwUpload debug mode)
-- :button_image_url 	 		Image Button
-- :button_width					Button width
-- :button_height				Button height
-- :flash_url					Url of your swfupload flash object (swfupload.swf)
-
-<%= js_panda_uploader_init %>
-
-Then in your form you need to add your file selector inside your form with
-
-<form>
-
-<%= panda_uploader_file_selector %>
-
-<input type="hidden" name="video" id="server_data_video" value="" />
-
-</form>
-
-*** For other frameworks
-
-Include the following Javascript files:
-
-'panda_uploader/fileprogress'
-'panda_uploader/swfupload'
-'panda_uploader/handlers'
-'panda_uploader/swfupload.swfobject'
-'panda_uploader/panda_uploader'
-
-Load the PandaUploaderHelper class
-
-<form>
-PandaUploaderHelper::panda_uploader_file_selector
-PandaUploaderHelper::panda_uploader_filename_container
-</form>
-
-
-*** Upload Success
-
-For a custom behaviour after the uploader has succeeded you will need to override the javascript function called :
-function uploadDone(file);
-
-Look at panda_uploader_helper.rb to see the default behaviour.
-
-When the upload ends the hidden input "#video" contains the json of the new created video
-value = "{'id' : '12345678', 'status':'processing', .....}"
