@@ -194,7 +194,7 @@ module PandaUploaderHelper
 	
 	
   def javascript_include_panda_uploader
-    javascript_include_tag 'panda_uploader/panda_uploader.js', 'panda_uploader/fileprogress', 'panda_uploader/swfupload', 'panda_uploader/handlers', 'panda_uploader/swfupload.swfobject', 'panda_uploader/monitor_progress'
+    javascript_include_tag 'panda_uploader/panda_uploader.js', 'panda_uploader/fileprogress', 'panda_uploader/swfupload', 'panda_uploader/handlers', 'panda_uploader/swfupload.swfobject'
   end
   
 end
