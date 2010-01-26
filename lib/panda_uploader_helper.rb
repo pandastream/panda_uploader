@@ -18,6 +18,8 @@ module PandaUploaderHelper
       :upload_filename => 'upload_filename',
       :debug => false
     }.merge(pu_options)
+    
+    auth_params = Panda.authentication_params('post', "/videos.json", {})
 
     plugins = []
     state_update_url_include = <<-end_eval
@@ -84,46 +86,8 @@ module PandaUploaderHelper
       };
 
       function uploadStart(file) {
-
-          // required params to authenticate
-      		var req_params = {
-      		  'authenticity_token': '#{form_authenticity_token}',
-      		  'request_uri': '/videos.json',
-      		  'method': 'post',
-      		};
-      		
-      		var flash_params = {}
-      		
-      		// Use to add params to panda api post request
-      		addParamsToPanda = function (key, value) {
-        		jQuery.extend(req_params, prefix_query('request_params['+key+']',value))
-        		jQuery.extend(flash_params, prefix_query(key, value))            
-          }
-          
-      		// Get authentication params
-      		getAuthParams = function() {
-      		  jQuery.ajax({
-        	           dataType: "json",
-                     url: '/authentication_params',
-                     data: req_params,
-                     async: false,
-                     success: function(data) {
-                       jQuery.extend(flash_params, data)
-                     }
-            });
-      		}
-      		
-          // plugins to add params for example 
-          #{plugins.join(' ')}
-          
-      		// Add selected encodings
-      		addParamsToPanda('profiles', getPandaVideoProfiles())
-
-          // get panda auth params
-          getAuthParams()
-          
-          this.setPostParams(flash_params);
-          return true;
+        this.setPostParams(#{auth_params.to_json});
+        return true;
       }
 
       function uploadSuccess(file, serverData) {
@@ -175,7 +139,7 @@ module PandaUploaderHelper
   end
 	
   def javascript_include_panda_uploader
-    javascript_include_tag 'panda_uploader/panda_uploader.js', 'panda_uploader/fileprogress', 'panda_uploader/swfupload', 'panda_uploader/handlers', 'panda_uploader/swfupload.swfobject'
+    javascript_include_tag 'panda_uploader/swfupload', 'panda_uploader/handlers', 'panda_uploader/swfupload.swfobject'
   end
   
 end
