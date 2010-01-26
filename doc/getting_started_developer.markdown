@@ -88,6 +88,7 @@ Include the following Javascript files:
 'panda_uploader/swfupload'
 'panda_uploader/handlers'
 'panda_uploader/swfupload.swfobject'
+'panda_uploader/panda_uploader.js'
 
 Load the PandaUploaderHelper class
 

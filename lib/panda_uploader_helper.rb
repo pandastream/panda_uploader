@@ -5,15 +5,17 @@ module PandaUploaderHelper
     options = { 
       :name => "swfu",
       :button_image_url => "/images/DefaultUploaderButton.png",
-      :button_placeholder_id => "spanButtonPlaceholder",
+      :upload_button => "spanButtonPlaceholder",
       :button_width => "61",
       :button_height => "22",
-      :button_placeholder_id => "spanButtonPlaceholder",
+      :upload_button => "upload_button",
       :flash_url => "/swfupload.swf",
       :upload_url => Panda.api_url + "/videos.json",
       :upload_post_params => {},
-      :server_data_id => "video",
-      :submit_id => 'btnSubmit',
+      :returned_video_id_dest => "returned_video_id",
+      :submit_button => 'submit_button',
+      :upload_progress => 'upload_progress',
+      :upload_filename => 'upload_filename',
       :debug => false
     }.merge(pu_options)
 
@@ -61,7 +63,7 @@ module PandaUploaderHelper
 
       		// Button Settings
       		button_image_url : "#{options[:button_image_url]}",
-      		button_placeholder_id : "#{options[:button_placeholder_id]}",
+      		upload_button : "#{options[:upload_button]}",
       		button_width: #{options[:button_width]},
       		button_height: #{options[:button_height]},
 
@@ -69,10 +71,10 @@ module PandaUploaderHelper
       		flash_url : "#{options[:flash_url]}",
 
       		custom_settings : {
-      			progress_target : "fsUploadProgress",
+      			progress_target : "#{options[:upload_progress]}",
       			upload_successful : false,
-      			upload_data_id: '#{options[:server_data_id]}',
-      			submit_id: '#{options[:submit_id]}'
+      			upload_data_id: '#{options[:returned_video_id_dest]}',
+      			submit_button: '#{options[:submit_button]}'
       		},
 
       		// Debug settings
@@ -138,18 +140,12 @@ module PandaUploaderHelper
       			this.customSettings.upload_successful = true;
       			
       			// Insert the server Data inside an input
-      			document.getElementById("#{options[:server_data_id]}").value = serverData;
+      			var video_data = eval("(" + serverData + ")");
+      			document.getElementById("#{options[:returned_video_id_dest]}").value = video_data['id'];
       		}
 
       	} catch (e) {
       	}
-      }
-
-      
-      // Can be overided to appy a different behaviour
-      function uploadDone(file) {
-        serverData = document.getElementById("#{options[:server_data_id]}").value
-        window.location = "/videos/"+JSON.parse(serverData).id+"/processing";     
       }
 
       end_eval
@@ -177,21 +173,6 @@ module PandaUploaderHelper
       src
     end
   end
-  
-  
-  def panda_uploader_file_selector(pu_options={})
-    options = { 
-      :name => "swfu",
-    }.merge(pu_options)
-    
-    src = <<-end_eval
-      <span id="spanButtonPlaceholder"></span>      
-      <input type="text" id="txtFileName" disabled="true" style="border: solid 1px; background-color: #FFFFFF;" />
-      <div class="flash" id="fsUploadProgress"></div>
-    end_eval
-    
-  end
-	
 	
   def javascript_include_panda_uploader
     javascript_include_tag 'panda_uploader/panda_uploader.js', 'panda_uploader/fileprogress', 'panda_uploader/swfupload', 'panda_uploader/handlers', 'panda_uploader/swfupload.swfobject'

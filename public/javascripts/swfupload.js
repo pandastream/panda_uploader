@@ -154,7 +154,7 @@ SWFUpload.prototype.initSettings = function () {
 	this.ensureDefault("button_text_left_padding", 0);
 	this.ensureDefault("button_action", SWFUpload.BUTTON_ACTION.SELECT_FILES);
 	this.ensureDefault("button_disabled", false);
-	this.ensureDefault("button_placeholder_id", "");
+	this.ensureDefault("upload_button", "");
 	this.ensureDefault("button_placeholder", null);
 	this.ensureDefault("button_cursor", SWFUpload.CURSOR.ARROW);
 	this.ensureDefault("button_window_mode", SWFUpload.WINDOW_MODE.WINDOW);
@@ -208,10 +208,10 @@ SWFUpload.prototype.loadFlash = function () {
 	}
 
 	// Get the element where we will be placing the flash movie
-	targetElement = document.getElementById(this.settings.button_placeholder_id) || this.settings.button_placeholder;
+	targetElement = document.getElementById(this.settings.upload_button) || this.settings.button_placeholder;
 
 	if (targetElement == undefined) {
-		throw "Could not find the placeholder element: " + this.settings.button_placeholder_id;
+		throw "Could not find the placeholder element: " + this.settings.upload_button;
 	}
 
 	// Append the container and load the flash
@@ -384,7 +384,7 @@ SWFUpload.prototype.displayDebugInfo = function () {
 
 			"\t", "prevent_swf_caching:      ", this.settings.prevent_swf_caching.toString(), "\n",
 
-			"\t", "button_placeholder_id:    ", this.settings.button_placeholder_id.toString(), "\n",
+			"\t", "upload_button:    ", this.settings.upload_button.toString(), "\n",
 			"\t", "button_placeholder:       ", (this.settings.button_placeholder ? "Set" : "Not Set"), "\n",
 			"\t", "button_image_url:         ", this.settings.button_image_url.toString(), "\n",
 			"\t", "button_width:             ", this.settings.button_width.toString(), "\n",

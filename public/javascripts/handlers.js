@@ -1,6 +1,6 @@
 var formChecker = null;
 function swfUploadLoaded() {
-	var btnSubmit = document.getElementById(this.customSettings.submit_id)
+	var btnSubmit = document.getElementById(this.customSettings.submit_button)
 	
 	btnSubmit.onclick = doSubmit;
 	btnSubmit.disabled = true;
@@ -16,14 +16,14 @@ function swfUploadLoaded() {
 }
 
 function validateForm(params) {
-	var txtFileName = document.getElementById("txtFileName");
+	customSettings = swfu.getCustomSettings();
+	var upload_filename = document.getElementById('upload_filename');
 	
 	var isValid = true;
-	if (txtFileName.value === "") {
+	if (upload_filename.value === "") {
 		isValid = false;
 	}
-	customSettings = swfu.getCustomSettings()
-	document.getElementById(customSettings.submit_id).disabled = !isValid;
+	document.getElementById(customSettings.submit_button).disabled = !isValid;
 
 }
 
@@ -58,8 +58,9 @@ function uploadDone() {
 }
 
 function fileDialogStart() {
-	var txtFileName = document.getElementById("txtFileName");
-	txtFileName.value = "";
+  customSettings = swfu.getCustomSettings();
+	var upload_filename = document.getElementById('upload_filename');
+	upload_filename.value = "";
 
 	this.cancelUpload();
 }
@@ -96,8 +97,9 @@ function fileQueueError(file, errorCode, message)  {
 
 function fileQueued(file) {
 	try {
-		var txtFileName = document.getElementById("txtFileName");
-		txtFileName.value = file.name;
+	  customSettings = swfu.getCustomSettings();
+		var upload_filename = document.getElementById('upload_filename');
+		upload_filename.value = file.name;
 	} catch (e) {
 	}
 
@@ -151,8 +153,8 @@ function uploadComplete(file) {
 			progress.setStatus("File rejected");
 			progress.toggleCancel(false);
 			
-			var txtFileName = document.getElementById("txtFileName");
-			txtFileName.value = "";
+			var upload_filename = document.getElementById('upload_filename');
+			upload_filename.value = "";
 			validateForm();
 
 			alert("There was a problem with the upload.\nThe server did not accept it.");
@@ -169,8 +171,9 @@ function uploadError(file, errorCode, message) {
 			return;
 		}
 		
-		var txtFileName = document.getElementById("txtFileName");
-		txtFileName.value = "";
+		customSettings = swfu.getCustomSettings();
+		var upload_filename = document.getElementById('upload_filename');
+		upload_filename.value = "";
 		validateForm();
 		
 		// Handle this error separately because we don't want to create a FileProgress element for it.
