@@ -51,14 +51,17 @@ function doSubmit(e) {
  // Called by the queue complete handler to submit the form
 function uploadDone() {
 	try {
-		document.forms[0].submit();
+		customSettings = swfu.getCustomSettings();
+		var realForm = $("form:has(#"+ customSettings.submit_button + ")")[0]
+		var tmpForm = document.createElement('FORM');
+		tmpForm.submit.apply(realForm);
 	} catch (ex) {
 		alert("Error submitting form");
 	}
 }
 
 function fileDialogStart() {
-  customSettings = swfu.getCustomSettings();
+  	customSettings = swfu.getCustomSettings();
 	var upload_filename = document.getElementById('upload_filename');
 	upload_filename.value = "";
 
