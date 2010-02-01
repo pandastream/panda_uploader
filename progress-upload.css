@@ -1,0 +1,12 @@
+.progress_bar_container {
+    display: block;
+    width:200px;
+    height:1em;
+    border:1px solid green;
+    background-color:white;
+}
+
+.progress_bar_container .progress-inside {
+    background-color:green;
+    height:100%;
+}
