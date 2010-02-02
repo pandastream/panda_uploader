@@ -1,0 +1,17 @@
+.panda_upload_filename {
+    position: relative;
+    top: -6px;
+}
+
+.panda_upload_progress {
+    display: block;
+    width:200px;
+    height:1em;
+    border:1px solid green;
+    background-color:white;
+}
+
+.panda_upload_progress .progress-inside {
+    background-color:green;
+    height:100%;
+}
