@@ -48,6 +48,7 @@ jQuery.fn.pandaUploader = function(signed_params, options, swfupload_options) {
     uploader.bind('uploadStart', onStart);
     uploader.bind('uploadProgress', onProgress);
     uploader.bind('uploadSuccess', onSuccess);
+    uploader.bind('uploadError', onError);
     uploader.bind('uploadComplete', onComplete);
 
     function setupSubmitButton() {
@@ -79,16 +80,28 @@ jQuery.fn.pandaUploader = function(signed_params, options, swfupload_options) {
             if (options.progress_handler) {
                 options.progress_handler.setProgress(file, bytesLoaded, bytesTotal);
             }
-            
         } catch (ex) {
         }
     }
 
     function onSuccess(event, file, response) {
         $video_field.val(eval('(' + response + ')').id);
+        this.success = true;
+    }
+
+    function onError(event, file, code, message, more) {
+        alert("There was an error uploading the file.\n\nHTTP error code " + message);
+        this.success = false;
     }
 
     function onComplete() {
+        if ( ! this.success) {
+            return;
+        }
+        if ( ! $video_field.val()) {
+            alert('The video ID was not stored on the form');
+            return;
+        }
         var form =  $video_field.closest("form")[0];
         var tmpForm = document.createElement('FORM');
         tmpForm.submit.apply(form);
