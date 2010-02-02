@@ -39,7 +39,7 @@ jQuery.fn.pandaUploader = function(signed_params, options, swfupload_options) {
         button_placeholder_id : options.upload_button_id,
         post_params : signed_params,
         file_post_name: "file",
-        debug: true
+        debug: false
     }, swfupload_options));
     
     var $video_field = this;
