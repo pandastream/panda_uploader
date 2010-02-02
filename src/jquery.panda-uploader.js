@@ -6,6 +6,7 @@ jQuery.fn.pandaUploader = function(signed_params, options, swfupload_options) {
         alert("There was an error setting up the upload form. (The upload parameters were not specified).");
         return false;
     }
+    
     options = options === undefined ? {} : options;
     swfupload_options = swfupload_options === undefined ? {} : swfupload_options;
     
@@ -43,7 +44,7 @@ jQuery.fn.pandaUploader = function(signed_params, options, swfupload_options) {
     }, swfupload_options));
     
     var $video_field = this;
-    uploader.bind('swfuploadLoaded', setupSubmitButton);
+    uploader.bind('swfuploadLoaded', onLoad);
     uploader.bind('fileQueued', onFileQueued);
     uploader.bind('uploadStart', onStart);
     uploader.bind('uploadProgress', onProgress);
@@ -51,7 +52,7 @@ jQuery.fn.pandaUploader = function(signed_params, options, swfupload_options) {
     uploader.bind('uploadError', onError);
     uploader.bind('uploadComplete', onComplete);
 
-    function setupSubmitButton() {
+    function onLoad() {
         var form = $video_field.closest("form");
         form.submit(onSubmit);
     }
