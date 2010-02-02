@@ -1,4 +1,9 @@
-.progress_bar_container {
+.panda_upload_filename {
+    position: relative;
+    top: -6px;
+}
+
+.panda_upload_progress {
     display: block;
     width:200px;
     height:1em;
@@ -6,7 +11,7 @@
     background-color:white;
 }
 
-.progress_bar_container .progress-inside {
+.panda_upload_progress .progress-inside {
     background-color:green;
     height:100%;
 }
