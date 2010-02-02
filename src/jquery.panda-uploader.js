@@ -18,7 +18,8 @@ jQuery.fn.pandaUploader = function(signed_params, options, swfupload_options) {
         upload_filename_id: null,
         upload_progress_id: null,
         api_url: "http://staging.pandastream.com/v2/videos.json",
-        progress_handler: null
+        progress_handler: null,
+        uploader_dir: "/panda_js_uploader"
     }, options);
     
     if ( ! options.progress_handler) {
@@ -31,8 +32,8 @@ jQuery.fn.pandaUploader = function(signed_params, options, swfupload_options) {
         file_types : "*.*",
         file_types_description : "All Files",
         file_upload_limit : 0,
-        flash_url : "/panda_js_uploader/swfupload-jquery/swfupload/swfupload.swf",
-        button_image_url : '/panda_js_uploader/swfupload-jquery/swfupload/XPButtonUploadText_61x22.png',
+        flash_url : options.uploader_dir + "/swfupload.swf",
+        button_image_url : options.uploader_dir + "/XPButtonUploadText_61x22.png",
         button_width : 61,
         button_height : 22,
         button_placeholder_id : options.upload_button_id,
