@@ -1,5 +1,8 @@
 (function(){
 
+var num_files = 0;
+var num_pending = 0;
+var num_errors = 0
 
 jQuery.fn.pandaUploader = function(signed_params, options, swfupload_options) {
     if (signed_params === undefined) {
@@ -50,14 +53,16 @@ jQuery.fn.pandaUploader = function(signed_params, options, swfupload_options) {
     uploader.bind('uploadProgress', onProgress);
     uploader.bind('uploadSuccess', onSuccess);
     uploader.bind('uploadError', onError);
-    uploader.bind('queueComplete', onComplete);
-
+    uploader.bind('uploadComplete', onComplete);
+    
     function onLoad() {
         var form = $video_field.closest("form");
         form.submit(onSubmit);
     }
 
     function onFileQueued(event, file) {
+        num_files++;
+        num_pending++;
         var $field = $('#' + options.upload_filename_id);
         if ($field.size() == 0) {
             return;
@@ -87,16 +92,17 @@ jQuery.fn.pandaUploader = function(signed_params, options, swfupload_options) {
 
     function onSuccess(event, file, response) {
         $video_field.val(eval('(' + response + ')').id);
-        this.success = true;
+        num_pending--;
     }
 
     function onError(event, file, code, message, more) {
         alert("There was an error uploading the file.\n\nHTTP error code " + message);
-        this.success = false;
+        num_pending--;
+        num_errors++;
     }
 
     function onComplete(event, num_uploads) {
-        if ( ! this.success) {
+        if (num_pending > 0 && num_files != num_errors || num_files == num_errors) {
             return;
         }
         if ( ! $video_field.val()) {

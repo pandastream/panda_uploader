@@ -10,7 +10,6 @@ GENERATED = ${PU_MIN} ${PU_CAT}
 MINJAR = java -jar ${BUILD_DIR}/google-compiler-20100202.jar
 
 MODULES = ${SRC_DIR}/swfupload.js\
-	${SRC_DIR}/swfupload.queue.js\
 	${SRC_DIR}/jquery.swfupload.js\
 	${SRC_DIR}/jquery.panda-uploader.js
 
