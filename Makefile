@@ -28,8 +28,9 @@ ${PU_TAR}: ${PU_MIN}
 	@@tar zcf ${PU_TAR} -C ${DIST_DIR} ${PACKAGE_NAME}
 
 ${PU_MIN}: ${PU_CAT}
-	@@echo "Copying minified file to " ${PU_MIN}
+	@@echo "Minifying" ${PU_CAT}
 	@@${MINJAR} --js ${PU_CAT} --warning_level QUIET >> ${PU_MIN}
+	@@echo "Copying minified file to " ${PU_MIN}
 	@@rm -f ${PU_CAT}
 
 ${PU_CAT}:
