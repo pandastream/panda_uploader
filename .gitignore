@@ -19,3 +19,5 @@ rdoc
 pkg
 
 ## PROJECT::SPECIFIC
+dist/jquery.panda-uploader.min.js
+dist/jquery.panda-uploader.cat.js
