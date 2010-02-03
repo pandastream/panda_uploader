@@ -8,9 +8,9 @@ It works as a jQuery plugin, and requires requires JQuery version 1.3.
 First of all
 ------------
 
-First of all, copy the `panda_js_uploader` directory to your app's public path.
+Copy the `panda_js_uploader` directory to your app's public path.
 
-Then, don't forget to include the following declarations in your page, normally in your `<HEAD>` element:
+And don't forget to include the following declarations in your page, normally in your `<HEAD>` element:
 
     <script src="/panda_js_uploader/jquery.panda-uploader.min.js" type="text/javascript"></script> 
     <link href="/panda_js_uploader/panda-uploader.css" media="screen" rel="stylesheet" type="text/css" /> 
@@ -154,7 +154,7 @@ At the moment, the following arguments are supported:
 * **`upload_filename_id`**: the ID of an text input field. It will be filled out with the name of the selected file.
 * **`upload_progress_id`**: the ID of DIV that will contain the progress bar.
 * **`api_url`**: alternative URL for the Panda API. Should not be necessary to change.
-* **`uploader_dir`**: path were the uploader files are located in the web server. By default "/panda_js_uploader"
+* **`uploader_dir`**: path were the uploader files are located in the web server. By default "`/panda_js_uploader`"
 
 ### Multiple uploads
 
