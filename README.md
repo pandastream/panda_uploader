@@ -178,3 +178,10 @@ pandaUploader() accepts a third argument: a hash with parameters that will be pa
 
 All available arguments are documented at the [SWFUpload site](http://demo.swfupload.org/Documentation).
 
+### Events
+
+This script works on top of [Adam Royle's swfupload-jquery-plugin](http://github.com/ifunk/swfupload-jquery-plugin). This means you can bind SWFUpload events to the returned object like follows:
+
+    jQuery("#returned_video_id")
+        .pandaUploader(panda_access_details, options)
+        .bind('uploadStart', function(){ alert("Stuff"); });
