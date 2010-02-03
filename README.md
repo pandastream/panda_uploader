@@ -5,52 +5,138 @@ Panda uploader allows you to upload videos from your applications to Panda.
 
 It works as a jQuery plugin, and requires requires JQuery version 1.3.
 
-Lets write a simple example
+First of all
+------------
 
-html
------
+First of all, don't forget to include the following declarations in your page, normally in your `<HEAD>` element:
+
     <script src="/panda_js_uploader/jquery.panda-uploader.min.js" type="text/javascript"></script> 
     <link href="/panda_js_uploader/panda-uploader.css" media="screen" rel="stylesheet" type="text/css" /> 
 
-    <form>
-        <p>
-            <label for="upload_button">File</label>
+The above will load the necessary JavaScript code and CSS styles.
 
-            <!-- file selector -->
-            <span id="upload_button"></span>      
 
-            <!-- filename of the selected file (optional) -->
-            <input type="text" id="upload_filename" disabled="true" />
-        </p>
-    
-        <p>
-            <!-- upload progress bar (optional) -->
-            <div id="upload_progress"></div>
-        </p>
-    
-        <p>
-            <!-- field where the video ID will be stored after the upload -->
-            <input type="hidden" name="panda_video_id" id="returned_video_id" />
+Simplest example
+----------------
 
-            <input type="submit" value="Upload video" id="submit_button" />
-        </p>
+The following is the simplest working form to upload a video:
+
+    <form action="/path/to/action">
+        <!-- file selector -->
+        <span id="upload_button"></span>
+
+        <!-- field where the video ID will be stored after the upload -->
+        <input type="hidden" name="panda_video_id" id="returned_video_id" />
+
+        <!-- a submit button -->
+        <input type="submit" value="Upload video" />
 
         <script>
-        jQuery("#returned_video_id").pandaUploader({
+        var panda_access_details = {
             'access_id': 'your-access-id',
             'cloud_id': 'your-cloud-id',
             'timestamp': '2010-02-02T17:04:46+00:00',
             'signature': 'dC/M34sNc7v+oyhFRfVLEKpkVMNyhhyuyCECAQiR6nrUw='
-        }, {
-          upload_button_id: 'upload_button',
-          upload_filename_id: 'upload_filename',
-          upload_progress_id: 'upload_progress'
+        };
+        jQuery("#returned_video_id").pandaUploader(panda_access_details, { upload_button_id: 'upload_button' });
+        </script>
+    </form>
+
+This will render a fairly ugly form. We'll worry about the looks later. For now:
+
+1. Click on "Choose file". You will be shown a file selection dialog.
+2. Select a file to upload.
+3. Click "Upload video" and the upload will start.
+
+After the upload, Panda returns a unique ID that identifies your video. This will be automatically set as the value of the hidden field `#returned_video_id`, which was specified in the jQuery call. Then, the form will be finally submitted so your application can read this value and use it to reference the video later.
+
+
+Showing the current selection
+-----------------------------
+
+The example above is minimal, and has a very poor interface. It would be useful if at least we could see the name of the file we selected, as a means of feedback. See the following example to see how to do this easily.
+
+First, add a text field that will contain the name of the selected file:
+
+    <!-- filename of the selected file (optional) -->
+    <input type="text" id="upload_filename" class="panda_upload_filename" disabled="true" />
+
+Then, use the `upload_filename_id` option of the pandaUploader() function:
+
+    jQuery("#returned_video_id").pandaUploader(panda_access_details, { upload_button_id: 'upload_button', upload_filename_id: 'upload_filename' });
+
+The full example would be like follows:
+
+    <form action="/player.php">
+        <!-- file selector -->
+        <span id="upload_button"></span>
+
+        <!-- filename of the selected file (optional) -->
+        <input type="text" id="upload_filename" class="panda_upload_filename" disabled="true" />
+
+        <!-- field where the video ID will be stored after the upload -->
+        <input type="hidden" name="panda_video_id" id="returned_video_id" />
+
+        <!-- a submit button -->
+        <p><input type="submit" value="Upload video" /></p>
+
+        <script>
+        var panda_access_details = {
+            'access_id': 'your-access-id',
+            'cloud_id': 'your-cloud-id',
+            'timestamp': '2010-02-02T17:04:46+00:00',
+            'signature': 'dC/M34sNc7v+oyhFRfVLEKpkVMNyhhyuyCECAQiR6nrUw='
+        };
+        jQuery("#returned_video_id").pandaUploader(panda_access_details, {
+            upload_button_id: 'upload_button',
+            upload_filename_id: 'upload_filename', // Optional
         });
         </script>
     </form>
-    
-Add some parameters to SWFUpload
-================================
 
-You can customise the swfupload object by passing an hash as a third argument:
-jQuery("#returned_video_id").pandaUploader({...}, {}, { button_image_url: "my-image.png" })
+Adding a progress bar
+---------------------
+
+One last thing that would make this much more usable is an upload bar. At the moment, the user doesn't know how the upload process is going, or if it is working at all. A progress bar would be very appropriate here, and one is included by default.
+
+To enable it, first create a DIV that will contain the bar:
+
+    <!-- upload progress bar (optional) -->
+    <div id="upload_progress" class="panda_upload_progress"></div>
+
+And then let pandaUploader() know about it:
+
+    jQuery("#returned_video_id").pandaUploader(panda_access_details, { upload_button_id: 'upload_button', upload_progress_id: 'upload_progress' });
+
+Finally, the full example with all the controls would be:
+
+    <form action="/player.php">
+        <!-- file selector -->
+        <span id="upload_button"></span>
+
+        <!-- filename of the selected file (optional) -->
+        <input type="text" id="upload_filename" class="panda_upload_filename" disabled="true" />
+
+        <!-- upload progress bar (optional) -->
+        <div id="upload_progress" class="panda_upload_progress"></div>
+
+        <!-- field where the video ID will be stored after the upload -->
+        <input type="hidden" name="panda_video_id" id="returned_video_id" />
+
+        <!-- a submit button -->
+        <p><input type="submit" value="Upload video" /></p>
+
+        <script>
+        var panda_access_details = {
+            'access_id': 'your-access-id',
+            'cloud_id': 'your-cloud-id',
+            'timestamp': '2010-02-02T17:04:46+00:00',
+            'signature': 'dC/M34sNc7v+oyhFRfVLEKpkVMNyhhyuyCECAQiR6nrUw='
+        };
+        jQuery("#returned_video_id").pandaUploader(panda_access_details, {
+            upload_button_id: 'upload_button',
+            upload_filename_id: 'upload_filename', // Optional
+            upload_progress_id: 'upload_progress'  // Optional
+        });
+        </script>
+    </form>
