@@ -23,7 +23,7 @@ jQuery.fn.pandaUploader = function(signed_params, options, swfupload_options) {
         upload_progress_id: null,
         api_url: "http://api.pandastream.com/v2/videos.json",
         progress_handler: null,
-        uploader_dir: "/panda_js_uploader"
+        uploader_dir: "/panda_uploader"
     }, options);
     
     if ( ! options.progress_handler) {

@@ -1,4 +1,4 @@
-PACKAGE_NAME = panda_js_uploader
+PACKAGE_NAME = panda_uploader
 SRC_DIR = src
 BUILD_DIR = build
 PREFIX = .
