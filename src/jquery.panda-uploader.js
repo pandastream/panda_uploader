@@ -55,6 +55,9 @@ jQuery.fn.pandaUploader = function(signed_params, options, swfupload_options) {
     uploader.bind('uploadError', onError);
     uploader.bind('uploadComplete', onComplete);
     
+    return uploader;
+    
+    
     //
     // Event handlers
     //
