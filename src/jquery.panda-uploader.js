@@ -50,7 +50,7 @@ jQuery.fn.pandaUploader = function(signed_params, options, swfupload_options) {
     uploader.bind('uploadProgress', onProgress);
     uploader.bind('uploadSuccess', onSuccess);
     uploader.bind('uploadError', onError);
-    uploader.bind('uploadComplete', onComplete);
+    uploader.bind('queueComplete', onComplete);
 
     function onLoad() {
         var form = $video_field.closest("form");
@@ -95,7 +95,7 @@ jQuery.fn.pandaUploader = function(signed_params, options, swfupload_options) {
         this.success = false;
     }
 
-    function onComplete() {
+    function onComplete(event, num_uploads) {
         if ( ! this.success) {
             return;
         }
