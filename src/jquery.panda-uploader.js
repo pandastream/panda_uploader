@@ -137,7 +137,10 @@ ProgressUpload.prototype = {
         if ($p.size() == 0) {
             return;
         }
-        $p.append('<div class="progress-inside"></div>');
+        
+        if ($p.find('.progress-inside').size() == 0) {
+            $p.append('<div class="progress-inside"></div>');
+        }
         this.progress = $p.find('.progress-inside');
         this.setProgress(file, 0, file.size);
     },
