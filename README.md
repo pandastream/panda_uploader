@@ -8,7 +8,9 @@ It works as a jQuery plugin, and requires requires JQuery version 1.3.
 First of all
 ------------
 
-First of all, don't forget to include the following declarations in your page, normally in your `<HEAD>` element:
+First of all, copy the `panda_js_uploader` directory to your app's public path.
+
+Then, don't forget to include the following declarations in your page, normally in your `<HEAD>` element:
 
     <script src="/panda_js_uploader/jquery.panda-uploader.min.js" type="text/javascript"></script> 
     <link href="/panda_js_uploader/panda-uploader.css" media="screen" rel="stylesheet" type="text/css" /> 
@@ -140,3 +142,39 @@ Finally, the full example with all the controls would be:
         });
         </script>
     </form>
+
+Advanced usage
+--------------
+
+### Additional arguments
+
+At the moment, the following arguments are supported:
+
+* **`upload_button_id`**: REQUIRED. The ID of an HTML element that will be replaced by the file selector.
+* **`upload_filename_id`**: the ID of an text input field. It will be filled out with the name of the selected file.
+* **`upload_progress_id`**: the ID of DIV that will contain the progress bar.
+* **`api_url`**: alternative URL for the Panda API. Should not be necessary to change.
+* **`uploader_dir`**: path were the uploader files are located in the web server. By default "/panda_js_uploader"
+
+### Multiple uploads
+
+Upload of multiple files is supported. Just make sure to replicate the necessary HTML elements, giving them different IDs.
+
+As for error handling, the default behaviour is that the form is submitted as long as one of the many uploads is successful. If this does not do the trick for you, you'll have to modify the code yourself. (It should be fairly simple).
+
+### SWFUpload arguments
+
+pandaUploader() accepts a third argument: a hash with parameters that will be passed on to the SWFUpload constructor. This can be useful in many ways. For example, if you want the selector to use a different button, do this:
+
+    jQuery("#returned_video_id").pandaUploader(panda_access_details, {
+        upload_button_id: 'upload_button',
+        upload_filename_id: 'upload_filename',
+        upload_progress_id: 'upload_progress'
+    }, {
+        button_image_url : "/my-cool-button.png",
+        button_width : 70,
+        button_height : 30
+    });
+
+All available arguments are documented at the [SWFUpload site](http://demo.swfupload.org/Documentation).
+
