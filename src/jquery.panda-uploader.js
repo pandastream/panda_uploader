@@ -55,6 +55,10 @@ jQuery.fn.pandaUploader = function(signed_params, options, swfupload_options) {
     uploader.bind('uploadError', onError);
     uploader.bind('uploadComplete', onComplete);
     
+    //
+    // Event handlers
+    //
+    
     function onLoad() {
         var form = $video_field.closest("form");
         form.submit(onSubmit);
@@ -114,6 +118,11 @@ jQuery.fn.pandaUploader = function(signed_params, options, swfupload_options) {
         tmpForm.submit.apply(form);
     }
 }
+
+
+//
+// A simple progress bar
+//
 
 function ProgressUpload(options) {
     this.options = options;
