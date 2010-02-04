@@ -9,7 +9,7 @@ PU_CAT = ${DIST_DIR}/jquery.panda-uploader.cat.js
 PU_MIN = ${PANDA_DIST_DIR}/jquery.panda-uploader.min.js
 GENERATED = ${PU_MIN} ${PU_CAT} ${PU_TAR}
 
-MINJAR = java -jar ${BUILD_DIR}/google-compiler-20100202.jar
+MINJAR = java -jar ${BUILD_DIR}/google-compiler-20091218.jar
 
 MODULES = ${SRC_DIR}/swfupload.js\
 	${SRC_DIR}/jquery.swfupload.js\
