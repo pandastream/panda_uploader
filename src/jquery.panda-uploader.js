@@ -21,7 +21,7 @@ jQuery.fn.pandaUploader = function(signed_params, options, swfupload_options) {
     options = jQuery.extend({
         upload_filename_id: null,
         upload_progress_id: null,
-        api_url: "http://api.pandastream.com/v2/videos.json",
+        api_url: "http://api.pandastream.com/v2",
         progress_handler: null,
         uploader_dir: "/panda_uploader"
     }, options);
@@ -31,7 +31,7 @@ jQuery.fn.pandaUploader = function(signed_params, options, swfupload_options) {
     }
     
     var uploader = this.swfupload(jQuery.extend({
-        upload_url: options.api_url,
+        upload_url: options.api_url + '/videos.json',
         file_size_limit : 0,
         file_types : "*.*",
         file_types_description : "All Files",
