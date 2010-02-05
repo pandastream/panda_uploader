@@ -1,8 +1,9 @@
 PACKAGE_NAME = panda_uploader
-SRC_DIR = src
-BUILD_DIR = build
+SRC_ROOT = src
+SRC_DIR = ${SRC_ROOT}/src
+BUILD_DIR = ${SRC_ROOT}/build
 PREFIX = .
-DIST_DIR = ${PREFIX}/dist
+DIST_DIR = ${PREFIX}
 PANDA_DIST_DIR = ${DIST_DIR}/${PACKAGE_NAME}
 PU_TAR = ${DIST_DIR}/${PACKAGE_NAME}.tar.gz
 PU_CAT = ${DIST_DIR}/jquery.panda-uploader.cat.js
@@ -14,7 +15,6 @@ MINJAR = java -jar ${BUILD_DIR}/google-compiler-20091218.jar
 MODULES = ${SRC_DIR}/swfupload.js\
 	${SRC_DIR}/jquery.swfupload.js\
 	${SRC_DIR}/jquery.panda-uploader.js
-
 
 all: min tar
 	@@echo "Panda uploader build complete."
