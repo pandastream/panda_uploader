@@ -185,3 +185,12 @@ This script works on top of [Adam Royle's swfupload-jquery-plugin](http://github
     jQuery("#returned_video_id")
         .pandaUploader(panda_access_details, options)
         .bind('uploadStart', function(){ alert("Stuff"); });
+
+
+Notes
+-----
+
+This code uses [Adam Royle's swfupload-jquery-plugin](http://github.com/ifunk/swfupload-jquery-plugin), which is in turn an interface to [SWFUpload](http://www.swfupload.org). Code is minified using the [Google Compiler](http://code.google.com/closure/compiler/).
+
+
+Copyright (c) 2010 New Bamboo. Distributed under the terms of the MIT License. See LICENSE file for details
