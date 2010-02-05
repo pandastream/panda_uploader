@@ -162,7 +162,7 @@ Upload of multiple files is supported. Just make sure to replicate the necessary
 
 As for error handling, the default behaviour is that the form is submitted as long as one of the many uploads is successful. If this does not do the trick for you, you'll have to modify the code yourself. (It should be fairly simple).
 
-### SWFUpload arguments
+### Custom button design
 
 pandaUploader() accepts a third argument: a hash with parameters that will be passed on to the SWFUpload constructor. This can be useful in many ways. For example, if you want the selector to use a different button, do this:
 

@@ -37,9 +37,9 @@ jQuery.fn.pandaUploader = function(signed_params, options, swfupload_options) {
         file_types_description : "All Files",
         file_upload_limit : 0,
         flash_url : options.uploader_dir + "/swfupload.swf",
-        button_image_url : options.uploader_dir + "/XPButtonUploadText_61x22.png",
-        button_width : 61,
-        button_height : 22,
+        button_image_url : options.uploader_dir + "/choose_file_button.png",
+        button_width : 87,
+        button_height : 27,
         button_placeholder_id : options.upload_button_id,
         post_params : signed_params,
         file_post_name: "file",
@@ -143,6 +143,7 @@ ProgressUpload.prototype = {
         }
         this.progress = $p.find('.progress-inside');
         this.setProgress(file, 0, file.size);
+        $p.show();
     },
     
     setProgress: function(file, bytesLoaded, bytesTotal) {
