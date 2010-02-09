@@ -135,7 +135,7 @@ jQuery.fn.pandaUploader = function(signed_params, options, swfupload_options) {
 function ProgressUpload(options) {
     this.options = options;
     this.$p = jQuery('#' + this.options.upload_progress_id);
-    this.$p.hide();
+    this.$p.css('display', 'none');
 }
 
 ProgressUpload.prototype = {
@@ -149,7 +149,7 @@ ProgressUpload.prototype = {
         }
         this.progress = this.$p.find('.progress-inside');
         this.setProgress(file, 0, file.size);
-        this.$p.show();
+        this.$p.css('display', 'block');
     },
     
     setProgress: function(file, bytesLoaded, bytesTotal) {
