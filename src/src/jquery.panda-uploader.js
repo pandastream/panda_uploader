@@ -18,6 +18,11 @@ jQuery.fn.pandaUploader = function(signed_params, options, swfupload_options) {
         return false;
     }
     
+    if ($(this).size() == 0) {
+        alert("The jQuery element is empty. Method pandaUploader() cannot be executed");
+        return false;
+    }
+    
     options = jQuery.extend({
         upload_filename_id: null,
         upload_progress_id: null,
