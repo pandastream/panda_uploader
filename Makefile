@@ -19,6 +19,8 @@ MODULES = ${SRC_DIR}/swfupload.js\
 all: min tar
 	@@echo "Panda uploader build complete."
 
+debug: ${PU_CAT}
+
 tar: ${PU_TAR}
 
 min: ${PU_MIN}
