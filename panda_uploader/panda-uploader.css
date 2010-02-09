@@ -4,7 +4,7 @@
 }
 
 .panda_upload_progress {
-    display: none;
+    display: block;
     width:250px;
     height:26px;
     border:1px solid #0c3c7e;

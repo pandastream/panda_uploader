@@ -134,21 +134,22 @@ jQuery.fn.pandaUploader = function(signed_params, options, swfupload_options) {
 
 function ProgressUpload(options) {
     this.options = options;
+    this.$p = jQuery('#' + this.options.upload_progress_id);
+    this.$p.hide();
 }
 
 ProgressUpload.prototype = {
     start: function(file) {
-        var $p = jQuery('#' + this.options.upload_progress_id);
-        if ($p.size() == 0) {
+        if (this.$p.size() == 0) {
             return;
         }
         
-        if ($p.find('.progress-inside').size() == 0) {
-            $p.append('<div class="progress-inside"></div>');
+        if (this.$p.find('.progress-inside').size() == 0) {
+            this.$p.append('<div class="progress-inside"></div>');
         }
-        this.progress = $p.find('.progress-inside');
+        this.progress = this.$p.find('.progress-inside');
         this.setProgress(file, 0, file.size);
-        $p.show();
+        this.$p.show();
     },
     
     setProgress: function(file, bytesLoaded, bytesTotal) {
