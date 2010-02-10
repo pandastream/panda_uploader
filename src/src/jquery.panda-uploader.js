@@ -5,6 +5,8 @@ var num_pending = 0;
 var num_errors = 0
 
 jQuery.fn.pandaUploader = function(signed_params, options, swfupload_options) {
+    var $video_field = this;
+
     if (signed_params === undefined) {
         alert("There was an error setting up the upload form. (The upload parameters were not specified).");
         return false;
@@ -18,8 +20,18 @@ jQuery.fn.pandaUploader = function(signed_params, options, swfupload_options) {
         return false;
     }
     
-    if ($(this).size() == 0) {
+    if ($video_field.size() == 0) {
         alert("The jQuery element is empty. Method pandaUploader() cannot be executed");
+        return false;
+    }
+    
+    if ( ! form()) {
+        alert("Could not find a suitable form. Please place the call to pandaUploader() after the form, or to be executed onload().");
+        return false;
+    }
+    
+    if ($(form()).find('[name=submit], #submit').length != 0) {
+        alert("An element of your video upload form is incorrect (most probably the submit button). Neither NAME nor ID can be set to \"submit\" on any field.");
         return false;
     }
     
@@ -51,7 +63,6 @@ jQuery.fn.pandaUploader = function(signed_params, options, swfupload_options) {
         debug: false
     }, swfupload_options));
     
-    var $video_field = this;
     uploader.bind('swfuploadLoaded', onLoad);
     uploader.bind('fileQueued', onFileQueued);
     uploader.bind('uploadStart', onStart);
@@ -121,9 +132,16 @@ jQuery.fn.pandaUploader = function(signed_params, options, swfupload_options) {
             alert('The video ID was not stored on the form');
             return;
         }
-        var form =  $video_field.closest("form")[0];
-        var tmpForm = document.createElement('FORM');
-        tmpForm.submit.apply(form);
+        form().submit();
+    }
+    
+    
+    //
+    // Utils
+    //
+    
+    function form() {
+        return $video_field.closest("form").get(0);
     }
 }
 
