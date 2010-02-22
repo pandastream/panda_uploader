@@ -38,10 +38,11 @@ jQuery.fn.pandaUploader = function(signed_params, options, swfupload_options) {
     options = jQuery.extend({
         upload_filename_id: null,
         upload_progress_id: null,
-        api_url: "http://api.pandastream.com/v2",
+        api_host: 'api.pandastream.com',
         progress_handler: null,
         uploader_dir: "/panda_uploader"
     }, options);
+    options['api_url'] = options['api_url'] || 'http://' + options['api_host'] + '/v2';
     
     if ( ! options.progress_handler) {
         options.progress_handler = new ProgressUpload(options);

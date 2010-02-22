@@ -153,7 +153,7 @@ At the moment, the following arguments are supported:
 * **`upload_button_id`**: REQUIRED. The ID of an HTML element that will be replaced by the file selector.
 * **`upload_filename_id`**: the ID of an text input field. It will be filled out with the name of the selected file.
 * **`upload_progress_id`**: the ID of DIV that will contain the progress bar.
-* **`api_url`**: alternative URL for the Panda API. Should not be necessary to change.
+* **`api_host`**: alternative host for the Panda API. Needs to change to `api.eu.pandastream.com` if you signed up for the EU region cloud.
 * **`uploader_dir`**: path were the uploader files are located in the web server. By default "`/panda_uploader`"
 
 ### Multiple uploads
