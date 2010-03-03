@@ -10,7 +10,7 @@ PU_CAT = ${DIST_DIR}/jquery.panda-uploader.cat.js
 PU_MIN = ${PANDA_DIST_DIR}/jquery.panda-uploader.min.js
 GENERATED = ${PU_MIN} ${PU_CAT} ${PU_TAR}
 
-MINJAR = java -jar ${BUILD_DIR}/google-compiler-20091218.jar
+MINJAR = java -jar ${BUILD_DIR}/google-compiler-20100226.jar
 
 MODULES = ${SRC_DIR}/swfupload.js\
 	${SRC_DIR}/jquery.swfupload.js\
@@ -31,7 +31,7 @@ ${PU_TAR}: ${PU_MIN}
 
 ${PU_MIN}: ${PU_CAT}
 	@@echo "Minifying" ${PU_CAT}
-	@@${MINJAR} --js ${PU_CAT} --warning_level QUIET >> ${PU_MIN}
+	@@${MINJAR} --js ${PU_CAT} --warning_level QUIET > ${PU_MIN}
 	@@echo "Copying minified file to " ${PU_MIN}
 	@@rm -f ${PU_CAT}
 
