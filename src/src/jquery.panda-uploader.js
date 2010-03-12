@@ -155,6 +155,7 @@ function ProgressUpload(options) {
     this.options = options;
     this.$p = jQuery('#' + this.options.upload_progress_id);
     this.$p.css('display', 'none');
+    this.count = 0;
 }
 
 ProgressUpload.prototype = {
@@ -169,6 +170,8 @@ ProgressUpload.prototype = {
         this.progress = this.$p.find('.progress-inside');
         this.setProgress(file, 0, file.size);
         this.$p.css('display', 'block');
+        var self = this;
+        setInterval(function(){self.animateBarBg()}, 20);
     },
     
     setProgress: function(file, bytesLoaded, bytesTotal) {
@@ -177,6 +180,17 @@ ProgressUpload.prototype = {
         }
         var percent = Math.ceil((bytesLoaded / bytesTotal) * 100);
         $(this.progress).css('width', percent + '%');
+    },
+    
+    animateBarBg: function() {
+      this.count++;
+      var currentOffset = parseInt(this.$p.css("background-position").split(" "));
+      if (this.count == 37) {
+        this.count = 0;
+        this.$p.css("background-position", (currentOffset + 36) + "px 0px");
+      }
+      else
+        this.$p.css("background-position", (currentOffset - 1) + "px 0px");
     }
 }
 
