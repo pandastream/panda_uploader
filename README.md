@@ -23,7 +23,7 @@ Generating access details
 You will also need a the help of a server-side library to generate access details for you. On the examples below, you will notice the following snippet of JS code:
 
     var panda_access_details = {
-        'access_id': 'your-access-id',
+        'access_key': 'your-access-key',
         'cloud_id': 'your-cloud-id',
         'timestamp': '2010-02-02T17:04:46+00:00',
         'signature': 'dC/M34sNc7v+oyhFRfVLEKpkVMNyhhyuyCECAQiR6nrUw='
@@ -61,7 +61,7 @@ The following is the simplest working form to upload a video:
 
         <script>
         var panda_access_details = {
-            'access_id': 'your-access-id',
+            'access_key': 'your-access-key',
             'cloud_id': 'your-cloud-id',
             'timestamp': '2010-02-02T17:04:46+00:00',
             'signature': 'dC/M34sNc7v+oyhFRfVLEKpkVMNyhhyuyCECAQiR6nrUw='
@@ -110,7 +110,7 @@ The full example would be like follows:
 
         <script>
         var panda_access_details = {
-            'access_id': 'your-access-id',
+            'access_key': 'your-access-key',
             'cloud_id': 'your-cloud-id',
             'timestamp': '2010-02-02T17:04:46+00:00',
             'signature': 'dC/M34sNc7v+oyhFRfVLEKpkVMNyhhyuyCECAQiR6nrUw='
@@ -156,7 +156,7 @@ Finally, the full example with all the controls would be:
 
         <script>
         var panda_access_details = {
-            'access_id': 'your-access-id',
+            'access_key': 'your-access-key',
             'cloud_id': 'your-cloud-id',
             'timestamp': '2010-02-02T17:04:46+00:00',
             'signature': 'dC/M34sNc7v+oyhFRfVLEKpkVMNyhhyuyCECAQiR6nrUw='
