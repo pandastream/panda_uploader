@@ -35,12 +35,19 @@ jQuery.fn.pandaUploader = function(signed_params, options, swfupload_options) {
         return false;
     }
     
+    
+		var $cancel_button = jQuery('#' + options.upload_cancel_button_id);
+		if ($cancel_button) {
+			$cancel_button.click(onCancel)
+		}
+    
     options = jQuery.extend({
         upload_filename_id: null,
         upload_progress_id: null,
         api_host: 'api.pandastream.com',
         progress_handler: null,
-        uploader_dir: "/panda_uploader"
+        uploader_dir: "/panda_uploader",
+        disable_submit_button: false
     }, options);
     options['api_url'] = options['api_url'] || 'http://' + options['api_host'] + '/v2';
     
@@ -74,6 +81,14 @@ jQuery.fn.pandaUploader = function(signed_params, options, swfupload_options) {
     
     return uploader;
     
+    function disableSubmitButton(value){
+      if(options.disable_submit_button) {
+        var form = $video_field.closest("form");
+        form.find("input[type=submit]").each(function() {
+         $(this).attr("disabled", value); 
+        })        
+      }
+    }
     
     //
     // Event handlers
@@ -82,6 +97,7 @@ jQuery.fn.pandaUploader = function(signed_params, options, swfupload_options) {
     function onLoad() {
         var form = $video_field.closest("form");
         form.submit(onSubmit);
+        disableSubmitButton(true)
     }
 
     function onFileQueued(event, file) {
@@ -92,6 +108,7 @@ jQuery.fn.pandaUploader = function(signed_params, options, swfupload_options) {
             return;
         }
         $field.val(file.name);
+        disableSubmitButton(false)
     }
 
     function onSubmit(event) {
@@ -100,11 +117,23 @@ jQuery.fn.pandaUploader = function(signed_params, options, swfupload_options) {
     }
 
     function onStart(event, file) {
+        disableSubmitButton(true)
         if (options.progress_handler) {
             options.progress_handler.start(file);
         }
     }
 
+    function onCancel(event) {
+      uploader.swfupload('cancelUpload', '', false)
+      $('#' + options.upload_filename_id).val('');
+      options.progress_handler.reset();
+      num_files = 0;
+      num_pending = 0;
+      num_errors = 0;
+      disableSubmitButton(true);
+      e.stopPropagation();
+    }
+    
     function onProgress(event, file, bytesLoaded, bytesTotal) {
         try {
             if (options.progress_handler) {
@@ -191,6 +220,11 @@ ProgressUpload.prototype = {
       }
       else
         this.$p.css("background-position", (currentOffset - 1) + "px 0px");
+    },
+    
+    reset: function(){
+      $(this.progress).css('width', '0%');
+      this.$p.css('display', 'none');
     }
 }
 
