@@ -181,6 +181,8 @@ At the moment, the following arguments are supported:
 * **`upload_progress_id`**: the ID of DIV that will contain the progress bar.
 * **`api_host`**: alternative host for the Panda API. Needs to change to `api.eu.pandastream.com` if you signed up for the EU region cloud.
 * **`uploader_dir`**: path were the uploader files are located in the web server. By default "`/panda_uploader`"
+* **`upload_cancel_button_id`**: The ID of an HTML element that will trigger the cancel upload on a click event.
+* **`disable_submit_button`**: true/false. Disable the submit button.
 
 ### Multiple uploads
 
