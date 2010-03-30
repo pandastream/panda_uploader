@@ -12,7 +12,7 @@ Copy the `panda_uploader` directory to your app's public path.
 
 And don't forget to include the following declarations in your page, normally in your `<HEAD>` element:
 
-    <script src="/panda_uploader/jquery.panda-uploader.min.js" type="text/javascript"></script> 
+    <script src="/panda_uploader/jquery.panda-uploader-VERSION.min.js" type="text/javascript"></script> 
     <link href="/panda_uploader/panda-uploader.css" media="screen" rel="stylesheet" type="text/css" /> 
 
 The above will load the necessary JavaScript code and CSS styles.
