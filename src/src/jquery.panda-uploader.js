@@ -155,14 +155,13 @@ jQuery.fn.pandaUploader = function(signed_params, options, swfupload_options) {
     }
 
     function onComplete(event, num_uploads) {
-        if (num_pending > 0 && num_files != num_errors || num_files == num_errors) {
-            return;
-        }
+      if (num_files > 0 && num_pending <= 0 && num_errors <= 0) {
         if ( ! $video_field.val()) {
             alert('The video ID was not stored on the form');
             return;
         }
-        form().submit();
+        form().submit();          
+      }
     }
     
     
