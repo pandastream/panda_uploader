@@ -1,8 +1,13 @@
 (function(){
 
+UPLOADING=0
+STOP=1
+
 var num_files = 0;
 var num_pending = 0;
 var num_errors = 0
+
+var status = STOP
 
 jQuery.fn.pandaUploader = function(signed_params, options, swfupload_options) {
     var $video_field = this;
@@ -117,8 +122,8 @@ jQuery.fn.pandaUploader = function(signed_params, options, swfupload_options) {
     }
 
     function onStart(event, file) {
+      status = UPLOADING
       uploader.swfupload('setButtonDisabled', true)
-      
       options.progress_handler.reset();
       
         disableSubmitButton(true)
@@ -139,9 +144,10 @@ jQuery.fn.pandaUploader = function(signed_params, options, swfupload_options) {
       disableSubmitButton(true);
       
       cancel_handler = options["cancel"]
-      if(cancel_handler) {
+      if(status == UPLOADING && cancel_handler) {
         cancel_handler(event)
       }
+      status = STOP
     }
     
     function onProgress(event, file, bytesLoaded, bytesTotal) {
@@ -184,7 +190,8 @@ jQuery.fn.pandaUploader = function(signed_params, options, swfupload_options) {
             alert('The video ID was not stored on the form');
             return;
         }
-        
+
+        status = STOP
         complete_handler = options["complete"]
         if(complete_handler) {
           complete_handler(event)
