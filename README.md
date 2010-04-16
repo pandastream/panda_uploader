@@ -182,8 +182,34 @@ At the moment, the following arguments are supported:
 * **`api_host`**: alternative host for the Panda API. Needs to change to `api.eu.pandastream.com` if you signed up for the EU region cloud.
 * **`uploader_dir`**: path were the uploader files are located in the web server. By default "`/panda_uploader`"
 * **`upload_cancel_button_id`**: The ID of an HTML element that will trigger the cancel upload on a click event.
-* **`disable_submit_button`**: true/false. Disable the submit button.
+* **`disable_submit_button`**: Disable the submit button. true by default
+* **`success/complete/error/cancel`**: Event handlers
 
+Event Handlers
+
+### Event handlers
+Panda uploader gives you full control of swfupload events.
+
+    {
+      success: function(event, file, video_id) {
+        // the video `video_id` has been uploaded
+      }
+
+      error: function(event, file, message) {
+        // An error occured during the upload
+        // find out why by checking the message
+      }
+
+      complete: function (event) {
+        // All videos have been uploaded
+        // The form is not submitted
+      }
+
+      cancel: function (event) {
+        // Upload canceled
+      }
+    }
+    
 ### Multiple uploads
 
 Upload of multiple files is supported. Just make sure to replicate the necessary HTML elements, giving them different IDs.
