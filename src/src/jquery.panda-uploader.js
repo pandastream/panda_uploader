@@ -47,7 +47,7 @@ jQuery.fn.pandaUploader = function(signed_params, options, swfupload_options) {
         api_host: 'api.pandastream.com',
         progress_handler: null,
         uploader_dir: "/panda_uploader",
-        disable_submit_button: false
+        disable_submit_button: true
     }, options);
     options['api_url'] = options['api_url'] || 'http://' + options['api_host'] + '/v2';
     
@@ -117,6 +117,10 @@ jQuery.fn.pandaUploader = function(signed_params, options, swfupload_options) {
     }
 
     function onStart(event, file) {
+      uploader.swfupload('setButtonDisabled', true)
+      
+      options.progress_handler.reset();
+      
         disableSubmitButton(true)
         if (options.progress_handler) {
             options.progress_handler.start(file);
@@ -125,13 +129,19 @@ jQuery.fn.pandaUploader = function(signed_params, options, swfupload_options) {
 
     function onCancel(event) {
       uploader.swfupload('cancelUpload', '', false)
+      uploader.swfupload('setButtonDisabled', false)
+      
       $('#' + options.upload_filename_id).val('');
       options.progress_handler.reset();
       num_files = 0;
       num_pending = 0;
       num_errors = 0;
       disableSubmitButton(true);
-      e.stopPropagation();
+      
+      cancel_handler = options["cancel"]
+      if(cancel_handler) {
+        cancel_handler(event)
+      }
     }
     
     function onProgress(event, file, bytesLoaded, bytesTotal) {
@@ -146,12 +156,26 @@ jQuery.fn.pandaUploader = function(signed_params, options, swfupload_options) {
     function onSuccess(event, file, response) {
         $video_field.val(eval('(' + response + ')').id);
         num_pending--;
+        
+        success_handler = options["success"]
+        if(success_handler) {
+          success_handler(event, file, response)
+        }
     }
 
     function onError(event, file, code, message, more) {
-        alert("There was an error uploading the file.\n\nHTTP error code " + message);
+        $('#' + options.upload_filename_id).val('');
+        options.progress_handler.reset();
+        
         num_pending--;
         num_errors++;
+
+        error_handler = options["error"]
+        if(error_handler)  {
+          error_handler(event, file, message)
+        }else {
+          alert("There was an error uploading the file.\n\nHTTP error code " + message);
+        }
     }
 
     function onComplete(event, num_uploads) {
@@ -160,7 +184,14 @@ jQuery.fn.pandaUploader = function(signed_params, options, swfupload_options) {
             alert('The video ID was not stored on the form');
             return;
         }
-        form().submit();          
+        
+        complete_handler = options["complete"]
+        if(complete_handler) {
+          complete_handler(event)
+        }else {
+          form().submit(); 
+        }
+        
       }
     }
     
@@ -188,6 +219,7 @@ function ProgressUpload(options) {
 
 ProgressUpload.prototype = {
     start: function(file) {
+        this.count = 0
         if (this.$p.size() == 0) {
             return;
         }
@@ -195,11 +227,12 @@ ProgressUpload.prototype = {
         if (this.$p.find('.progress-inside').size() == 0) {
             this.$p.append('<div class="progress-inside"></div>');
         }
+        
         this.progress = this.$p.find('.progress-inside');
         this.setProgress(file, 0, file.size);
         this.$p.css('display', 'block');
         var self = this;
-        setInterval(function(){self.animateBarBg()}, 20);
+        this.timer = setInterval(function(){self.animateBarBg()}, 20);
     },
     
     setProgress: function(file, bytesLoaded, bytesTotal) {
@@ -222,6 +255,7 @@ ProgressUpload.prototype = {
     },
     
     reset: function(){
+      clearInterval(this.timer)
       $(this.progress).css('width', '0%');
       this.$p.css('display', 'none');
     }
