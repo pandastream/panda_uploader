@@ -88,7 +88,7 @@ jQuery.fn.pandaUploader = function(signed_params, options, swfupload_options) {
     
     function disableSubmitButton(value){
       if(options.disable_submit_button) {
-        var form = $video_field.closest("form");
+        var form = $video_field.parents("form").eq(0);
         form.find("input[type=submit]").each(function() {
          $(this).attr("disabled", value); 
         })        
@@ -100,7 +100,7 @@ jQuery.fn.pandaUploader = function(signed_params, options, swfupload_options) {
     //
     
     function onLoad() {
-        var form = $video_field.closest("form");
+        var form = $video_field.parents("form").eq(0);
         form.submit(onSubmit);
         disableSubmitButton(true)
     }
@@ -208,7 +208,7 @@ jQuery.fn.pandaUploader = function(signed_params, options, swfupload_options) {
     //
     
     function form() {
-        return $video_field.closest("form").get(0);
+        return $video_field.parents("form")[0];
     }
 }
 
