@@ -3,15 +3,9 @@
 UPLOADING=0
 STOP=1
 
-var num_files = 0;
-var num_pending = 0;
-var num_errors = 0
-
-var status = STOP
-
 jQuery.fn.pandaUploader = function(signed_params, options, swfupload_options) {
-    var $video_field = this;
-
+    var form = this.parents("form")[0];
+    
     if (signed_params === undefined) {
         alert("There was an error setting up the upload form. (The upload parameters were not specified).");
         return false;
@@ -25,26 +19,21 @@ jQuery.fn.pandaUploader = function(signed_params, options, swfupload_options) {
         return false;
     }
     
-    if ($video_field.size() == 0) {
+    if (this.size() == 0) {
         alert("The jQuery element is empty. Method pandaUploader() cannot be executed");
         return false;
     }
     
-    if ( ! form()) {
+    if ( ! form) {
         alert("Could not find a suitable form. Please place the call to pandaUploader() after the form, or to be executed onload().");
         return false;
     }
     
-    if ($(form()).find('[name=submit], #submit').length != 0) {
+    if ($(form).find('[name=submit], #submit').length != 0) {
         alert("An element of your video upload form is incorrect (most probably the submit button). Neither NAME nor ID can be set to \"submit\" on any field.");
         return false;
     }
     
-    
-		var $cancel_button = jQuery('#' + options.upload_cancel_button_id);
-		if ($cancel_button) {
-			$cancel_button.click(onCancel)
-		}
     
     options = jQuery.extend({
         upload_filename_id: null,
@@ -52,7 +41,8 @@ jQuery.fn.pandaUploader = function(signed_params, options, swfupload_options) {
         api_host: 'api.pandastream.com',
         progress_handler: null,
         uploader_dir: "/panda_uploader",
-        disable_submit_button: true
+        disable_submit_button: true,
+        strategy: 'upload_on_submit'
     }, options);
     options['api_url'] = options['api_url'] || 'http://' + options['api_host'] + '/v2';
     
@@ -76,141 +66,275 @@ jQuery.fn.pandaUploader = function(signed_params, options, swfupload_options) {
         debug: false
     }, swfupload_options));
     
-    uploader.bind('swfuploadLoaded', onLoad);
-    uploader.bind('fileQueued', onFileQueued);
-    uploader.bind('uploadStart', onStart);
-    uploader.bind('uploadProgress', onProgress);
-    uploader.bind('uploadSuccess', onSuccess);
-    uploader.bind('uploadError', onError);
-    uploader.bind('uploadComplete', onComplete);
+    var strategyClass = null;
+    switch(options.strategy) {
+    case 'upload_on_submit':
+        strategyClass = UploadOnSubmit;
+        break;
+    case 'upload_on_select':
+        strategyClass = UploadOnSelect;
+        break;
+    default:
+        strategyClass = options.strategy;
+    }
+    strategy = new strategyClass(form, options, uploader);
+
+    uploader.bind('swfuploadLoaded', bondage(strategy, 'onLoad'));
+    uploader.bind('fileQueued', bondage(strategy, 'onFileQueued'));
+    uploader.bind('uploadStart', bondage(strategy, 'onStart'));
+    uploader.bind('uploadProgress', bondage(strategy, 'onProgress'));
+    uploader.bind('uploadSuccess', bondage(strategy, 'onSuccess'));
+    uploader.bind('uploadError', bondage(strategy, 'onError'));
+    uploader.bind('uploadComplete', bondage(strategy, 'onComplete'));
+    
+    var $cancel_button = jQuery('#' + options.upload_cancel_button_id);
+    if ($cancel_button) {
+        $cancel_button.click(bondage(strategy, 'onCancel'));
+    }
     
     return uploader;
-    
-    function disableSubmitButton(value){
-      var form = $video_field.parents("form").eq(0);
-      form.find("input[type=submit]").each(function() {
-       $(this).attr("disabled", value);
-      })
-    }
-    
-    //
-    // Event handlers
-    //
-    
-    function onLoad() {
-      var form = $video_field.parents("form").eq(0);
-      form.submit(onSubmit);
-      if(options.disable_submit_button) {
-        disableSubmitButton(true);
-      }
-    }
+}
 
-    function onFileQueued(event, file) {
-        num_files++;
-        num_pending++;
-        var $field = $('#' + options.upload_filename_id);
-        if ($field.size() == 0) {
-            return;
+
+//
+// BaseStrategy
+//
+
+function BaseStrategy(form, options, uploader) {
+    this.form = form;
+    this.options = options;
+    this.uploader = uploader;
+}
+BaseStrategy.prototype = {
+    disableSubmitButton: function(value){
+        $(this.form).find("input[type=submit]").each(function() {
+            $(this.form).attr("disabled", value);
+        })
+    },
+
+    onLoad: function() {
+        var form = this.uploader.parents("form").eq(0);
+        form.submit(bondage(this, 'onSubmit'));
+        if(this.options.disable_submit_button) {
+            this.disableSubmitButton(true);
         }
-        $field.val(file.name);
-        disableSubmitButton(false)
+    },
+    
+    onSubmit: function() {
+    },
+    onFileQueued: function() {
+    },
+    onStart: function() {
+    },
+    onProgress: function() {
+    },
+    onSuccess: function() {
+    },
+    onError: function() {
+    },
+    onComplete: function() {
     }
+}
 
-    function onSubmit(event) {
-      if (num_files > 0) {
-        uploader.swfupload('startUpload');
+
+//
+// UploadOnSubmit
+//
+
+function UploadOnSubmit(form, options, uploader) {
+    BaseStrategy.apply(this, [form, options, uploader]);
+    this.num_files = 0;
+    this.num_pending = 0;
+    this.num_errors = 0
+    this.status = STOP
+}
+UploadOnSubmit.prototype = new BaseStrategy();
+UploadOnSubmit.prototype.constructor = UploadOnSubmit;
+
+UploadOnSubmit.prototype.onFileQueued = function(event, file) {
+    this.num_files++;
+    this.num_pending++;
+    var $field = $('#' + this.options.upload_filename_id);
+    if ($field.size() == 0) {
+        return;
+    }
+    $field.val(file.name);
+    this.disableSubmitButton(false)
+}
+
+UploadOnSubmit.prototype.onSubmit = function(event) {
+    if (this.num_files > 0) {
+        this.uploader.swfupload('startUpload');
         return false;
-      }
     }
+}
 
-    function onStart(event, file) {
-      status = UPLOADING
-      uploader.swfupload('setButtonDisabled', true)
-      options.progress_handler.reset();
-      
-      disableSubmitButton(true)
-      if (options.progress_handler) {
-          options.progress_handler.start(file);
-      }
+UploadOnSubmit.prototype.onStart = function(event, file) {
+    this.status = UPLOADING;
+    this.uploader.swfupload('setButtonDisabled', true);
+    this.options.progress_handler.reset();
+
+    this.disableSubmitButton(true);
+    if (this.options.progress_handler) {
+        this.options.progress_handler.start(file);
     }
+}
 
-    function onCancel(event) {
-      uploader.swfupload('cancelUpload', '', false)
-      uploader.swfupload('setButtonDisabled', false)
-      
-      $('#' + options.upload_filename_id).val('');
-      options.progress_handler.reset();
-      num_files = 0;
-      num_pending = 0;
-      num_errors = 0;
-      disableSubmitButton(true);
-      
-      cancel_handler = options["cancel"]
-      if(status == UPLOADING && cancel_handler) {
-        cancel_handler(event)
-      }
-      status = STOP
+UploadOnSubmit.prototype.onCancel = function(event) {
+    this.uploader.swfupload('cancelUpload', '', false);
+    this.uploader.swfupload('setButtonDisabled', false);
+
+    $('#' + this.options.upload_filename_id).val('');
+    this.options.progress_handler.reset();
+    this.num_files = 0;
+    this.num_pending = 0;
+    this.num_errors = 0;
+    if (this.options.disableSubmitButton) {
+        this.disableSubmitButton(true);
     }
     
-    function onProgress(event, file, bytesLoaded, bytesTotal) {
-        try {
-            if (options.progress_handler) {
-                options.progress_handler.setProgress(file, bytesLoaded, bytesTotal);
-            }
-        } catch (ex) {
-        }
+    cancel_handler = options['cancel'];
+    if(this.uploader.status == UPLOADING && cancel_handler) {
+        cancel_handler(event);
     }
+    this.status = STOP;
+}
 
-    function onSuccess(event, file, response) {
-        $video_field.val(eval('(' + response + ')').id);
-        num_pending--;
-        
-        success_handler = options["success"]
-        if(success_handler) {
-          success_handler(event, file, response)
+UploadOnSubmit.prototype.onProgress = function(event, file, bytesLoaded, bytesTotal) {
+    try {
+        if (this.options.progress_handler) {
+            this.options.progress_handler.setProgress(file, bytesLoaded, bytesTotal);
         }
+    } catch (ex) {
     }
+}
 
-    function onError(event, file, code, message, more) {
-        $('#' + options.upload_filename_id).val('');
-        options.progress_handler.reset();
-        
-        num_pending--;
-        num_errors++;
+UploadOnSubmit.prototype.onSuccess = function(event, file, response) {
+    this.uploader.val(eval('(' + response + ')').id);
+    this.num_pending--;
 
-        error_handler = options["error"]
-        if(error_handler)  {
-          error_handler(event, file, message)
-        }else {
-          alert("There was an error uploading the file.\n\nHTTP error code " + message);
-        }
+    success_handler = this.options["success"]
+    if(success_handler) {
+        success_handler(event, file, response)
     }
+}
 
-    function onComplete(event, num_uploads) {
-      if (num_files > 0 && num_pending <= 0 && num_errors <= 0) {
-        if ( ! $video_field.val()) {
+UploadOnSubmit.prototype.onError = function(event, file, code, message, more) {
+    $('#' + this.options.upload_filename_id).val('');
+    this.options.progress_handler.reset();
+
+    this.num_pending--;
+    this.num_errors++;
+
+    error_handler = this.options['error'];
+    if(error_handler)  {
+        error_handler(event, file, message);
+    }else {
+        alert("There was an error uploading the file.\n\nHTTP error code " + message);
+    }
+}
+
+UploadOnSubmit.prototype.onComplete = function(event, num_uploads) {
+    if (this.num_files > 0 && this.num_pending <= 0 && this.num_errors <= 0) {
+        if ( ! this.uploader.val()) {
             alert('The video ID was not stored on the form');
             return;
         }
 
-        status = STOP
-        complete_handler = options["complete"]
+        this.status = STOP;
+        complete_handler = this.options['complete'];
         if(complete_handler) {
-          complete_handler(event)
+            complete_handler(event);
         }else {
-          form().submit(); 
+            this.form.submit(); 
         }
-        
-      }
     }
-    
-    
-    //
-    // Utils
-    //
-    
-    function form() {
-        return $video_field.parents("form")[0];
+}
+
+
+//
+// UploadOnSelect
+//
+
+function UploadOnSelect(form, options, uploader) {
+    BaseStrategy.apply(this, [form, options, uploader]);
+}
+UploadOnSelect.prototype = new BaseStrategy();
+UploadOnSelect.prototype.constructor = UploadOnSelect;
+
+UploadOnSelect.prototype.onFileQueued = function(event, file) {
+    this.uploader.swfupload('startUpload');
+}
+
+UploadOnSelect.prototype.onStart = function(event, file) {
+    this.options.progress_handler.reset();
+
+    this.disableSubmitButton(true);
+    if (this.options.progress_handler) {
+        this.options.progress_handler.start(file);
+    }
+}
+
+UploadOnSelect.prototype.onCancel = function(event) {
+    this.uploader.swfupload('cancelUpload', '', false);
+    this.uploader.swfupload('setButtonDisabled', false);
+
+    $('#' + this.options.upload_filename_id).val('');
+    this.options.progress_handler.reset();
+    if (this.options.disableSubmitButton) {
+        this.disableSubmitButton(true);
+    }
+
+    cancel_handler = options["cancel"];
+    if(this.uploader.status == UPLOADING && cancel_handler) {
+        cancel_handler(event);
+    }
+}
+
+UploadOnSelect.prototype.onProgress = function(event, file, bytesLoaded, bytesTotal) {
+    try {
+        if (this.options.progress_handler) {
+            this.options.progress_handler.setProgress(file, bytesLoaded, bytesTotal);
+        }
+    } catch (ex) {
+    }
+}
+
+UploadOnSelect.prototype.onSuccess = function(event, file, response) {
+    this.uploader.val(eval('(' + response + ')').id);
+    this.num_pending--;
+
+    success_handler = this.options["success"];
+    if(success_handler) {
+        success_handler(event, file, response)
+    }
+}
+
+UploadOnSelect.prototype.onError = function(event, file, code, message, more) {
+    $('#' + this.options.upload_filename_id).val('');
+    this.options.progress_handler.reset();
+
+    this.num_pending--;
+    this.num_errors++;
+
+    error_handler = this.options["error"];
+    if (error_handler) {
+        error_handler(event, file, message);
+    } else {
+        alert("There was an error uploading the file.\n\nHTTP error code " + message);
+    }
+}
+
+UploadOnSelect.prototype.onComplete = function(event, num_uploads) {
+    if ( ! this.uploader.val()) {
+        alert('The video ID was not stored on the form');
+        return;
+    }
+
+    this.status = STOP;
+    complete_handler = this.options["complete"];
+    if(complete_handler) {
+        complete_handler(event);
     }
 }
 
@@ -253,20 +377,28 @@ ProgressUpload.prototype = {
     },
     
     animateBarBg: function() {
-      this.count++;
-      var currentOffset = parseInt(this.$p.css("background-position").split(" "));
-      if (this.count == 37) {
-        this.count = 0;
-        this.$p.css("background-position", (currentOffset + 36) + "px 0px");
-      }
-      else
-        this.$p.css("background-position", (currentOffset - 1) + "px 0px");
+        this.count++;
+        var bpos = this.$p.css("background-position");
+        var currentOffset = bpos ? bpos.split(' ') : 0;
+        if (this.count == 37) {
+            this.count = 0;
+            this.$p.css("background-position", (currentOffset + 36) + "px 0px");
+        }
+        else {
+            this.$p.css("background-position", (currentOffset - 1) + "px 0px");
+        }
     },
     
     reset: function(){
-      clearInterval(this.timer)
-      $(this.progress).css('width', '0%');
-      this.$p.css('display', 'none');
+        clearInterval(this.timer)
+        $(this.progress).css('width', '0%');
+        this.$p.css('display', 'none');
+    }
+}
+
+function bondage(object, method_name) {
+    return function() {
+        return object[method_name].apply(object, arguments);
     }
 }
 
