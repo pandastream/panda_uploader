@@ -133,6 +133,15 @@ BaseStrategy.prototype = {
     onError: function() {
     },
     onComplete: function() {
+    },
+    
+    triggerEvent: function(event, args, alternative) {
+        var handler = this.options[event];
+        if (handler) {
+            handler.apply(this, args);
+        } else if (alternative) {
+            alternative();
+        }
     }
 }
 
@@ -193,9 +202,8 @@ UploadOnSubmit.prototype.onCancel = function(event) {
         this.disableSubmitButton(true);
     }
     
-    cancel_handler = options['cancel'];
-    if(this.uploader.status == UPLOADING && cancel_handler) {
-        cancel_handler(event);
+    if(this.uploader.status == UPLOADING) {
+        this.triggerEvent('cancel', [event]);
     }
     this.status = STOP;
 }
@@ -212,11 +220,7 @@ UploadOnSubmit.prototype.onProgress = function(event, file, bytesLoaded, bytesTo
 UploadOnSubmit.prototype.onSuccess = function(event, file, response) {
     this.uploader.val(eval('(' + response + ')').id);
     this.num_pending--;
-
-    success_handler = this.options["success"]
-    if(success_handler) {
-        success_handler(event, file, response)
-    }
+    this.triggerEvent('success', [event, file, response]);
 }
 
 UploadOnSubmit.prototype.onError = function(event, file, code, message, more) {
@@ -226,12 +230,9 @@ UploadOnSubmit.prototype.onError = function(event, file, code, message, more) {
     this.num_pending--;
     this.num_errors++;
 
-    error_handler = this.options['error'];
-    if(error_handler)  {
-        error_handler(event, file, message);
-    }else {
+    this.triggerEvent('error', [event, file, message], function() {
         alert("There was an error uploading the file.\n\nHTTP error code " + message);
-    }
+    });
 }
 
 UploadOnSubmit.prototype.onComplete = function(event, num_uploads) {
@@ -242,12 +243,9 @@ UploadOnSubmit.prototype.onComplete = function(event, num_uploads) {
         }
 
         this.status = STOP;
-        complete_handler = this.options['complete'];
-        if(complete_handler) {
-            complete_handler(event);
-        }else {
-            this.form.submit(); 
-        }
+        this.triggerEvent('complete', [event], function() {
+            this.form.submit();
+        });
     }
 }
 
@@ -285,9 +283,8 @@ UploadOnSelect.prototype.onCancel = function(event) {
         this.disableSubmitButton(true);
     }
 
-    cancel_handler = options["cancel"];
-    if(this.uploader.status == UPLOADING && cancel_handler) {
-        cancel_handler(event);
+    if(this.uploader.status == UPLOADING) {
+        this.triggerEvent('cancel', [event]);
     }
 }
 
@@ -304,10 +301,7 @@ UploadOnSelect.prototype.onSuccess = function(event, file, response) {
     this.uploader.val(eval('(' + response + ')').id);
     this.num_pending--;
 
-    success_handler = this.options["success"];
-    if(success_handler) {
-        success_handler(event, file, response)
-    }
+    this.triggerEvent('success', [event, file, response]);
 }
 
 UploadOnSelect.prototype.onError = function(event, file, code, message, more) {
@@ -317,12 +311,9 @@ UploadOnSelect.prototype.onError = function(event, file, code, message, more) {
     this.num_pending--;
     this.num_errors++;
 
-    error_handler = this.options["error"];
-    if (error_handler) {
-        error_handler(event, file, message);
-    } else {
+    this.triggerEvent('error', [event, file, message], function() {
         alert("There was an error uploading the file.\n\nHTTP error code " + message);
-    }
+    });
 }
 
 UploadOnSelect.prototype.onComplete = function(event, num_uploads) {
@@ -332,10 +323,7 @@ UploadOnSelect.prototype.onComplete = function(event, num_uploads) {
     }
 
     this.status = STOP;
-    complete_handler = this.options["complete"];
-    if(complete_handler) {
-        complete_handler(event);
-    }
+    this.triggerEvent('complete', [event]);
 }
 
 
