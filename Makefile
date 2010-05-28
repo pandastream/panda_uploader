@@ -45,7 +45,7 @@ ${PU_MIN}: ${PU_CAT}
 	@@echo "Minifying" ${PU_CAT}
 	@@${MINJAR} --js ${PU_CAT} --warning_level QUIET > ${PU_MIN}
 	@@echo "Copying minified file to " ${PU_MIN}
-	#@@rm -f ${PU_CAT}
+	@@rm -f ${PU_CAT}
 	
 
 ${PU_CAT}: ${PU_SIMPLE}
