@@ -248,8 +248,9 @@ UploadOnSubmit.prototype.onComplete = function(event, num_uploads) {
         }
 
         this.status = STOP;
+        var that = this;
         this.triggerEvent('complete', [event], function() {
-            this.form.submit();
+            that.form.submit();
         });
     }
 }
