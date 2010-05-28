@@ -187,6 +187,7 @@ UploadOnSubmit.prototype.onStart = function(event, file) {
     if (this.options.progress_handler) {
         this.options.progress_handler.start(file);
     }
+    this.triggerEvent('start', [event, file]);
 }
 
 UploadOnSubmit.prototype.onCancel = function(event) {
@@ -271,6 +272,7 @@ UploadOnSelect.prototype.onStart = function(event, file) {
     if (this.options.progress_handler) {
         this.options.progress_handler.start(file);
     }
+    this.triggerEvent('start', [event, file]);
 }
 
 UploadOnSelect.prototype.onCancel = function(event) {

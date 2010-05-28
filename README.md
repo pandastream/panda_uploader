@@ -183,7 +183,7 @@ At the moment, the following arguments are supported:
 * **`uploader_dir`**: path were the uploader files are located in the web server. By default "`/panda_uploader`"
 * **`upload_cancel_button_id`**: The ID of an HTML element that will trigger the cancel upload on a click event.
 * **`disable_submit_button`**: Disable the submit button. true by default
-* **`success/complete/error/cancel`**: Event handlers
+* **`start/success/complete/error/cancel`**: Event handlers
 
 Event Handlers
 
@@ -191,19 +191,23 @@ Event Handlers
 Panda uploader gives you full control of swfupload events.
 
     {
+      start: function(event, file) {
+        // the video upload has started
+      },
+      
       success: function(event, file, video_id) {
         // the video `video_id` has been uploaded
-      }
+      },
 
       error: function(event, file, message) {
         // An error occured during the upload
         // find out why by checking the message
-      }
+      },
 
       complete: function (event) {
         // All videos have been uploaded
         // The form is not submitted
-      }
+      },
 
       cancel: function (event) {
         // Upload canceled
