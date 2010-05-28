@@ -61,7 +61,6 @@ jQuery.fn.pandaUploader = function(signed_params, options, swfupload_options) {
         button_width : 87,
         button_height : 27,
         button_placeholder_id : options.upload_button_id,
-        post_params : signed_params,
         file_post_name: "file",
         debug: false
     }, swfupload_options));
@@ -78,6 +77,11 @@ jQuery.fn.pandaUploader = function(signed_params, options, swfupload_options) {
         strategyClass = options.strategy;
     }
     strategy = new strategyClass(form, options, uploader);
+
+    uploader.bind('fileQueued', function() {
+        uploader.data('__swfu').setPostParams(signed_params.call ? signed_params() : signed_params)
+        console.log(uploader.data('__swfu').settings.post_params);
+    })
 
     uploader.bind('swfuploadLoaded', bondage(strategy, 'onLoad'));
     uploader.bind('fileQueued', bondage(strategy, 'onFileQueued'));
