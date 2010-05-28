@@ -184,8 +184,7 @@ At the moment, the following arguments are supported:
 * **`upload_cancel_button_id`**: The ID of an HTML element that will trigger the cancel upload on a click event.
 * **`disable_submit_button`**: Disable the submit button. true by default
 * **`start/success/complete/error/cancel`**: Event handlers
-
-Event Handlers
+* **`strategy`**: valid options are `upload_on_submit` (default) and `upload_on_select`. See "repeated uploads" below for more info.
 
 ### Event handlers
 Panda uploader gives you full control of swfupload events.
@@ -219,6 +218,26 @@ Panda uploader gives you full control of swfupload events.
 Upload of multiple files is supported. Just make sure to replicate the necessary HTML elements, giving them different IDs.
 
 As for error handling, the default behaviour is that the form is submitted as long as one of the many uploads is successful. If this does not do the trick for you, you'll have to modify the code yourself. (It should be fairly simple).
+
+### Repeated uploads
+
+You can specify that the files start to upload just after being selected (before submitting the form). The form won't then be submitted until the user hits the submit button.
+
+For this, you'll have to specify the optional argument `{strategy: 'upload_on_select'}`. However, there is another detail to bear in mind: if you want to use this to enable users to upload new files that replace those already uploaded, these new uploads require a new cryptographic signature.
+
+How to generate another signature?:
+
+1. You should make an Ajax request to your own site to generate the signature
+2. The `panda_access_details` parameter should be given as a function rather than a hash, so that this is regenerated for every upload
+
+WHAT???
+
+OK, ok, I know that's a bit too much. You are better off by having a look at [some example code](http://github.com/newbamboo/panda_example_php/blob/master/ajax/index.php). On it, the important bits are:
+
+1. `pandaUploader` is passed a function `get_signed_params`
+2. `get_signed_params` returns the latest generated parameters and starts an AJAX request to get new ones
+
+I hope that helps...
 
 ### Custom button design
 
