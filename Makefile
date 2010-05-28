@@ -3,6 +3,7 @@ PACKAGE_NAME = panda_uploader
 SRC_ROOT = src
 SRC_DIR = ${SRC_ROOT}/src
 BUILD_DIR = ${SRC_ROOT}/build
+TEST_DIR = ${SRC_ROOT}/test
 PREFIX = .
 DIST_DIR = ${PREFIX}
 PANDA_DIST_DIR = ${DIST_DIR}/${PACKAGE_NAME}
@@ -20,7 +21,7 @@ MODULES = ${SRC_DIR}/swfobject.js\
 	${SRC_DIR}/jquery.swfupload.js\
 	${SRC_DIR}/jquery.panda-uploader-${PANDA_UPLOADER_VERSION}.js
 
-all: versionize min tar
+all: versionize min tar copy_to_test
 	@@rm -f ${TMP_PU_VERSION}
 	@@echo "Panda uploader build complete."
 
@@ -29,6 +30,10 @@ debug: ${PU_CAT}
 tar: ${PU_TAR}
 
 min: ${PU_MIN}
+
+copy_to_test:
+	@@rm -rf ${TEST_DIR}/app/public/panda_uploader
+	@@cp -pr ${PANDA_DIST_DIR} ${TEST_DIR}/app/public/panda_uploader
 
 versionize:
 	@@echo "Generate version" ${PANDA_UPLOADER_VERSION}

@@ -21,3 +21,4 @@ pkg
 ## PROJECT::SPECIFIC
 panda_uploader/jquery.panda-uploader.cat.js
 panda_uploader.tar.gz
+src/test/capybara*.html
