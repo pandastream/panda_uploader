@@ -39,7 +39,7 @@ class FlashSelenium
   end
   
   def call(functionName, *parameters)
-    return @selenium.get_eval(jsForFunction(functionName, *parameters))
+    return @selenium.bridge.executeScript(jsForFunction(functionName, *parameters))
   end
   
   def wait_for_page_to_load(timeout)
@@ -159,7 +159,7 @@ class FlashSelenium
   #### Custom Methods ####
   
   def checkBrowserAndReturnJSPrefix()
-    indexOfMicrosoft = @selenium.get_eval("navigator.appName.indexOf(\"Microsoft Internet\")")
+    indexOfMicrosoft = @selenium.bridge.executeScript("navigator.appName.indexOf(\"Microsoft Internet\")")
     if (indexOfMicrosoft != -1)
       return createJSPrefix_window_document(@flashObjectId)
     else
