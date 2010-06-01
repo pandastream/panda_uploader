@@ -1,0 +1,11 @@
+.container {
+  margin: 0 auto;
+  width: 60%;
+}
+
+.instructions {
+  border: 1px solid black;
+  background: #eee;
+  padding: 0 2em;
+  margin: 0 auto 1.5em auto;
+}

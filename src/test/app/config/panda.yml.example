@@ -1,0 +1,5 @@
+panda:
+  api_host: api.pandastream.com
+  cloud_id: your-cloud-id
+  access_key: your-access-key
+  secret_key: your-secret-key
