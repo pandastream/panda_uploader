@@ -111,9 +111,7 @@ function BaseStrategy(form, options, uploader) {
 }
 BaseStrategy.prototype = {
     disableSubmitButton: function(value){
-        $(this.form).find("input[type=submit]").each(function() {
-            $(this.form).attr("disabled", value);
-        })
+        $(this.form).find("input[type=submit]").attr("disabled", value);
     },
 
     onLoad: function() {
