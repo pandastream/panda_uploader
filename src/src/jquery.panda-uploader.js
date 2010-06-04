@@ -80,7 +80,6 @@ jQuery.fn.pandaUploader = function(signed_params, options, swfupload_options) {
 
     uploader.bind('fileQueued', function() {
         uploader.data('__swfu').setPostParams(signed_params.call ? signed_params() : signed_params)
-        console.log(uploader.data('__swfu').settings.post_params);
     })
 
     uploader.bind('swfuploadLoaded', bondage(strategy, 'onLoad'));
