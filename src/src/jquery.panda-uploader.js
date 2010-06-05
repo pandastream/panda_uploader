@@ -325,6 +325,7 @@ UploadOnSelect.prototype.onComplete = function(event, num_uploads) {
         alert('The video ID was not stored on the form');
         return;
     }
+    this.disableSubmitButton(false);
 
     this.status = STOP;
     this.triggerEvent('complete', [event]);
