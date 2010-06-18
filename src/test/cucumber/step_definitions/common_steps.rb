@@ -1,3 +1,3 @@
-When /^pause for 5 seconds$/ do
-  pending # express the regexp above with the code you wish you had
+When /^pause for (\d+) seconds$/ do |secs|
+  sleep(secs)
 end
