@@ -1,8 +1,12 @@
 <link href="/qunit/qunit.css" rel="stylesheet" type="text/css" />
 <script src="/qunit/qunit.js"></script>
 
-<script>
-$(document).ready(function(){
+<script>$(document).ready(function(){
+
+
+PandaUploader.alert = function(msg) {
+  PandaUploader.latest_alert = msg;
+}
 
 module("Detection");
 
@@ -46,10 +50,23 @@ test("generate cross-site request object", function() {
 });
 
 
+module("Checking options");
+
+test("requires the upload parameters", function () {
+  PandaUploader.latest_alert = '';
+  $('#the-file').checkPandaUploaderOptions(undefined, {});
+  ok(PandaUploader.latest_alert.indexOf('error') != -1, 'No error expected');
 });
-</script>
+
+
+});</script>
 
 <h1 id="qunit-header"><code>panda_uploader</code> JS unit tests</h1>
 <h2 id="qunit-banner"></h2>
 <h2 id="qunit-userAgent"></h2>
 <ol id="qunit-tests"></ol>
+
+<p>Test form follows</p>
+<form>
+  <input type="file" id="the-file" />
+</form>

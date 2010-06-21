@@ -32,43 +32,53 @@ PandaUploader.createXRequestObject = function() {
     }
 };
 
+PandaUploader.alert = function(msg) {
+    return alert(msg);
+};
+
 
 (function(){
 
 UPLOADING=0
 STOP=1
 
-jQuery.fn.pandaUploader = function(signed_params, options, swfupload_options) {
+jQuery.fn.checkPandaUploaderOptions = function(signed_params, options) {
     var form = this.parents("form")[0];
     
     if (signed_params === undefined) {
-        alert("There was an error setting up the upload form. (The upload parameters were not specified).");
+        PandaUploader.alert("There was an error setting up the upload form. (The upload parameters were not specified).");
         return false;
     }
     
-    options = options === undefined ? {} : options;
-    swfupload_options = swfupload_options === undefined ? {} : swfupload_options;
-    
     if (options.upload_button_id === undefined) {
-        alert("You have to specify the button id");
+        PandaUploader.alert("You have to specify the button id");
         return false;
     }
     
     if (this.size() == 0) {
-        alert("The jQuery element is empty. Method pandaUploader() cannot be executed");
+        PandaUploader.alert("The jQuery element is empty. Method pandaUploader() cannot be executed");
         return false;
     }
     
     if ( ! form) {
-        alert("Could not find a suitable form. Please place the call to pandaUploader() after the form, or to be executed onload().");
+        PandaUploader.alert("Could not find a suitable form. Please place the call to pandaUploader() after the form, or to be executed onload().");
         return false;
     }
     
     if ($(form).find('[name=submit], #submit').length != 0) {
-        alert("An element of your video upload form is incorrect (most probably the submit button). Neither NAME nor ID can be set to \"submit\" on any field.");
+        PandaUploader.alert("An element of your video upload form is incorrect (most probably the submit button). Neither NAME nor ID can be set to \"submit\" on any field.");
         return false;
     }
     
+    return true;
+}
+
+jQuery.fn.pandaUploader = function(signed_params, options, swfupload_options) {
+    options = options === undefined ? {} : options;
+    if ( ! this.checkPandaUploaderOptions(signed_params, options)) {
+        return false;
+    }
+    swfupload_options = swfupload_options === undefined ? {} : swfupload_options;
     
     options = jQuery.extend({
         upload_filename_id: null,
