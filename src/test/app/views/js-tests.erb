@@ -35,7 +35,7 @@ test("generate cross-site request object", function() {
   var b = jQuery.browser;
 
   if (b.webkit || b.mozilla) {
-    equal(xro.constructor.name, 'XMLHttpRequest');
+    ok(xro instanceof XMLHttpRequest, 'XMLHttpRequest');
   }
   else if(b.msie && b.version >= 8) {
     ok(xro instanceof XDomainRequest, 'XDomainRequest');
