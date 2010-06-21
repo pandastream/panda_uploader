@@ -1,0 +1,55 @@
+<link href="/qunit/qunit.css" rel="stylesheet" type="text/css" />
+<script src="/qunit/qunit.js"></script>
+
+<script>
+$(document).ready(function(){
+
+module("Detection");
+
+test("detect support for file uploads", function() {
+  var support = PandaUploader.supportAjaxUpload();
+  if (jQuery.browser.webkit || jQuery.browser.mozilla) {
+    ok(support, 'Support expected');
+  }
+  else {
+    ok(!support, 'Support NOT expected');
+  }
+});
+
+test("detect support for Ajax progress events", function() {
+  var support = PandaUploader.supportAjaxProgressEvents();
+  var b = jQuery.browser;
+  if (b.webkit || b.mozilla || b.msie && b.version >= 8) {
+    ok(support, 'Support expected');
+  }
+  else {
+    ok(!support, 'Support NOT expected');
+  }
+});
+
+module("Factories");
+
+
+test("generate cross-site request object", function() {
+  var xro = PandaUploader.createXRequestObject();
+  var b = jQuery.browser;
+
+  if (b.webkit || b.mozilla) {
+    equal(xro.constructor.name, 'XMLHttpRequest');
+  }
+  else if(b.msie && b.version >= 8) {
+    ok(xro instanceof XDomainRequest, 'XDomainRequest');
+  }
+  else {
+    equal(xro, null);
+  }
+});
+
+
+});
+</script>
+
+<h1 id="qunit-header"><code>panda_uploader</code> JS unit tests</h1>
+<h2 id="qunit-banner"></h2>
+<h2 id="qunit-userAgent"></h2>
+<ol id="qunit-tests"></ol>

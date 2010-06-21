@@ -1,3 +1,38 @@
+function PandaUploader(){}
+
+PandaUploader.supportAjaxUpload = function() {
+    var fi = document.createElement('INPUT');
+    fi.type = 'file';
+    return 'files' in fi;
+};
+
+PandaUploader.supportAjaxProgressEvents = function() {
+    if (typeof XDomainRequest != 'undefined') {
+        return true;
+    }
+    else if (typeof XMLHttpRequest != 'undefined') {
+        var ret = new XMLHttpRequest()
+        return 'withCredentials' in ret;
+    }
+    else {
+        return null;
+    }
+};
+
+PandaUploader.createXRequestObject = function() {
+    if (typeof XDomainRequest != 'undefined') {
+        return new XDomainRequest();
+    }
+    else if (typeof XMLHttpRequest != 'undefined') {
+        var ret = new XMLHttpRequest()
+        return 'withCredentials' in ret ? ret : null;
+    }
+    else {
+        return null;
+    }
+};
+
+
 (function(){
 
 UPLOADING=0

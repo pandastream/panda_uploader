@@ -35,6 +35,9 @@ class PandaUploaderTestApp < Sinatra::Base
     erb :with_other_controls
   end
 
+  get '/js-tests' do
+    erb :'js-tests'
+  end
 
   helpers do
     def panda_uploader_link_tag
