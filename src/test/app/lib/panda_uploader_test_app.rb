@@ -27,16 +27,8 @@ class PandaUploaderTestApp < Sinatra::Base
     erb :player
   end
 
-  get '/basic' do
-    erb :basic
-  end
-
-  get '/with_other_controls' do
-    erb :with_other_controls
-  end
-
-  get '/js-tests' do
-    erb :'js-tests'
+  get '/:page' do |page|
+    erb page.to_sym
   end
 
   helpers do
