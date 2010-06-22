@@ -15,6 +15,7 @@ class PandaUploaderTestApp < Sinatra::Base
   end
 
   get '/' do
+    @this_is_the_index = true
     erb :index
   end
   
