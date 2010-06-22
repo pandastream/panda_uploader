@@ -77,7 +77,7 @@ PandaUploader.FlashWidget.prototype = {
     },
     
     getForm: function() {
-        return this.swfupload.parents('form').eq(0);
+        return this.swfupload.parents('form').get(0);
     },
     
     start: function() {
@@ -177,7 +177,7 @@ jQuery.fn.pandaUploader = function(signed_params, options, swfupload_options) {
     default:
         strategyClass = options.strategy;
     }
-    strategy = new strategyClass(this.parents("form")[0], options);
+    strategy = new strategyClass(options);
     strategy.setUploadWidget(widget)
     widget.setUploadStrategy(strategy);
     
@@ -194,8 +194,7 @@ jQuery.fn.pandaUploader = function(signed_params, options, swfupload_options) {
 // BaseStrategy
 //
 
-function BaseStrategy(form, options) {
-    this.form = form;
+function BaseStrategy(options) {
     this.options = options;
 }
 BaseStrategy.prototype = {
@@ -203,12 +202,11 @@ BaseStrategy.prototype = {
         this.widget = upload_widget;
     },
     disableSubmitButton: function(value){
-        $(this.form).find("input[type=submit]").attr("disabled", value);
+        $(this.widget.getForm()).find("input[type=submit]").attr("disabled", value);
     },
 
     onLoad: function() {
-        var form = this.widget.getForm();
-        form.submit(PandaUploader.bind(this, 'onSubmit'));
+        $(this.widget.getForm()).submit(PandaUploader.bind(this, 'onSubmit'));
         if(this.options.disable_submit_button) {
             this.disableSubmitButton(true);
         }
@@ -244,8 +242,8 @@ BaseStrategy.prototype = {
 // UploadOnSubmit
 //
 
-function UploadOnSubmit(form, options) {
-    BaseStrategy.apply(this, [form, options]);
+function UploadOnSubmit(options) {
+    BaseStrategy.apply(this, [options]);
     this.num_files = 0;
     this.num_pending = 0;
     this.num_errors = 0
@@ -340,7 +338,7 @@ UploadOnSubmit.prototype.onComplete = function(event, num_uploads) {
         this.status = STOP;
         var that = this;
         this.triggerEvent('complete', [event], function() {
-            that.form.submit();
+            that.widget.getForm().submit();
         });
     }
 }
@@ -350,8 +348,8 @@ UploadOnSubmit.prototype.onComplete = function(event, num_uploads) {
 // UploadOnSelect
 //
 
-function UploadOnSelect(form, options) {
-    BaseStrategy.apply(this, [form, options]);
+function UploadOnSelect(options) {
+    BaseStrategy.apply(this, [options]);
 }
 UploadOnSelect.prototype = new BaseStrategy();
 UploadOnSelect.prototype.constructor = UploadOnSelect;
