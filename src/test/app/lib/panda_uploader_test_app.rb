@@ -18,6 +18,8 @@ class PandaUploaderTestApp < Sinatra::Base
     erb :index
   end
   
+  get('/favicon.ico'){ 404 }
+  
   get '/player' do
     @video_id = params[:panda_video_id]
     encodings = JSON.parse(@panda.get("/videos/#{@video_id}/encodings.json"))
