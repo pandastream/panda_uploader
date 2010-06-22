@@ -8,33 +8,26 @@ PandaUploader.alert = function(msg) {
   PandaUploader.latest_alert = msg;
 }
 
-module("Detection");
-
-test("detect support for file uploads", function() {
+test("Detection of features", function() {
   var support = PandaUploader.supportAjaxUpload();
   if (jQuery.browser.webkit || jQuery.browser.mozilla) {
-    ok(support, 'Support expected');
+    ok(support, 'Detect support for Ajax file upload in Webkit and Mozilla');
   }
   else {
-    ok(!support, 'Support NOT expected');
+    ok(!support, 'Detect lack of support for Ajax file upload in IE');
   }
-});
 
-test("detect support for Ajax progress events", function() {
   var support = PandaUploader.supportAjaxProgressEvents();
   var b = jQuery.browser;
   if (b.webkit || b.mozilla || b.msie && b.version >= 8) {
-    ok(support, 'Support expected');
+    ok(support, 'Detect support for Ajax progress events in Webkit, Mozilla and MSIE8+');
   }
   else {
-    ok(!support, 'Support NOT expected');
+    ok(!support, 'Detect lack of support for Ajax progress events in MSIE < 8');
   }
 });
 
-
-module("Factories");
-
-test("generate cross-site request object", function() {
+test("Generate cross-site request object", function() {
   var xro = PandaUploader.createXRequestObject();
   var b = jQuery.browser;
 
@@ -49,43 +42,30 @@ test("generate cross-site request object", function() {
   }
 });
 
-
-module("Checking options");
-
-test("requires the upload parameters", function () {
+test("Options validation", function () {
   PandaUploader.latest_alert = '';
   $('#the-file').checkPandaUploaderOptions(undefined, {});
-  ok(PandaUploader.latest_alert.indexOf('error') != -1, 'Error expected');
-});
+  ok(PandaUploader.latest_alert.indexOf('error') != -1, 'Check that upload parameters are given');
 
-test("requires the ID of the upload control", function () {
   PandaUploader.latest_alert = '';
   $('#the-file').checkPandaUploaderOptions({}, {});
-  ok(PandaUploader.latest_alert.indexOf('specify the button id') != -1, 'Error expected');
-});
+  ok(PandaUploader.latest_alert.indexOf('specify the button id') != -1, 'Check that the ID of the upload control is given');
 
-test("requires some elements selected in the query", function () {
   PandaUploader.latest_alert = '';
   $('#no-file').checkPandaUploaderOptions({}, {upload_button_id: 'upload_button'});
-  ok(PandaUploader.latest_alert.indexOf('jQuery element is empty') != -1, 'Error expected');
-});
+  ok(PandaUploader.latest_alert.indexOf('jQuery element is empty') != -1, 'Check that the jQuery object is not empty');
 
-test("require a form", function () {
   PandaUploader.latest_alert = '';
   $('#bad-file').checkPandaUploaderOptions({}, {upload_button_id: 'bad_upload_button'});
-  ok(PandaUploader.latest_alert.indexOf('Could not find a suitable form') != -1, 'Error expected');
-});
+  ok(PandaUploader.latest_alert.indexOf('Could not find a suitable form') != -1, 'Check that a suitable form exists');
 
-test("do not accept elements with 'submit'  as name/ID", function () {
   PandaUploader.latest_alert = '';
   $('#another-file').checkPandaUploaderOptions({}, {upload_button_id: 'another_upload_button'});
-  ok(PandaUploader.latest_alert.indexOf('Neither NAME nor ID can') != -1, 'Error expected');
-});
+  ok(PandaUploader.latest_alert.indexOf('Neither NAME nor ID can') != -1, 'Check that there are no elements with a "submit" name/ID');
 
-test("accept a correct form", function () {
   PandaUploader.latest_alert = '';
   $('#the-file').checkPandaUploaderOptions({}, {upload_button_id: 'upload_button'});
-  equal(PandaUploader.latest_alert, '')
+  equal(PandaUploader.latest_alert, '', 'No errors show for a correct form')
 });
 
 });</script>
