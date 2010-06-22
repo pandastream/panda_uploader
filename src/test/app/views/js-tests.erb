@@ -55,9 +55,38 @@ module("Checking options");
 test("requires the upload parameters", function () {
   PandaUploader.latest_alert = '';
   $('#the-file').checkPandaUploaderOptions(undefined, {});
-  ok(PandaUploader.latest_alert.indexOf('error') != -1, 'No error expected');
+  ok(PandaUploader.latest_alert.indexOf('error') != -1, 'Error expected');
 });
 
+test("requires the ID of the upload control", function () {
+  PandaUploader.latest_alert = '';
+  $('#the-file').checkPandaUploaderOptions({}, {});
+  ok(PandaUploader.latest_alert.indexOf('specify the button id') != -1, 'Error expected');
+});
+
+test("requires some elements selected in the query", function () {
+  PandaUploader.latest_alert = '';
+  $('#no-file').checkPandaUploaderOptions({}, {upload_button_id: 'upload_button'});
+  ok(PandaUploader.latest_alert.indexOf('jQuery element is empty') != -1, 'Error expected');
+});
+
+test("require a form", function () {
+  PandaUploader.latest_alert = '';
+  $('#bad-file').checkPandaUploaderOptions({}, {upload_button_id: 'bad_upload_button'});
+  ok(PandaUploader.latest_alert.indexOf('Could not find a suitable form') != -1, 'Error expected');
+});
+
+test("do not accept elements with 'submit'  as name/ID", function () {
+  PandaUploader.latest_alert = '';
+  $('#another-file').checkPandaUploaderOptions({}, {upload_button_id: 'another_upload_button'});
+  ok(PandaUploader.latest_alert.indexOf('Neither NAME nor ID can') != -1, 'Error expected');
+});
+
+test("accept a correct form", function () {
+  PandaUploader.latest_alert = '';
+  $('#the-file').checkPandaUploaderOptions({}, {upload_button_id: 'upload_button'});
+  equal(PandaUploader.latest_alert, '')
+});
 
 });</script>
 
@@ -68,5 +97,15 @@ test("requires the upload parameters", function () {
 
 <p>Test form follows</p>
 <form>
-  <input type="file" id="the-file" />
+  <span id="upload_button"></span>
+  <input type="hidden" id="the-file" />
+</form>
+
+<span id="bad_upload_button"></span>
+<input type="hidden" id="bad-file" />
+
+<form id="bad-form">
+  <span id="another_upload_button"></span>
+  <input type="hidden" id="another-file" />
+  <input name="submit" type="submit" />
 </form>
