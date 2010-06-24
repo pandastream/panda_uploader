@@ -34,7 +34,13 @@ PandaUploader.createXRequestObject = function() {
 
 PandaUploader.bind = function(object, method_name) {
     return function() {
-        return object[method_name].apply(object, arguments);
+        var method = object[method_name];
+        if (method) {
+            return method.apply(object, arguments);
+        }
+        else {
+            console.debug("Not implemented: ", method_name);
+        }
     }
 }
 
@@ -159,36 +165,22 @@ PandaUploader.HTML5Widget.prototype.constructor = PandaUploader.HTML5Widget;
 PandaUploader.HTML5Widget.prototype.setUploadStrategy = function(upload_strategy) {
     this.upload_strategy = upload_strategy;
     this.xhr = PandaUploader.createXRequestObject();
-    // this.swfupload.bind('uploadStart', PandaUploader.bind(upload_strategy, 'onStart'));
-    // this.swfupload.bind('uploadComplete', PandaUploader.bind(upload_strategy, 'onComplete'));
-    
-    this.xhr.upload.addEventListener("progress", PandaUploader.bind(upload_strategy, 'onProgress'), false);
-    this.xhr.upload.addEventListener("load", PandaUploader.bind(this, 'triggerSuccess'), false);
-    this.xhr.upload.addEventListener("error", PandaUploader.bind(upload_strategy, 'onError'), false);
-    this.xhr.addEventListener('readystatechange', PandaUploader.bind(this, 'onreadystatechange'), false);
+    this.xhr.upload.addEventListener('loadStart', PandaUploader.bind(upload_strategy, 'onloadstart'), false);
+    this.xhr.upload.addEventListener('progress', PandaUploader.bind(upload_strategy, 'onprogress'), false);
+    this.xhr.upload.addEventListener('load', PandaUploader.bind(upload_strategy, 'onload'), false);
+    this.xhr.upload.addEventListener('error', PandaUploader.bind(upload_strategy, 'onerror'), false);
+    this.xhr.upload.addEventListener('abort', PandaUploader.bind(upload_strategy, 'onabort'), false);
+    this.xhr.addEventListener('readystatechange', PandaUploader.bind(upload_strategy, 'onreadystatechange'), false);
     
     var $field = $('#' + this.options.upload_button_id);
     $field.append('<input type="file" />');
-    $field.find('input[type=file]').change(PandaUploader.bind(this, 'triggerFileQueued'));
+    $field.find('input[type=file]').change(PandaUploader.bind(upload_strategy, 'onchange'));
     
-    upload_strategy.onLoad();
+    upload_strategy.onwidgetload();
 };
 
-PandaUploader.HTML5Widget.prototype.triggerFileQueued = function() {
-    var event = {};
-    var file = this.getFile();
-    this.upload_strategy.onFileQueued(event, file);
-}
-
-PandaUploader.HTML5Widget.prototype.triggerSuccess = function() {
-    console.log('success', arguments)
-    var event = {};
-    var file = this.getFile();
-    this.upload_strategy.onSuccess(event, file);
-}
-
 PandaUploader.HTML5Widget.prototype.onreadystatechange = function() {
-    console.log('onreadystatechange', arguments)
+    console.log('onreadystatechange', arguments);
 };
 
 PandaUploader.HTML5Widget.prototype.getForm = function() {
@@ -351,39 +343,42 @@ BaseStrategy.prototype = {
     setUploadWidget: function (upload_widget) {
         this.widget = upload_widget;
     },
+    
     disableSubmitButton: function(value){
         $(this.widget.getForm()).find("input[type=submit]").attr("disabled", value);
     },
+    
+    
+    // The widget has been set, about to return control to caller
+    onwidgetload: function() {
+    },
+    
+    // A file has been selected and the widget is ready to upload it
+    onchange: function() {
+    },
+    
+    // Upload commences
+    onloadstart: function() {
+    },
+    
+    // Upload progresses. Called zero or more times
+    onprogress: function() {
+    },
 
-    onLoad: function() {
-        $(this.widget.getForm()).submit(PandaUploader.bind(this, 'onSubmit'));
-        if(this.options.disable_submit_button) {
-            this.disableSubmitButton(true);
-        }
+    // Upload succeeded
+    onload: function() {
     },
     
-    onSubmit: function() {
-    },
-    onFileQueued: function() {
-    },
-    onStart: function() {
-    },
-    onProgress: function() {
-    },
-    onSuccess: function() {
-    },
-    onError: function() {
-    },
-    onComplete: function() {
+    // Upload failed
+    onerror: function() {
     },
     
-    triggerEvent: function(event, args, alternative) {
-        var handler = this.options[event];
-        if (handler) {
-            handler.apply(this, args);
-        } else if (alternative) {
-            alternative();
-        }
+    // Upload was aborted by the user
+    onabort: function() {
+    },
+    
+    // Containing form is being submitted
+    onsubmit: function() {
     }
 }
 
@@ -394,104 +389,77 @@ BaseStrategy.prototype = {
 
 function UploadOnSubmit(options) {
     BaseStrategy.apply(this, [options]);
-    this.num_files = 0;
-    this.num_pending = 0;
-    this.num_errors = 0
-    this.status = STOP
-}
+};
 UploadOnSubmit.prototype = new BaseStrategy();
 UploadOnSubmit.prototype.constructor = UploadOnSubmit;
 
-UploadOnSubmit.prototype.onFileQueued = function(event, file) {
-    this.num_files++;
-    this.num_pending++;
+UploadOnSubmit.prototype.onchange = function() {
     var $field = $('#' + this.options.upload_filename_id);
     if ($field.size() == 0) {
         return;
     }
-    $field.val(file.name);
+    $field.val(this.widget.getFile().name);
     this.disableSubmitButton(false)
-}
+};
 
-UploadOnSubmit.prototype.onSubmit = function(event) {
-    if (this.num_files > 0) {
-        this.widget.start();
-        return false;
+UploadOnSubmit.prototype.onwidgetload = function() {
+    $(this.widget.getForm()).submit(PandaUploader.bind(this, 'onsubmit'));
+    if(this.options.disable_submit_button) {
+        this.disableSubmitButton(true);
     }
 }
 
-UploadOnSubmit.prototype.onStart = function(event, file) {
-    this.status = UPLOADING;
+UploadOnSubmit.prototype.onloadstart = function() {
     this.widget.disable();
     this.options.progress_handler.reset();
-
+    
     this.disableSubmitButton(true);
     if (this.options.progress_handler) {
         this.options.progress_handler.start(file);
     }
-    this.triggerEvent('start', [event, file]);
-}
+};
 
-UploadOnSubmit.prototype.onCancel = function(event) {
-    this.widget.cancel();
-    this.widget.enable();
-
-    $('#' + this.options.upload_filename_id).val('');
-    this.options.progress_handler.reset();
-    this.num_files = 0;
-    this.num_pending = 0;
-    this.num_errors = 0;
-    if (this.options.disableSubmitButton) {
-        this.disableSubmitButton(true);
-    }
-    
-    if(this.widget.status == UPLOADING) {
-        this.triggerEvent('cancel', [event]);
-    }
-    this.status = STOP;
-}
-
-UploadOnSubmit.prototype.onProgress = function(event, file, bytesLoaded, bytesTotal) {
+UploadOnSubmit.prototype.onprogress = function() {
+    console.debug(arguments);
     try {
         if (this.options.progress_handler) {
             this.options.progress_handler.setProgress(file, bytesLoaded, bytesTotal);
         }
     } catch (ex) {
     }
-}
+};
 
-UploadOnSubmit.prototype.onSuccess = function(event, file, response) {
-    this.widget.setValue(eval('(' + response + ')').id);
-    this.num_pending--;
-    this.triggerEvent('success', [event, file, response]);
-}
+UploadOnSubmit.prototype.onreadystatechange = function(event) {
+    if (event.target.status == '200' && event.target.responseText) {
+        var response = jQuery.parseJSON(event.target.responseText);
+        this.widget.setValue(response.id);
+        console.log(20);
+    }
+    else {
+        console.log('onreadystatechange: status', event.target.status)
+    }
+};
 
-UploadOnSubmit.prototype.onError = function(event, file, code, message, more) {
+UploadOnSubmit.prototype.onerror = function() {
     $('#' + this.options.upload_filename_id).val('');
     this.options.progress_handler.reset();
+};
 
-    this.num_pending--;
-    this.num_errors++;
-
-    this.triggerEvent('error', [event, file, message], function() {
-        alert("There was an error uploading the file.\n\nHTTP error code " + message);
-    });
-}
-
-UploadOnSubmit.prototype.onComplete = function(event, num_uploads) {
-    if (this.num_files > 0 && this.num_pending <= 0 && this.num_errors <= 0) {
-        if ( ! this.widget.getValue()) {
-            alert('The video ID was not stored on the form');
-            return;
-        }
-
-        this.status = STOP;
-        var that = this;
-        this.triggerEvent('complete', [event], function() {
-            that.widget.getForm().submit();
-        });
+UploadOnSubmit.prototype.onabort = function() {
+    this.widget.cancel();
+    this.widget.enable();
+    
+    $('#' + this.options.upload_filename_id).val('');
+    this.options.progress_handler.reset();
+    if (this.options.disableSubmitButton) {
+        this.disableSubmitButton(true);
     }
-}
+};
+
+UploadOnSubmit.prototype.onsubmit = function(event) {
+    this.widget.start();
+    return false;
+};
 
 
 //
