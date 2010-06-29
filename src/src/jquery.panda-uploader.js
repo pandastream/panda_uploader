@@ -34,6 +34,7 @@ PandaUploader.createXRequestObject = function() {
 
 PandaUploader.bind = function(object, method_name) {
     return function() {
+        console.log(method_name);
         var method = object[method_name];
         if (method) {
             return method.apply(object, arguments);
@@ -117,45 +118,68 @@ PandaUploader.FlashWidget = function(query, signed_params, options, swfupload_op
 PandaUploader.FlashWidget.prototype = new PandaUploader.BaseWidget();
 PandaUploader.FlashWidget.prototype.constructor = PandaUploader.FlashWidget;
 
-PandaUploader.FlashWidget.prototype = {
-    setUploadStrategy: function(upload_strategy) {
-        this.swfupload.bind('swfuploadLoaded', PandaUploader.bind(upload_strategy, 'onLoad'));
-        this.swfupload.bind('fileQueued', PandaUploader.bind(upload_strategy, 'onFileQueued'));
-        this.swfupload.bind('uploadStart', PandaUploader.bind(upload_strategy, 'onStart'));
-        this.swfupload.bind('uploadProgress', PandaUploader.bind(upload_strategy, 'onProgress'));
-        this.swfupload.bind('uploadSuccess', PandaUploader.bind(upload_strategy, 'onSuccess'));
-        this.swfupload.bind('uploadError', PandaUploader.bind(upload_strategy, 'onError'));
-        this.swfupload.bind('uploadComplete', PandaUploader.bind(upload_strategy, 'onComplete'));
-    },
-    
-    getForm: function() {
-        return this.swfupload.parents('form').get(0);
-    },
-    
-    start: function() {
-        return this.swfupload.swfupload('startUpload');
-    },
-    
-    disable: function() {
-        return this.swfupload.swfupload('setButtonDisabled', true);
-    },
-    
-    enable: function() {
-        return this.swfupload.swfupload('setButtonDisabled', false);
-    },
-    
-    cancel: function() {
-        return this.swfupload.swfupload('cancelUpload', '', false);
-    },
-    
-    setValue: function(value) {
-        return this.swfupload.val(value);
-    },
-    
-    getValue: function() {
-        return this.swfupload.val();
-    }
+PandaUploader.FlashWidget.prototype.setUploadStrategy = function(upload_strategy) {
+    this.upload_strategy = upload_strategy;
+    this.swfupload.bind('swfuploadLoaded', PandaUploader.bind(upload_strategy, 'onwidgetload'));
+    this.swfupload.bind('fileQueued', PandaUploader.bind(this, 'fileQueued'));
+    this.swfupload.bind('uploadStart', PandaUploader.bind(upload_strategy, 'onloadstart'));
+    this.swfupload.bind('uploadProgress', PandaUploader.bind(this, 'uploadProgress'));
+    this.swfupload.bind('uploadSuccess', PandaUploader.bind(this, 'uploadSuccess'));
+    this.swfupload.bind('uploadError', PandaUploader.bind(upload_strategy, 'onerror'));
 };
+
+
+PandaUploader.FlashWidget.prototype.fileQueued = function(evt, file) {
+    this.file = file;
+    this.upload_strategy.onchange();
+};
+PandaUploader.FlashWidget.prototype.uploadProgress = function(evt, _file, bytesLoaded, bytesTotal) {
+    evt.loaded = bytesLoaded;
+    evt.total = bytesTotal;
+    this.upload_strategy.onprogress(evt);
+};
+PandaUploader.FlashWidget.prototype.uploadSuccess = function(evt, file, response) {
+    var event = {
+        target: {
+            status: '200',
+            responseText: response
+        }
+    };
+    this.upload_strategy.onreadystatechange(event);
+};
+
+PandaUploader.FlashWidget.prototype.getFile = function() {
+    return this.file;
+};
+
+PandaUploader.FlashWidget.prototype.getForm = function() {
+    return this.swfupload.parents('form').get(0);
+};
+
+PandaUploader.FlashWidget.prototype.start = function() {
+    return this.swfupload.swfupload('startUpload');
+};
+
+PandaUploader.FlashWidget.prototype.disable = function() {
+    return this.swfupload.swfupload('setButtonDisabled', true);
+};
+
+PandaUploader.FlashWidget.prototype.enable = function() {
+    return this.swfupload.swfupload('setButtonDisabled', false);
+};
+
+PandaUploader.FlashWidget.prototype.cancel = function() {
+    return this.swfupload.swfupload('cancelUpload', '', false);
+};
+
+PandaUploader.FlashWidget.prototype.setValue = function(value) {
+    return this.swfupload.val(value);
+};
+
+PandaUploader.FlashWidget.prototype.getValue = function() {
+    return this.swfupload.val();
+};
+
 
 PandaUploader.HTML5Widget = function(query, signed_params, options) {
     PandaUploader.BaseWidget.apply(this, [query, signed_params, options]);
