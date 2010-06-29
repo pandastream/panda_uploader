@@ -39,7 +39,9 @@ PandaUploader.bind = function(object, method_name) {
             return method.apply(object, arguments);
         }
         else {
-            console.debug("Not implemented: ", method_name);
+            if (typeof console != 'undefined') {
+                console.debug("Not implemented: ", method_name);
+            }
         }
     }
 }
@@ -583,21 +585,18 @@ ProgressUpload.prototype = {
         }
         
         this.progress = this.$p.find('.progress-inside');
-        console.log('cero!')
         this.setProgress(file, 0, file.size);
         this.$p.css('display', 'block');
         var self = this;
-        this.timer = setInterval(function(){self.animateBarBg()}, 20);
+        this.timer = setInterval(function(){ self.animateBarBg() }, 20);
     },
     
     setProgress: function(file, loaded, total) {
-        console.log('here', loaded, total);
         if ( ! this.progress) {
             return;
         }
         var percent = Math.ceil(loaded*100/total);
         $(this.progress).css('width', percent + '%');
-        console.log(percent + '%');
     },
     
     animateBarBg: function() {
