@@ -506,6 +506,11 @@ UploadOnSelect.prototype = new BaseStrategy();
 UploadOnSelect.prototype.constructor = UploadOnSelect;
 
 UploadOnSelect.prototype.onchange = function(event, file) {
+    var $field = $('#' + this.options.upload_filename_id);
+    if ($field.size() == 0) {
+        return;
+    }
+    $field.val(this.widget.getFile().name);
     this.widget.start();
 }
 
