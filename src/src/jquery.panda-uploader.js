@@ -214,7 +214,7 @@ PandaUploader.HTML5Widget.prototype.getForm = function() {
 
 PandaUploader.HTML5Widget.prototype.start = function() {
     var file = this.getFile();
-    this.xhr.open('POST', 'http://site-beta.dev/', true);
+    this.xhr.open('POST', this.options.api_url + '/videos.json', true);
     this.xhr.setRequestHeader("Cache-Control", "no-cache");
     this.xhr.setRequestHeader("X-Requested-With", "XMLHttpRequest");
     this.xhr.setRequestHeader("X-File-Name", file.fileName);
