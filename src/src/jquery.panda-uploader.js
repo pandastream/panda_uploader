@@ -32,6 +32,15 @@ PandaUploader.createXRequestObject = function() {
     }
 };
 
+PandaUploader.createWidget = function() {
+    if (PandaUploader.supportAjaxUpload() && PandaUploader.supportAjaxUpload) {
+        return PandaUploader.HTML5Widget;
+    }
+    else {
+        return PandaUploader.FlashWidget;
+    }
+}
+
 PandaUploader.bind = function(object, method_name) {
     return function() {
         var method = object[method_name];
@@ -272,7 +281,7 @@ jQuery.fn.checkPandaUploaderOptions = function(signed_params, options) {
     return true;
 }
 
-jQuery.fn.pandaUploader = function(signed_params, options, swfupload_options) {
+jQuery.fn.pandaUploader = function(signed_params, options, widget_options) {
     options = options === undefined ? {} : options;
     if ( ! this.checkPandaUploaderOptions(signed_params, options)) {
         return false;
@@ -285,61 +294,19 @@ jQuery.fn.pandaUploader = function(signed_params, options, swfupload_options) {
         progress_handler: null,
         uploader_dir: "/panda_uploader",
         disable_submit_button: true,
-        strategy: 'upload_on_submit'
+        strategy: 'upload_on_submit',
+        widget: null
     }, options);
     options['api_url'] = options['api_url'] || 'http://' + options['api_host'] + '/v2';
     
     if ( ! options.progress_handler) {
         options.progress_handler = new ProgressUpload(options);
     }
-    
-    var widget = new PandaUploader.FlashWidget(this, signed_params, options, swfupload_options);
-    
-    var strategyClass = null;
-    switch(options.strategy) {
-    case 'upload_on_submit':
-        strategyClass = UploadOnSubmit;
-        break;
-    case 'upload_on_select':
-        strategyClass = UploadOnSelect;
-        break;
-    default:
-        strategyClass = options.strategy;
-    }
-    strategy = new strategyClass(options);
-    strategy.setUploadWidget(widget)
-    widget.setUploadStrategy(strategy);
-    
-    var $cancel_button = jQuery('#' + options.upload_cancel_button_id);
-    if ($cancel_button) {
-        $cancel_button.click(PandaUploader.bind(strategy, 'onCancel'));
-    }
-    
-    return this;
-};
 
-jQuery.fn.pandaHTML5Uploader = function(signed_params, options, swfupload_options) {
-    options = options === undefined ? {} : options;
-    if ( ! this.checkPandaUploaderOptions(signed_params, options)) {
-        return false;
+    if ( ! options.widget) {
+        options.widget = PandaUploader.createWidget();
     }
-    
-    options = jQuery.extend({
-        upload_filename_id: null,
-        upload_progress_id: null,
-        api_host: 'api.pandastream.com',
-        progress_handler: null,
-        uploader_dir: "/panda_uploader",
-        disable_submit_button: true,
-        strategy: 'upload_on_submit'
-    }, options);
-    options['api_url'] = options['api_url'] || 'http://' + options['api_host'] + '/v2';
-    
-    if ( ! options.progress_handler) {
-        options.progress_handler = new ProgressUpload(options);
-    }
-    
-    var widget = new PandaUploader.HTML5Widget(this, signed_params, options);
+    var widget = new options.widget(this, signed_params, options, widget_options);
     
     var strategyClass = null;
     switch(options.strategy) {
