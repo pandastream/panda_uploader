@@ -34,15 +34,9 @@ PandaUploader.createXRequestObject = function() {
 
 PandaUploader.bind = function(object, method_name) {
     return function() {
-        console.log(method_name);
         var method = object[method_name];
         if (method) {
             return method.apply(object, arguments);
-        }
-        else {
-            if (typeof console != 'undefined') {
-                console.debug("Not implemented: ", method_name);
-            }
         }
     }
 }
@@ -477,9 +471,6 @@ UploadOnSubmit.prototype.onreadystatechange = function(event) {
         this.widget.setValue(response.id);
         this.widget.getForm().submit();
     }
-    else {
-        console.log('onreadystatechange: status', event.target.status)
-    }
 };
 
 UploadOnSubmit.prototype.onerror = function() {
@@ -548,9 +539,6 @@ UploadOnSelect.prototype.onreadystatechange = function(event) {
         var response = jQuery.parseJSON(event.target.responseText);
         this.widget.setValue(response.id);
         this.enableSubmitButton();
-    }
-    else {
-        console.log('onreadystatechange: status', event.target.status)
     }
 }
 
