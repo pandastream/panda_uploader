@@ -409,7 +409,13 @@ BaseStrategy.prototype = {
     },
     
     // Upload progresses. Called zero or more times
-    onprogress: function() {
+    onprogress: function(event) {
+        try {
+            if (this.options.progress_handler) {
+                this.options.progress_handler.setProgress(this.widget.getFile(), event.loaded, event.total);
+            }
+        } catch (ex) {
+        }
     },
 
     // Upload succeeded
@@ -465,15 +471,6 @@ UploadOnSubmit.prototype.onloadstart = function() {
     }
 };
 
-UploadOnSubmit.prototype.onprogress = function(event) {
-    try {
-        if (this.options.progress_handler) {
-            this.options.progress_handler.setProgress(this.widget.getFile(), event.loaded, event.total);
-        }
-    } catch (ex) {
-    }
-};
-
 UploadOnSubmit.prototype.onreadystatechange = function(event) {
     if (event.target.status == '200' && event.target.responseText) {
         var response = jQuery.parseJSON(event.target.responseText);
@@ -517,21 +514,20 @@ function UploadOnSelect(options) {
 UploadOnSelect.prototype = new BaseStrategy();
 UploadOnSelect.prototype.constructor = UploadOnSelect;
 
-UploadOnSelect.prototype.onFileQueued = function(event, file) {
+UploadOnSelect.prototype.onchange = function(event, file) {
     this.widget.start();
 }
 
-UploadOnSelect.prototype.onStart = function(event, file) {
+UploadOnSelect.prototype.onloadstart = function(event, file) {
     this.options.progress_handler.reset();
 
     this.disableSubmitButton();
     if (this.options.progress_handler) {
         this.options.progress_handler.start(file);
     }
-    this.triggerEvent('start', [event, file]);
 }
 
-UploadOnSelect.prototype.onCancel = function(event) {
+UploadOnSelect.prototype.onabort = function(event) {
     this.cancel();
     this.enable();
 
@@ -540,49 +536,22 @@ UploadOnSelect.prototype.onCancel = function(event) {
     if (this.options.disableSubmitButton) {
         this.disableSubmitButton();
     }
-
-    if(this.widget.status == UPLOADING) {
-        this.triggerEvent('cancel', [event]);
-    }
 }
 
-UploadOnSelect.prototype.onProgress = function(event, file, bytesLoaded, bytesTotal) {
-    try {
-        if (this.options.progress_handler) {
-            this.options.progress_handler.setProgress(file, bytesLoaded, bytesTotal);
-        }
-    } catch (ex) {
-    }
-}
-
-UploadOnSelect.prototype.onSuccess = function(event, file, response) {
-    this.widget.setValue(eval('(' + response + ')').id);
-    this.num_pending--;
-
-    this.triggerEvent('success', [event, file, response]);
-}
-
-UploadOnSelect.prototype.onError = function(event, file, code, message, more) {
+UploadOnSelect.prototype.onerror = function(event, file, code, message, more) {
     $('#' + this.options.upload_filename_id).val('');
     this.options.progress_handler.reset();
-
-    this.num_pending--;
-    this.num_errors++;
-
-    this.triggerEvent('error', [event, file, message], function() {
-        alert("There was an error uploading the file.\n\nHTTP error code " + message);
-    });
 }
 
-UploadOnSelect.prototype.onComplete = function(event, num_uploads) {
-    if ( ! this.widget.getValue()) {
-        alert('The video ID was not stored on the form');
-        return;
+UploadOnSelect.prototype.onreadystatechange = function(event) {
+    if (event.target.status == '200' && event.target.responseText) {
+        var response = jQuery.parseJSON(event.target.responseText);
+        this.widget.setValue(response.id);
+        this.enableSubmitButton();
     }
-    this.enableSubmitButton();
-
-    this.status = STOP;
-    this.triggerEvent('complete', [event]);
+    else {
+        console.log('onreadystatechange: status', event.target.status)
+    }
 }
 
 
