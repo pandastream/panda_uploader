@@ -165,7 +165,7 @@ PandaUploader.HTML5Widget.prototype.constructor = PandaUploader.HTML5Widget;
 PandaUploader.HTML5Widget.prototype.setUploadStrategy = function(upload_strategy) {
     this.upload_strategy = upload_strategy;
     this.xhr = PandaUploader.createXRequestObject();
-    this.xhr.upload.addEventListener('loadStart', PandaUploader.bind(upload_strategy, 'onloadstart'), false);
+    this.xhr.upload.addEventListener('loadstart', PandaUploader.bind(upload_strategy, 'onloadstart'), false);
     this.xhr.upload.addEventListener('progress', PandaUploader.bind(upload_strategy, 'onprogress'), false);
     this.xhr.upload.addEventListener('load', PandaUploader.bind(upload_strategy, 'onload'), false);
     this.xhr.upload.addEventListener('error', PandaUploader.bind(upload_strategy, 'onerror'), false);
@@ -174,13 +174,9 @@ PandaUploader.HTML5Widget.prototype.setUploadStrategy = function(upload_strategy
     
     var $field = $('#' + this.options.upload_button_id);
     $field.append('<input type="file" />');
-    $field.find('input[type=file]').change(PandaUploader.bind(upload_strategy, 'onchange'));
+    $(this.getField()).change(PandaUploader.bind(upload_strategy, 'onchange'));
     
     upload_strategy.onwidgetload();
-};
-
-PandaUploader.HTML5Widget.prototype.onreadystatechange = function() {
-    console.log('onreadystatechange', arguments);
 };
 
 PandaUploader.HTML5Widget.prototype.getForm = function() {
@@ -199,8 +195,25 @@ PandaUploader.HTML5Widget.prototype.start = function() {
 };
 
 PandaUploader.HTML5Widget.prototype.getFile = function() {
-    return $('#' + this.options.upload_button_id).find('input[type=file]').get(0).files[0];
+    return $(this.getField()).get(0).files[0];
 };
+
+PandaUploader.HTML5Widget.prototype.setValue = function(value) {
+    return this.query.val(value);
+};
+
+PandaUploader.HTML5Widget.prototype.disable = function() {
+    $(this.getField()).attr('disabled', true);
+};
+
+PandaUploader.HTML5Widget.prototype.enable = function() {
+    $(this.getField()).removeAttr('disabled');
+};
+
+PandaUploader.HTML5Widget.prototype.getField = function() {
+    return $('#' + this.options.upload_button_id).find('input[type=file]').get(0);
+};
+
 
 
 (function(){
@@ -344,8 +357,16 @@ BaseStrategy.prototype = {
         this.widget = upload_widget;
     },
     
-    disableSubmitButton: function(value){
-        $(this.widget.getForm()).find("input[type=submit]").attr("disabled", value);
+    disableSubmitButton: function(){
+        $(this.getSubmitButton()).attr('disabled', true);
+    },
+
+    enableSubmitButton: function(){
+        return $(this.getSubmitButton()).removeAttr('disabled');
+    },
+    
+    getSubmitButton: function() {
+        return $(this.widget.getForm()).find('input[type=submit]');
     },
     
     
@@ -399,31 +420,29 @@ UploadOnSubmit.prototype.onchange = function() {
         return;
     }
     $field.val(this.widget.getFile().name);
-    this.disableSubmitButton(false)
+    this.enableSubmitButton()
 };
 
 UploadOnSubmit.prototype.onwidgetload = function() {
     $(this.widget.getForm()).submit(PandaUploader.bind(this, 'onsubmit'));
     if(this.options.disable_submit_button) {
-        this.disableSubmitButton(true);
+        this.disableSubmitButton();
     }
 }
 
 UploadOnSubmit.prototype.onloadstart = function() {
     this.widget.disable();
     this.options.progress_handler.reset();
-    
-    this.disableSubmitButton(true);
+    this.disableSubmitButton();
     if (this.options.progress_handler) {
-        this.options.progress_handler.start(file);
+        this.options.progress_handler.start(this.widget.getFile());
     }
 };
 
-UploadOnSubmit.prototype.onprogress = function() {
-    console.debug(arguments);
+UploadOnSubmit.prototype.onprogress = function(event) {
     try {
         if (this.options.progress_handler) {
-            this.options.progress_handler.setProgress(file, bytesLoaded, bytesTotal);
+            this.options.progress_handler.setProgress(this.widget.getFile(), event.loaded, event.total);
         }
     } catch (ex) {
     }
@@ -433,7 +452,7 @@ UploadOnSubmit.prototype.onreadystatechange = function(event) {
     if (event.target.status == '200' && event.target.responseText) {
         var response = jQuery.parseJSON(event.target.responseText);
         this.widget.setValue(response.id);
-        console.log(20);
+        this.widget.getForm().submit();
     }
     else {
         console.log('onreadystatechange: status', event.target.status)
@@ -452,7 +471,7 @@ UploadOnSubmit.prototype.onabort = function() {
     $('#' + this.options.upload_filename_id).val('');
     this.options.progress_handler.reset();
     if (this.options.disableSubmitButton) {
-        this.disableSubmitButton(true);
+        this.disableSubmitButton();
     }
 };
 
@@ -479,7 +498,7 @@ UploadOnSelect.prototype.onFileQueued = function(event, file) {
 UploadOnSelect.prototype.onStart = function(event, file) {
     this.options.progress_handler.reset();
 
-    this.disableSubmitButton(true);
+    this.disableSubmitButton();
     if (this.options.progress_handler) {
         this.options.progress_handler.start(file);
     }
@@ -493,7 +512,7 @@ UploadOnSelect.prototype.onCancel = function(event) {
     $('#' + this.options.upload_filename_id).val('');
     this.options.progress_handler.reset();
     if (this.options.disableSubmitButton) {
-        this.disableSubmitButton(true);
+        this.disableSubmitButton();
     }
 
     if(this.widget.status == UPLOADING) {
@@ -534,7 +553,7 @@ UploadOnSelect.prototype.onComplete = function(event, num_uploads) {
         alert('The video ID was not stored on the form');
         return;
     }
-    this.disableSubmitButton(false);
+    this.enableSubmitButton();
 
     this.status = STOP;
     this.triggerEvent('complete', [event]);
@@ -564,18 +583,21 @@ ProgressUpload.prototype = {
         }
         
         this.progress = this.$p.find('.progress-inside');
+        console.log('cero!')
         this.setProgress(file, 0, file.size);
         this.$p.css('display', 'block');
         var self = this;
         this.timer = setInterval(function(){self.animateBarBg()}, 20);
     },
     
-    setProgress: function(file, bytesLoaded, bytesTotal) {
+    setProgress: function(file, loaded, total) {
+        console.log('here', loaded, total);
         if ( ! this.progress) {
             return;
         }
-        var percent = Math.ceil((bytesLoaded / bytesTotal) * 100);
+        var percent = Math.ceil(loaded*100/total);
         $(this.progress).css('width', percent + '%');
+        console.log(percent + '%');
     },
     
     animateBarBg: function() {
