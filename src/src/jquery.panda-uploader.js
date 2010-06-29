@@ -365,13 +365,14 @@ jQuery.fn.pandaHTML5Uploader = function(signed_params, options, swfupload_option
 };
 
 
+
 //
 // BaseStrategy
 //
 
 function BaseStrategy(options) {
     this.options = options;
-}
+};
 BaseStrategy.prototype = {
     setUploadWidget: function (upload_widget) {
         this.widget = upload_widget;
@@ -427,7 +428,7 @@ BaseStrategy.prototype = {
     // Containing form is being submitted
     onsubmit: function() {
     }
-}
+};
 
 
 //
@@ -454,7 +455,7 @@ UploadOnSubmit.prototype.onwidgetload = function() {
     if(this.options.disable_submit_button) {
         this.disableSubmitButton();
     }
-}
+};
 
 UploadOnSubmit.prototype.onloadstart = function() {
     this.widget.disable();
@@ -501,7 +502,7 @@ UploadOnSubmit.prototype.onsubmit = function(event) {
 
 function UploadOnSelect(options) {
     BaseStrategy.apply(this, [options]);
-}
+};
 UploadOnSelect.prototype = new BaseStrategy();
 UploadOnSelect.prototype.constructor = UploadOnSelect;
 
@@ -512,7 +513,7 @@ UploadOnSelect.prototype.onchange = function(event, file) {
     }
     $field.val(this.widget.getFile().name);
     this.widget.start();
-}
+};
 
 UploadOnSelect.prototype.onloadstart = function(event, file) {
     this.options.progress_handler.reset();
@@ -521,7 +522,7 @@ UploadOnSelect.prototype.onloadstart = function(event, file) {
     if (this.options.progress_handler) {
         this.options.progress_handler.start(file);
     }
-}
+};
 
 UploadOnSelect.prototype.onabort = function(event) {
     this.cancel();
@@ -532,12 +533,12 @@ UploadOnSelect.prototype.onabort = function(event) {
     if (this.options.disableSubmitButton) {
         this.disableSubmitButton();
     }
-}
+};
 
 UploadOnSelect.prototype.onerror = function(event, file, code, message, more) {
     $('#' + this.options.upload_filename_id).val('');
     this.options.progress_handler.reset();
-}
+};
 
 UploadOnSelect.prototype.onreadystatechange = function(event) {
     if (event.target.status == '200' && event.target.responseText) {
@@ -545,7 +546,7 @@ UploadOnSelect.prototype.onreadystatechange = function(event) {
         this.widget.setValue(response.id);
         this.enableSubmitButton();
     }
-}
+};
 
 
 //
@@ -557,7 +558,7 @@ function ProgressUpload(options) {
     this.$p = jQuery('#' + this.options.upload_progress_id);
     this.$p.css('display', 'none');
     this.count = 0;
-}
+};
 
 ProgressUpload.prototype = {
     start: function(file) {
@@ -603,7 +604,7 @@ ProgressUpload.prototype = {
         $(this.progress).css('width', '0%');
         this.$p.css('display', 'none');
     }
-}
+};
 
 
 })();
