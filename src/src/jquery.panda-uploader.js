@@ -482,12 +482,12 @@ UploadOnSelect.prototype.onchange = function(event, file) {
     this.widget.start();
 };
 
-UploadOnSelect.prototype.onloadstart = function(event, file) {
+UploadOnSelect.prototype.onloadstart = function() {
     this.options.progress_handler.reset();
 
     this.disableSubmitButton();
     if (this.options.progress_handler) {
-        this.options.progress_handler.start(file);
+        this.options.progress_handler.start(this.widget.getFile());
     }
 };
 
