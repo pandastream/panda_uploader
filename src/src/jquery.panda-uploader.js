@@ -111,7 +111,13 @@ PandaUploader.FlashWidget = function(query, signed_params, options, swfupload_op
         file_post_name: "file",
         debug: false
     }, swfupload_options));
-    
+
+    if (this.unique_id === undefined) {
+        this.unique_id = 1;
+    }
+    var filename_field_id = 'panda-flashwidget-filename-' + this.unique_id++;
+    '<input type="text" id="' + filename_field_id + '" disabled="true" class="panda_upload_filename" />'
+
     var swfupload = this.swfupload;
     this.swfupload.bind('fileQueued', function() {
         swfupload.data('__swfu').setPostParams(signed_params.call ? signed_params() : signed_params)
@@ -214,12 +220,14 @@ PandaUploader.HTML5Widget.prototype.getForm = function() {
 
 PandaUploader.HTML5Widget.prototype.start = function() {
     var file = this.getFile();
+    var json_string = '{"access_key":"' + this.signed_params.access_key + '", "cloud_id":"' + this.signed_params.cloud_id + '", "timestamp":"' + this.signed_params.timestamp + '", "signature":"' + this.signed_params.signature + '"}';
     this.xhr.open('POST', this.options.api_url + '/videos.json', true);
     this.xhr.setRequestHeader("Cache-Control", "no-cache");
+    this.xhr.setRequestHeader("Content-Type", "application/octet-stream");
     this.xhr.setRequestHeader("X-Requested-With", "XMLHttpRequest");
     this.xhr.setRequestHeader("X-File-Name", file.fileName);
-    this.xhr.setRequestHeader("X-File-Size", file.fileSize);
-    this.xhr.setRequestHeader("Content-Type", "application/octet-stream");
+    // this.xhr.setRequestHeader("X-File-Size", file.fileSize);
+    this.xhr.setRequestHeader("X-Panda-Params", json_string);
     this.xhr.send(file);
 };
 

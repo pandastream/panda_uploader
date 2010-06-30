@@ -30,6 +30,11 @@ class PandaUploaderTestApp < Sinatra::Base
     erb :player
   end
 
+  get '/signatures' do
+    content_type :json
+    @panda.signed_params("POST", "/videos.json").to_json
+  end
+
   get '/:page' do |page|
     erb page.to_sym
   end

@@ -63,6 +63,8 @@ test("Options validation", function () {
   $('#another-file').checkPandaUploaderOptions({}, {upload_button_id: 'another_upload_button'});
   ok(PandaUploader.latest_alert.indexOf('Neither NAME nor ID can') != -1, 'Check that there are no elements with a "submit" name/ID');
 
+  $('#the-file').checkPandaUploaderOptions({}, {upload_button_id: 'upload_button'});
+
   PandaUploader.latest_alert = '';
   $('#the-file').checkPandaUploaderOptions({}, {upload_button_id: 'upload_button'});
   equal(PandaUploader.latest_alert, '', 'No errors show for a correct form')
