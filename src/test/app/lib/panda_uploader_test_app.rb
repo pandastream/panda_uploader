@@ -35,4 +35,8 @@ class PandaUploaderTestApp < Sinatra::Base
     erb :with_other_controls
   end
 
+  get '/with_other_libraries' do
+    erb :with_other_libraries
+  end
+
 end

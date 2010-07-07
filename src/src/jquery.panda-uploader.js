@@ -29,7 +29,7 @@ jQuery.fn.pandaUploader = function(signed_params, options, swfupload_options) {
         return false;
     }
     
-    if ($(form).find('[name=submit], #submit').length != 0) {
+    if (jQuery(form).find('[name=submit], #submit').length != 0) {
         alert("An element of your video upload form is incorrect (most probably the submit button). Neither NAME nor ID can be set to \"submit\" on any field.");
         return false;
     }
@@ -110,7 +110,7 @@ function BaseStrategy(form, options, uploader) {
 }
 BaseStrategy.prototype = {
     disableSubmitButton: function(value){
-        $(this.form).find("input[type=submit]").attr("disabled", value);
+        jQuery(this.form).find("input[type=submit]").attr("disabled", value);
     },
 
     onLoad: function() {
@@ -164,7 +164,7 @@ UploadOnSubmit.prototype.constructor = UploadOnSubmit;
 UploadOnSubmit.prototype.onFileQueued = function(event, file) {
     this.num_files++;
     this.num_pending++;
-    var $field = $('#' + this.options.upload_filename_id);
+    var $field = jQuery('#' + this.options.upload_filename_id);
     if ($field.size() == 0) {
         return;
     }
@@ -195,7 +195,7 @@ UploadOnSubmit.prototype.onCancel = function(event) {
     this.uploader.swfupload('cancelUpload', '', false);
     this.uploader.swfupload('setButtonDisabled', false);
 
-    $('#' + this.options.upload_filename_id).val('');
+    jQuery('#' + this.options.upload_filename_id).val('');
     this.options.progress_handler.reset();
     this.num_files = 0;
     this.num_pending = 0;
@@ -226,7 +226,7 @@ UploadOnSubmit.prototype.onSuccess = function(event, file, response) {
 }
 
 UploadOnSubmit.prototype.onError = function(event, file, code, message, more) {
-    $('#' + this.options.upload_filename_id).val('');
+    jQuery('#' + this.options.upload_filename_id).val('');
     this.options.progress_handler.reset();
 
     this.num_pending--;
@@ -281,7 +281,7 @@ UploadOnSelect.prototype.onCancel = function(event) {
     this.uploader.swfupload('cancelUpload', '', false);
     this.uploader.swfupload('setButtonDisabled', false);
 
-    $('#' + this.options.upload_filename_id).val('');
+    jQuery('#' + this.options.upload_filename_id).val('');
     this.options.progress_handler.reset();
     if (this.options.disableSubmitButton) {
         this.disableSubmitButton(true);
@@ -309,7 +309,7 @@ UploadOnSelect.prototype.onSuccess = function(event, file, response) {
 }
 
 UploadOnSelect.prototype.onError = function(event, file, code, message, more) {
-    $('#' + this.options.upload_filename_id).val('');
+    jQuery('#' + this.options.upload_filename_id).val('');
     this.options.progress_handler.reset();
 
     this.num_pending--;
@@ -366,7 +366,7 @@ ProgressUpload.prototype = {
             return;
         }
         var percent = Math.ceil((bytesLoaded / bytesTotal) * 100);
-        $(this.progress).css('width', percent + '%');
+        jQuery(this.progress).css('width', percent + '%');
     },
     
     animateBarBg: function() {
@@ -384,7 +384,7 @@ ProgressUpload.prototype = {
     
     reset: function(){
         clearInterval(this.timer)
-        $(this.progress).css('width', '0%');
+        jQuery(this.progress).css('width', '0%');
         this.$p.css('display', 'none');
     }
 }
