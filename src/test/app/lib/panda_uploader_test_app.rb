@@ -1,6 +1,5 @@
 require 'sinatra/base'
 require 'panda'
-require 'json'
 require 'pp'
 
 class PandaUploaderTestApp < Sinatra::Base
@@ -23,7 +22,7 @@ class PandaUploaderTestApp < Sinatra::Base
   
   get '/player' do
     @video_id = params[:panda_video_id]
-    encodings = JSON.parse(@panda.get("/videos/#{@video_id}/encodings.json"))
+    encodings = @panda.get("/videos/#{@video_id}/encodings.json")
     @num_encodings = encodings.size
     @pretty_printed_encodings = ''
     PP.pp(encodings, @pretty_printed_encodings)
