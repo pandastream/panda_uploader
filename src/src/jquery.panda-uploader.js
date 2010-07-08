@@ -492,6 +492,7 @@ UploadOnSelect.prototype.constructor = UploadOnSelect;
 
 UploadOnSelect.prototype.onchange = function(event, file) {
     var $field = $('#' + this.options.upload_filename_id);
+
     if ($field.size() == 0) {
         return;
     }
@@ -525,7 +526,16 @@ UploadOnSelect.prototype.onerror = function(event, file, code, message, more) {
 };
 
 UploadOnSelect.prototype.onreadystatechange = function(event) {
-    if (event.target.status == '200' && event.target.responseText) {
+    var status = null;
+
+    try {
+        status = event.target.status;
+    }
+    catch(e) {
+        return;
+    }
+
+    if (status == '200' && event.target.responseText) {
         var response = jQuery.parseJSON(event.target.responseText);
         this.widget.setValue(response.id);
         this.enableSubmitButton();
