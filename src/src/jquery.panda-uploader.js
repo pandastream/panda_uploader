@@ -226,7 +226,6 @@ PandaUploader.HTML5Widget.prototype.start = function() {
     this.xhr.setRequestHeader("Content-Type", "application/octet-stream");
     this.xhr.setRequestHeader("X-Requested-With", "XMLHttpRequest");
     this.xhr.setRequestHeader("X-File-Name", file.fileName);
-    // this.xhr.setRequestHeader("X-File-Size", file.fileSize);
     this.xhr.setRequestHeader("X-Panda-Params", json_string);
     this.xhr.send(file);
 };
