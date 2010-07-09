@@ -114,8 +114,9 @@ PandaUploader.FlashWidget.prototype.init = function() {
 
     var field_id = this.query.attr('id');
     var placeholder_id = field_id + '_pandauploader-flashwidget-placeholder';
+    this.filename_field_id = field_id + '_orig-filename';
     this.query.after('<span id="' + placeholder_id + '"></span>');
-    $('#' + placeholder_id).after('<input type="text" disabled="disabled" id="' + field_id + '_orig-filename" />');
+    $('#' + placeholder_id).after('<input type="text" disabled="disabled" id="' + this.filename_field_id + '" />');
 
     this.swfupload = this.query.swfupload(jQuery.extend({
         upload_url: this.options.api_url + '/videos.json',
@@ -143,6 +144,7 @@ PandaUploader.FlashWidget.prototype.init = function() {
 
 PandaUploader.FlashWidget.prototype.fileQueued = function(evt, file) {
     this.file = file;
+    $('#' + this.filename_field_id).val(file.name);
     this.upload_strategy.onchange();
 };
 PandaUploader.FlashWidget.prototype.uploadStart = function(_file) {
