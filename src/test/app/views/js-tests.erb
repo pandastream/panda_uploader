@@ -28,11 +28,11 @@ test("Detection of features", function() {
 
   var support = PandaUploader.supportHTML5Widget();
   var b = jQuery.browser;
-  if (b.webkit || b.mozilla || b.msie && b.version >= 8) {
-    ok(support, 'Detect support for the HTML5 widget in Webkit, Mozilla and MSIE8+');
+  if (b.webkit || b.mozilla) {
+    ok(support, 'Detect support for the HTML5 widget in Webkit and Mozilla');
   }
   else {
-    ok(!support, 'Detect lack of support for the HTML5 widget in MSIE < 8');
+    ok(!support, 'Detect lack of support for the HTML5 widget in MSIE');
   }
 });
 
