@@ -503,7 +503,7 @@ jQuery.fn.pandaUploader = function(signed_params, options, widget_options) {
     if ( ! widget) {
         widget = PandaUploader.createWidget();
     }
-    console.log(options.upload_strategy)
+    
     if ( ! options.upload_strategy) {
         options.upload_strategy = new PandaUploader.UploadOnSubmit();
     }
