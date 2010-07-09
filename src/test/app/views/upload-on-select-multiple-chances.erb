@@ -18,7 +18,7 @@ $('#returned_video_id').pandaUploader(get_signed_params, {
     upload_progress_id: 'upload_progress',
     api_url: '<%= @panda.api_url %>',
     uploader_dir: '/panda_uploader',
-    strategy: 'upload_on_select'
+    upload_strategy: new PandaUploader.UploadOnSelect()
 });
 
 function get_signed_params() {

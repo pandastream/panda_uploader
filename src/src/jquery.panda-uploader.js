@@ -36,12 +36,12 @@ PandaUploader.createXRequestObject = function() {
     }
 };
 
-PandaUploader.getWidgetClass = function() {
+PandaUploader.createWidget = function() {
     if (PandaUploader.supportHTML5Widget()) {
-        return PandaUploader.HTML5Widget;
+        return new PandaUploader.HTML5Widget();
     }
     else {
-        return PandaUploader.FlashWidget;
+        return new PandaUploader.FlashWidget();
     }
 };
 
@@ -59,14 +59,14 @@ PandaUploader.alert = function(msg) {
     return alert(msg);
 };
 
-PandaUploader.BaseWidget = function(query, signed_params, options) {
-    this.query = query;
-    this.signed_params = signed_params;
-    this.options = options;
+PandaUploader.BaseWidget = function() {
 };
 PandaUploader.BaseWidget.prototype = {
-    setUploadStrategy: function(upload_strategy) {
-        throw "Unimplemented method setUploadStrategy()";
+    init: function(query, signed_params, options) {
+        this.query = query;
+        this.signed_params = signed_params;
+        this.options = options;
+        this.upload_strategy = this.options.upload_strategy;
     },
     
     getForm: function() {
@@ -102,40 +102,42 @@ PandaUploader.BaseWidget.prototype = {
     }
 };
 
-PandaUploader.FlashWidget = function(query, signed_params, options, swfupload_options) {
-    PandaUploader.BaseWidget.apply(this, [query, signed_params, options]);
-    swfupload_options = swfupload_options === undefined ? {} : swfupload_options;
-    var placeholder_id = 'pandauploader_flashwidget_placeholder';
-    var placeholder_html = '<span id="' + placeholder_id + '"></span>';
-    this.query.after(placeholder_html);
-    
-    this.swfupload = query.swfupload(jQuery.extend({
-        upload_url: options.api_url + '/videos.json',
+PandaUploader.FlashWidget = function(swfupload_options) {
+    this.swfupload_options = swfupload_options === undefined ? {} : swfupload_options;
+}
+
+PandaUploader.FlashWidget.prototype = new PandaUploader.BaseWidget();
+PandaUploader.FlashWidget.prototype.constructor = PandaUploader.FlashWidget;
+
+PandaUploader.FlashWidget.prototype.init = function() {
+    PandaUploader.BaseWidget.prototype.init.apply(this, arguments);
+
+    var field_id = this.query.attr('id');
+    var placeholder_id = field_id + '_pandauploader-flashwidget-placeholder';
+    this.query.after('<span id="' + placeholder_id + '"></span>');
+    $('#' + placeholder_id).after('<input type="text" disabled="disabled" id="' + field_id + '_orig-filename" />');
+
+    this.swfupload = this.query.swfupload(jQuery.extend({
+        upload_url: this.options.api_url + '/videos.json',
         file_size_limit : 0,
         file_types : "*.*",
         file_types_description : "All Files",
         file_upload_limit : 0,
-        flash_url : options.uploader_dir + "/swfupload.swf",
-        button_image_url : options.uploader_dir + "/choose_file_button.png",
+        flash_url : this.options.uploader_dir + "/swfupload.swf",
+        button_image_url : this.options.uploader_dir + "/choose_file_button.png",
         button_width : 87,
         button_height : 27,
         button_placeholder_id: placeholder_id,
         file_post_name: "file",
         debug: false
-    }, swfupload_options));
-};
+    }, this.swfupload_options));
 
-PandaUploader.FlashWidget.prototype = new PandaUploader.BaseWidget();
-PandaUploader.FlashWidget.prototype.constructor = PandaUploader.FlashWidget;
-
-PandaUploader.FlashWidget.prototype.setUploadStrategy = function(upload_strategy) {
-    this.upload_strategy = upload_strategy;
-    this.swfupload.bind('swfuploadLoaded', PandaUploader.bind(upload_strategy, 'onwidgetload'));
+    this.swfupload.bind('swfuploadLoaded', PandaUploader.bind(this.upload_strategy, 'onwidgetload'));
     this.swfupload.bind('fileQueued', PandaUploader.bind(this, 'fileQueued'));
     this.swfupload.bind('uploadStart', PandaUploader.bind(this, 'uploadStart'));
     this.swfupload.bind('uploadProgress', PandaUploader.bind(this, 'uploadProgress'));
     this.swfupload.bind('uploadSuccess', PandaUploader.bind(this, 'uploadSuccess'));
-    this.swfupload.bind('uploadError', PandaUploader.bind(upload_strategy, 'onerror'));
+    this.swfupload.bind('uploadError', PandaUploader.bind(this.upload_strategy, 'onerror'));
 };
 
 
@@ -194,28 +196,27 @@ PandaUploader.FlashWidget.prototype.getValue = function() {
     return this.swfupload.val();
 };
 
-
-PandaUploader.HTML5Widget = function(query, signed_params, options) {
-    PandaUploader.BaseWidget.apply(this, [query, signed_params, options]);
+PandaUploader.HTML5Widget = function() {
 };
 
 PandaUploader.HTML5Widget.prototype = new PandaUploader.BaseWidget();
 PandaUploader.HTML5Widget.prototype.constructor = PandaUploader.HTML5Widget;
 
-PandaUploader.HTML5Widget.prototype.setUploadStrategy = function(upload_strategy) {
-    this.upload_strategy = upload_strategy;
+PandaUploader.HTML5Widget.prototype.init = function() {
+    PandaUploader.BaseWidget.prototype.init.apply(this, arguments);
+    
     this.xhr = PandaUploader.createXRequestObject();
-    this.xhr.upload.addEventListener('loadstart', PandaUploader.bind(upload_strategy, 'onloadstart'), false);
-    this.xhr.upload.addEventListener('progress', PandaUploader.bind(upload_strategy, 'onprogress'), false);
-    this.xhr.upload.addEventListener('load', PandaUploader.bind(upload_strategy, 'onload'), false);
-    this.xhr.upload.addEventListener('error', PandaUploader.bind(upload_strategy, 'onerror'), false);
-    this.xhr.upload.addEventListener('abort', PandaUploader.bind(upload_strategy, 'onabort'), false);
-    this.xhr.addEventListener('readystatechange', PandaUploader.bind(upload_strategy, 'onreadystatechange'), false);
-    
+    this.xhr.upload.addEventListener('loadstart', PandaUploader.bind(this.upload_strategy, 'onloadstart'), false);
+    this.xhr.upload.addEventListener('progress', PandaUploader.bind(this.upload_strategy, 'onprogress'), false);
+    this.xhr.upload.addEventListener('load', PandaUploader.bind(this.upload_strategy, 'onload'), false);
+    this.xhr.upload.addEventListener('error', PandaUploader.bind(this.upload_strategy, 'onerror'), false);
+    this.xhr.upload.addEventListener('abort', PandaUploader.bind(this.upload_strategy, 'onabort'), false);
+    this.xhr.addEventListener('readystatechange', PandaUploader.bind(this.upload_strategy, 'onreadystatechange'), false);
+
     this.query.after('<input type="file" />');
-    $(this.getField()).change(PandaUploader.bind(upload_strategy, 'onchange'));
+    $(this.getField()).change(PandaUploader.bind(this.upload_strategy, 'onchange'));
     
-    upload_strategy.onwidgetload();
+    this.upload_strategy.onwidgetload();
 };
 
 PandaUploader.HTML5Widget.prototype.getForm = function() {
@@ -253,6 +254,195 @@ PandaUploader.HTML5Widget.prototype.enable = function() {
 
 PandaUploader.HTML5Widget.prototype.getField = function() {
     return this.query.next().get(0);
+};
+
+
+
+
+
+//
+// BaseStrategy
+//
+
+PandaUploader.BaseStrategy = function() {
+};
+PandaUploader.BaseStrategy.prototype = {
+    setUploadWidget: function (upload_widget) {
+        this.widget = upload_widget;
+    },
+    
+    disableSubmitButton: function(){
+        $(this.getSubmitButton()).attr('disabled', true);
+    },
+
+    enableSubmitButton: function(){
+        return $(this.getSubmitButton()).removeAttr('disabled');
+    },
+    
+    getSubmitButton: function() {
+        return $(this.widget.getForm()).find('input[type=submit]');
+    },
+    
+    
+    // The widget has been set, about to return control to caller
+    onwidgetload: function() {
+    },
+    
+    // A file has been selected and the widget is ready to upload it
+    onchange: function() {
+    },
+    
+    // Upload commences
+    onloadstart: function() {
+    },
+    
+    // Upload progresses. Called zero or more times
+    onprogress: function(event) {
+        try {
+            if (this.widget.options.progress_handler) {
+                this.widget.options.progress_handler.setProgress(this.widget.getFile(), event.loaded, event.total);
+            }
+        } catch (ex) {
+        }
+    },
+
+    // Upload succeeded
+    onload: function() {
+    },
+    
+    // Upload failed
+    onerror: function() {
+    },
+    
+    // Upload was aborted by the user
+    onabort: function() {
+    },
+    
+    // Containing form is being submitted
+    onsubmit: function() {
+    }
+};
+
+
+//
+// UploadOnSubmit
+//
+
+PandaUploader.UploadOnSubmit = function() {
+    PandaUploader.BaseStrategy.apply(this, arguments);
+};
+PandaUploader.UploadOnSubmit.prototype = new PandaUploader.BaseStrategy();
+PandaUploader.UploadOnSubmit.prototype.constructor = PandaUploader.UploadOnSubmit;
+
+PandaUploader.UploadOnSubmit.prototype.onchange = function() {
+    this.enableSubmitButton();
+};
+
+PandaUploader.UploadOnSubmit.prototype.onwidgetload = function() {
+    $(this.widget.getForm()).submit(PandaUploader.bind(this, 'onsubmit'));
+    if(this.widget.options.disable_submit_button) {
+        this.disableSubmitButton();
+    }
+};
+
+PandaUploader.UploadOnSubmit.prototype.onloadstart = function() {
+    this.widget.disable();
+    this.widget.options.progress_handler.reset();
+    this.disableSubmitButton();
+    if (this.widget.options.progress_handler) {
+        this.widget.options.progress_handler.start(this.widget.getFile());
+    }
+};
+
+PandaUploader.UploadOnSubmit.prototype.onreadystatechange = function(event) {
+    var status = null;
+
+    try {
+        status = event.target.status;
+    }
+    catch(e) {
+        return;
+    }
+
+    if (status == '200' && event.target.responseText) {
+        var response = jQuery.parseJSON(event.target.responseText);
+        this.widget.setValue(response.id);
+        this.widget.getForm().submit();
+    }
+};
+
+PandaUploader.UploadOnSubmit.prototype.onerror = function() {
+    this.widget.options.progress_handler.reset();
+};
+
+PandaUploader.UploadOnSubmit.prototype.onabort = function() {
+    this.widget.cancel();
+    this.widget.enable();
+    
+    this.widget.options.progress_handler.reset();
+    if (this.widget.options.disableSubmitButton) {
+        this.disableSubmitButton();
+    }
+};
+
+PandaUploader.UploadOnSubmit.prototype.onsubmit = function(event) {
+    this.widget.start();
+    return false;
+};
+
+
+//
+// UploadOnSelect
+//
+
+PandaUploader.UploadOnSelect = function() {
+    PandaUploader.BaseStrategy.apply(this, arguments);
+};
+PandaUploader.UploadOnSelect.prototype = new PandaUploader.BaseStrategy();
+PandaUploader.UploadOnSelect.prototype.constructor = PandaUploader.UploadOnSelect;
+
+PandaUploader.UploadOnSelect.prototype.onchange = function(event, file) {
+    this.widget.start();
+};
+
+PandaUploader.UploadOnSelect.prototype.onloadstart = function() {
+    this.widget.options.progress_handler.reset();
+
+    this.disableSubmitButton();
+    if (this.widget.options.progress_handler) {
+        this.widget.options.progress_handler.start(this.widget.getFile());
+    }
+};
+
+PandaUploader.UploadOnSelect.prototype.onabort = function(event) {
+    this.cancel();
+    this.enable();
+
+    this.widget.options.progress_handler.reset();
+    if (this.widget.options.disableSubmitButton) {
+        this.disableSubmitButton();
+    }
+};
+
+PandaUploader.UploadOnSelect.prototype.onerror = function(event, file, code, message, more) {
+    this.widget.options.progress_handler.reset();
+};
+
+PandaUploader.UploadOnSelect.prototype.onreadystatechange = function(event) {
+    var status = null;
+
+    try {
+        status = event.target.status;
+    }
+    catch(e) {
+        return;
+    }
+
+    if (status == '200' && event.target.responseText) {
+        var response = jQuery.parseJSON(event.target.responseText);
+        this.widget.setValue(response.id);
+        this.enableSubmitButton();
+    }
 };
 
 
@@ -300,7 +490,7 @@ jQuery.fn.pandaUploader = function(signed_params, options, widget_options) {
         progress_handler: null,
         uploader_dir: "/panda_uploader",
         disable_submit_button: true,
-        strategy: 'upload_on_submit',
+        upload_strategy: null,
         widget: null
     }, options);
     options['api_url'] = options['api_url'] || 'http://' + options['api_host'] + '/v2';
@@ -308,221 +498,25 @@ jQuery.fn.pandaUploader = function(signed_params, options, widget_options) {
     if ( ! options.progress_handler) {
         options.progress_handler = new ProgressUpload(options);
     }
-
-    if ( ! options.widget) {
-        options.widget = PandaUploader.getWidgetClass();
-    }
-    var widget = new options.widget(this, signed_params, options, widget_options);
     
-    var strategyClass = null;
-    switch(options.strategy) {
-    case 'upload_on_submit':
-        strategyClass = UploadOnSubmit;
-        break;
-    case 'upload_on_select':
-        strategyClass = UploadOnSelect;
-        break;
-    default:
-        strategyClass = options.strategy;
+    var widget = options.widget;
+    if ( ! widget) {
+        widget = PandaUploader.createWidget();
     }
-    strategy = new strategyClass(options);
-    strategy.setUploadWidget(widget)
-    widget.setUploadStrategy(strategy);
+    console.log(options.upload_strategy)
+    if ( ! options.upload_strategy) {
+        options.upload_strategy = new PandaUploader.UploadOnSubmit();
+    }
+    options.upload_strategy.setUploadWidget(widget)
+    
+    widget.init(this, signed_params, options);
     
     var $cancel_button = jQuery('#' + options.upload_cancel_button_id);
     if ($cancel_button) {
-        $cancel_button.click(PandaUploader.bind(strategy, 'onCancel'));
+        $cancel_button.click(PandaUploader.bind(this.upload_strategy, 'onCancel'));
     }
     
     return this;
-};
-
-
-
-//
-// BaseStrategy
-//
-
-function BaseStrategy(options) {
-    this.options = options;
-};
-BaseStrategy.prototype = {
-    setUploadWidget: function (upload_widget) {
-        this.widget = upload_widget;
-    },
-    
-    disableSubmitButton: function(){
-        $(this.getSubmitButton()).attr('disabled', true);
-    },
-
-    enableSubmitButton: function(){
-        return $(this.getSubmitButton()).removeAttr('disabled');
-    },
-    
-    getSubmitButton: function() {
-        return $(this.widget.getForm()).find('input[type=submit]');
-    },
-    
-    
-    // The widget has been set, about to return control to caller
-    onwidgetload: function() {
-    },
-    
-    // A file has been selected and the widget is ready to upload it
-    onchange: function() {
-    },
-    
-    // Upload commences
-    onloadstart: function() {
-    },
-    
-    // Upload progresses. Called zero or more times
-    onprogress: function(event) {
-        try {
-            if (this.options.progress_handler) {
-                this.options.progress_handler.setProgress(this.widget.getFile(), event.loaded, event.total);
-            }
-        } catch (ex) {
-        }
-    },
-
-    // Upload succeeded
-    onload: function() {
-    },
-    
-    // Upload failed
-    onerror: function() {
-    },
-    
-    // Upload was aborted by the user
-    onabort: function() {
-    },
-    
-    // Containing form is being submitted
-    onsubmit: function() {
-    }
-};
-
-
-//
-// UploadOnSubmit
-//
-
-function UploadOnSubmit(options) {
-    BaseStrategy.apply(this, [options]);
-};
-UploadOnSubmit.prototype = new BaseStrategy();
-UploadOnSubmit.prototype.constructor = UploadOnSubmit;
-
-UploadOnSubmit.prototype.onchange = function() {
-    this.enableSubmitButton();
-};
-
-UploadOnSubmit.prototype.onwidgetload = function() {
-    $(this.widget.getForm()).submit(PandaUploader.bind(this, 'onsubmit'));
-    if(this.options.disable_submit_button) {
-        this.disableSubmitButton();
-    }
-};
-
-UploadOnSubmit.prototype.onloadstart = function() {
-    this.widget.disable();
-    this.options.progress_handler.reset();
-    this.disableSubmitButton();
-    if (this.options.progress_handler) {
-        this.options.progress_handler.start(this.widget.getFile());
-    }
-};
-
-UploadOnSubmit.prototype.onreadystatechange = function(event) {
-    var status = null;
-
-    try {
-        status = event.target.status;
-    }
-    catch(e) {
-        return;
-    }
-
-    if (status == '200' && event.target.responseText) {
-        var response = jQuery.parseJSON(event.target.responseText);
-        this.widget.setValue(response.id);
-        this.widget.getForm().submit();
-    }
-};
-
-UploadOnSubmit.prototype.onerror = function() {
-    this.options.progress_handler.reset();
-};
-
-UploadOnSubmit.prototype.onabort = function() {
-    this.widget.cancel();
-    this.widget.enable();
-    
-    this.options.progress_handler.reset();
-    if (this.options.disableSubmitButton) {
-        this.disableSubmitButton();
-    }
-};
-
-UploadOnSubmit.prototype.onsubmit = function(event) {
-    this.widget.start();
-    return false;
-};
-
-
-//
-// UploadOnSelect
-//
-
-function UploadOnSelect(options) {
-    BaseStrategy.apply(this, [options]);
-};
-UploadOnSelect.prototype = new BaseStrategy();
-UploadOnSelect.prototype.constructor = UploadOnSelect;
-
-UploadOnSelect.prototype.onchange = function(event, file) {
-    this.widget.start();
-};
-
-UploadOnSelect.prototype.onloadstart = function() {
-    this.options.progress_handler.reset();
-
-    this.disableSubmitButton();
-    if (this.options.progress_handler) {
-        this.options.progress_handler.start(this.widget.getFile());
-    }
-};
-
-UploadOnSelect.prototype.onabort = function(event) {
-    this.cancel();
-    this.enable();
-
-    this.options.progress_handler.reset();
-    if (this.options.disableSubmitButton) {
-        this.disableSubmitButton();
-    }
-};
-
-UploadOnSelect.prototype.onerror = function(event, file, code, message, more) {
-    this.options.progress_handler.reset();
-};
-
-UploadOnSelect.prototype.onreadystatechange = function(event) {
-    var status = null;
-
-    try {
-        status = event.target.status;
-    }
-    catch(e) {
-        return;
-    }
-
-    if (status == '200' && event.target.responseText) {
-        var response = jQuery.parseJSON(event.target.responseText);
-        this.widget.setValue(response.id);
-        this.enableSubmitButton();
-    }
 };
 
 
