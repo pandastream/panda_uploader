@@ -116,7 +116,7 @@ PandaUploader.FlashWidget.prototype.init = function() {
     var placeholder_id = field_id + '_pandauploader-flashwidget-placeholder';
     this.filename_field_id = field_id + '_orig-filename';
     this.query.after('<span id="' + placeholder_id + '"></span>');
-    $('#' + placeholder_id).after('<input type="text" disabled="disabled" id="' + this.filename_field_id + '" />');
+    $('#' + placeholder_id).after('<input type="text" style="position: relative; top: -8px; margin-left: .5em;" disabled="disabled" id="' + this.filename_field_id + '" />');
 
     this.swfupload = this.query.swfupload(jQuery.extend({
         upload_url: this.options.api_url + '/videos.json',
