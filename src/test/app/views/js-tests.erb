@@ -48,10 +48,6 @@ test("Options validation", function () {
   ok(PandaUploader.latest_alert.indexOf('error') != -1, 'Check that upload parameters are given');
 
   PandaUploader.latest_alert = '';
-  $('#the-file').checkPandaUploaderOptions({}, {});
-  ok(PandaUploader.latest_alert.indexOf('specify the button id') != -1, 'Check that the ID of the upload control is given');
-
-  PandaUploader.latest_alert = '';
   $('#no-file').checkPandaUploaderOptions({}, {upload_button_id: 'upload_button'});
   ok(PandaUploader.latest_alert.indexOf('jQuery element is empty') != -1, 'Check that the jQuery object is not empty');
 
