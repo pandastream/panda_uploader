@@ -6,17 +6,15 @@
 <form action="/player" method="get" id="upload-form">
     <label>Upload a video<br/></label>
     
-    <input type="text" id="upload_filename" disabled="true" class="panda_upload_filename" />
-    <div id="upload_progress" class="panda_upload_progress"></div>
     <input type="hidden" id="returned_video_id" name="panda_video_id" />
-
+    <div id="upload_progress" class="panda_upload_progress"></div>
+    
     <p><input type="submit" value="Save" /></p>
 </form>
 <script type="text/javascript">
 var signed_params = <%= @panda.signed_params("POST", "/videos.json").to_json %>;
 
 $('#returned_video_id').pandaUploader(get_signed_params, {
-    upload_filename_id: 'upload_filename',
     upload_progress_id: 'upload_progress',
     api_url: '<%= @panda.api_url %>',
     uploader_dir: '/panda_uploader',

@@ -19,6 +19,10 @@ PandaUploader.supportAjaxProgressEvents = function() {
     }
 };
 
+PandaUploader.supportHTML5Widget = function() {
+    return PandaUploader.supportAjaxUpload() && PandaUploader.supportAjaxProgressEvents();
+}
+
 PandaUploader.createXRequestObject = function() {
     if (typeof XDomainRequest != 'undefined') {
         return new XDomainRequest();
@@ -33,13 +37,13 @@ PandaUploader.createXRequestObject = function() {
 };
 
 PandaUploader.getWidgetClass = function() {
-    if (PandaUploader.supportAjaxUpload() && PandaUploader.supportAjaxUpload) {
+    if (PandaUploader.supportHTML5Widget()) {
         return PandaUploader.HTML5Widget;
     }
     else {
         return PandaUploader.FlashWidget;
     }
-}
+};
 
 PandaUploader.bind = function(object, method_name) {
     return function() {
@@ -48,7 +52,7 @@ PandaUploader.bind = function(object, method_name) {
             return method.apply(object, arguments);
         }
     }
-}
+};
 
 
 PandaUploader.alert = function(msg) {
@@ -59,7 +63,7 @@ PandaUploader.BaseWidget = function(query, signed_params, options) {
     this.query = query;
     this.signed_params = signed_params;
     this.options = options;
-}
+};
 PandaUploader.BaseWidget.prototype = {
     setUploadStrategy: function(upload_strategy) {
         throw "Unimplemented method setUploadStrategy()";
@@ -67,6 +71,10 @@ PandaUploader.BaseWidget.prototype = {
     
     getForm: function() {
         throw "Unimplemented method getForm()";
+    },
+    
+    getSignedParams: function() {
+        return this.signed_params.call ? this.signed_params() : this.signed_params;
     },
     
     start: function() {
@@ -92,7 +100,7 @@ PandaUploader.BaseWidget.prototype = {
     getValue: function() {
         throw "Unimplemented method getValue()";
     }
-}
+};
 
 PandaUploader.FlashWidget = function(query, signed_params, options, swfupload_options) {
     PandaUploader.BaseWidget.apply(this, [query, signed_params, options]);
@@ -124,7 +132,7 @@ PandaUploader.FlashWidget.prototype.setUploadStrategy = function(upload_strategy
     this.upload_strategy = upload_strategy;
     this.swfupload.bind('swfuploadLoaded', PandaUploader.bind(upload_strategy, 'onwidgetload'));
     this.swfupload.bind('fileQueued', PandaUploader.bind(this, 'fileQueued'));
-    this.swfupload.bind('uploadStart', PandaUploader.bind(upload_strategy, 'onloadstart'));
+    this.swfupload.bind('uploadStart', PandaUploader.bind(this, 'uploadStart'));
     this.swfupload.bind('uploadProgress', PandaUploader.bind(this, 'uploadProgress'));
     this.swfupload.bind('uploadSuccess', PandaUploader.bind(this, 'uploadSuccess'));
     this.swfupload.bind('uploadError', PandaUploader.bind(upload_strategy, 'onerror'));
@@ -134,6 +142,10 @@ PandaUploader.FlashWidget.prototype.setUploadStrategy = function(upload_strategy
 PandaUploader.FlashWidget.prototype.fileQueued = function(evt, file) {
     this.file = file;
     this.upload_strategy.onchange();
+};
+PandaUploader.FlashWidget.prototype.uploadStart = function(_file) {
+    this.swfupload.data('__swfu').setPostParams(this.getSignedParams());
+    this.upload_strategy.onloadstart();
 };
 PandaUploader.FlashWidget.prototype.uploadProgress = function(evt, _file, bytesLoaded, bytesTotal) {
     evt.loaded = bytesLoaded;
@@ -212,7 +224,8 @@ PandaUploader.HTML5Widget.prototype.getForm = function() {
 
 PandaUploader.HTML5Widget.prototype.start = function() {
     var file = this.getFile();
-    var json_string = '{"access_key":"' + this.signed_params.access_key + '", "cloud_id":"' + this.signed_params.cloud_id + '", "timestamp":"' + this.signed_params.timestamp + '", "signature":"' + this.signed_params.signature + '"}';
+    var params = this.getSignedParams();
+    var json_string = '{"access_key":"' + params.access_key + '", "cloud_id":"' + params.cloud_id + '", "timestamp":"' + params.timestamp + '", "signature":"' + params.signature + '"}';
     this.xhr.open('POST', this.options.api_url + '/videos.json', true);
     this.xhr.setRequestHeader("Cache-Control", "no-cache");
     this.xhr.setRequestHeader("Content-Type", "application/octet-stream");
@@ -282,7 +295,6 @@ jQuery.fn.pandaUploader = function(signed_params, options, widget_options) {
     }
     
     options = jQuery.extend({
-        upload_filename_id: null,
         upload_progress_id: null,
         api_host: 'api.pandastream.com',
         progress_handler: null,
@@ -403,12 +415,7 @@ UploadOnSubmit.prototype = new BaseStrategy();
 UploadOnSubmit.prototype.constructor = UploadOnSubmit;
 
 UploadOnSubmit.prototype.onchange = function() {
-    var $field = $('#' + this.options.upload_filename_id);
-    if ($field.size() == 0) {
-        return;
-    }
-    $field.val(this.widget.getFile().name);
-    this.enableSubmitButton()
+    this.enableSubmitButton();
 };
 
 UploadOnSubmit.prototype.onwidgetload = function() {
@@ -445,7 +452,6 @@ UploadOnSubmit.prototype.onreadystatechange = function(event) {
 };
 
 UploadOnSubmit.prototype.onerror = function() {
-    $('#' + this.options.upload_filename_id).val('');
     this.options.progress_handler.reset();
 };
 
@@ -453,7 +459,6 @@ UploadOnSubmit.prototype.onabort = function() {
     this.widget.cancel();
     this.widget.enable();
     
-    $('#' + this.options.upload_filename_id).val('');
     this.options.progress_handler.reset();
     if (this.options.disableSubmitButton) {
         this.disableSubmitButton();
@@ -477,12 +482,6 @@ UploadOnSelect.prototype = new BaseStrategy();
 UploadOnSelect.prototype.constructor = UploadOnSelect;
 
 UploadOnSelect.prototype.onchange = function(event, file) {
-    var $field = $('#' + this.options.upload_filename_id);
-
-    if ($field.size() == 0) {
-        return;
-    }
-    $field.val(this.widget.getFile().name);
     this.widget.start();
 };
 
@@ -499,7 +498,6 @@ UploadOnSelect.prototype.onabort = function(event) {
     this.cancel();
     this.enable();
 
-    $('#' + this.options.upload_filename_id).val('');
     this.options.progress_handler.reset();
     if (this.options.disableSubmitButton) {
         this.disableSubmitButton();
@@ -507,7 +505,6 @@ UploadOnSelect.prototype.onabort = function(event) {
 };
 
 UploadOnSelect.prototype.onerror = function(event, file, code, message, more) {
-    $('#' + this.options.upload_filename_id).val('');
     this.options.progress_handler.reset();
 };
 

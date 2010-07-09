@@ -25,6 +25,15 @@ test("Detection of features", function() {
   else {
     ok(!support, 'Detect lack of support for Ajax progress events in MSIE < 8');
   }
+
+  var support = PandaUploader.supportHTML5Widget();
+  var b = jQuery.browser;
+  if (b.webkit || b.mozilla || b.msie && b.version >= 8) {
+    ok(support, 'Detect support for the HTML5 widget in Webkit, Mozilla and MSIE8+');
+  }
+  else {
+    ok(!support, 'Detect lack of support for the HTML5 widget in MSIE < 8');
+  }
 });
 
 test("Generate cross-site request object", function() {
@@ -66,6 +75,23 @@ test("Options validation", function () {
   equal(PandaUploader.latest_alert, '', 'No errors show for a correct form')
 });
 
+if (PandaUploader.supportHTML5Widget()) {
+  test("HTML5 widget load", function() {
+    var query = $('#good-form input[type=file]');
+    equal(query.length, 1, "Check that a file upload field has been added");
+  });
+}
+else {
+  test("Flash widget load", function() {
+    var query = $('#SWFUpload_0')
+    equal(query.length, 1, "Check that a file upload field has been added");
+
+    var query = $('#good-form input#the-file_orig-filename[type=text]')
+    equal(query.length, 1, "Check that a field for the filename has been added");
+  });
+}
+
+
 });</script>
 
 <h1 id="qunit-header"><code>panda_uploader</code> JS unit tests</h1>
@@ -74,10 +100,18 @@ test("Options validation", function () {
 <ol id="qunit-tests"></ol>
 
 <p>Test form follows</p>
-<form>
+<form id="good-form">
   <span id="upload_button"></span>
   <input type="hidden" id="the-file" />
 </form>
+<script type="text/javascript">
+$('#the-file').pandaUploader(<%= @panda.signed_params("POST", "/videos.json").to_json %>, {
+    upload_filename_id: 'upload_filename',
+    upload_progress_id: 'upload_progress',
+    api_url: '<%= @panda.api_url %>',
+    uploader_dir: '/panda_uploader'
+});
+</script>
 
 <span id="bad_upload_button"></span>
 <input type="hidden" id="bad-file" />
