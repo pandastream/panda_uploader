@@ -32,7 +32,7 @@ PandaUploader.createXRequestObject = function() {
     }
 };
 
-PandaUploader.createWidget = function() {
+PandaUploader.getWidgetClass = function() {
     if (PandaUploader.supportAjaxUpload() && PandaUploader.supportAjaxUpload) {
         return PandaUploader.HTML5Widget;
     }
@@ -311,7 +311,7 @@ jQuery.fn.pandaUploader = function(signed_params, options, widget_options) {
     }
 
     if ( ! options.widget) {
-        options.widget = PandaUploader.createWidget();
+        options.widget = PandaUploader.getWidgetClass();
     }
     var widget = new options.widget(this, signed_params, options, widget_options);
     
