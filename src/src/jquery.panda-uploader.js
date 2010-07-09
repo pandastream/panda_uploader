@@ -529,7 +529,13 @@ jQuery.fn.pandaUploader = function(signed_params, options, widget_options) {
 function ProgressUpload(options) {
     this.options = options;
     this.$p = jQuery('#' + this.options.upload_progress_id);
-    this.$p.css('display', 'none');
+    this.$p.css({
+        display: 'none',
+        width: '250px',
+        height: '26px',
+        border: '1px solid #0c3c7e',
+        background: 'url(' + this.options.uploader_dir + '/progress_bg.gif) repeat scroll left top'
+    });
     this.count = 0;
 };
 
@@ -545,6 +551,10 @@ ProgressUpload.prototype = {
         }
         
         this.progress = this.$p.find('.progress-inside');
+        this.progress.css({
+            height: '100%',
+            backgroundImage: 'url(' + this.options.uploader_dir + '/progress_fg.gif)'
+        });
         this.setProgress(file, 0, file.size);
         this.$p.css('display', 'block');
         var self = this;
