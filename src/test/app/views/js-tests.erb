@@ -57,27 +57,27 @@ test("Options validation", function () {
   ok(PandaUploader.latest_alert.indexOf('error') != -1, 'Check that upload parameters are given');
 
   PandaUploader.latest_alert = '';
-  $('#no-file').checkPandaUploaderOptions({}, {upload_button_id: 'upload_button'});
+  $('#no-file').checkPandaUploaderOptions({}, {});
   ok(PandaUploader.latest_alert.indexOf('jQuery element is empty') != -1, 'Check that the jQuery object is not empty');
 
   PandaUploader.latest_alert = '';
-  $('#bad-file').checkPandaUploaderOptions({}, {upload_button_id: 'bad_upload_button'});
+  $('#file-2').checkPandaUploaderOptions({}, {});
   ok(PandaUploader.latest_alert.indexOf('Could not find a suitable form') != -1, 'Check that a suitable form exists');
 
   PandaUploader.latest_alert = '';
-  $('#another-file').checkPandaUploaderOptions({}, {upload_button_id: 'another_upload_button'});
+  $('#file-3').checkPandaUploaderOptions({}, {});
   ok(PandaUploader.latest_alert.indexOf('Neither NAME nor ID can') != -1, 'Check that there are no elements with a "submit" name/ID');
 
-  $('#the-file').checkPandaUploaderOptions({}, {upload_button_id: 'upload_button'});
+  $('#file-1').checkPandaUploaderOptions({}, {upload_button_id: 'upload_button'});
 
   PandaUploader.latest_alert = '';
-  $('#the-file').checkPandaUploaderOptions({}, {upload_button_id: 'upload_button'});
+  $('#file-1').checkPandaUploaderOptions({}, {upload_button_id: 'upload_button'});
   equal(PandaUploader.latest_alert, '', 'No errors show for a correct form')
 });
 
 if (PandaUploader.supportHTML5Widget()) {
   test("HTML5 widget load", function() {
-    var query = $('#good-form input[type=file]');
+    var query = $('#form-1 input[type=file]');
     equal(query.length, 1, "Check that a file upload field has been added");
   });
 }
@@ -86,11 +86,16 @@ else {
     var query = $('#SWFUpload_0')
     equal(query.length, 1, "Check that a file upload field has been added");
 
-    var query = $('#good-form input#the-file_orig-filename[type=text]')
+    var query = $('#form-1 input#the-file_orig-filename[type=text]')
     equal(query.length, 1, "Check that a field for the filename has been added");
   });
 }
 
+
+test("Upload on submit", function() {
+  ok($('#form-4 input[type=submit]').attr('disabled'), "Should disable submit button by default");
+  ok( ! $('#form-5 input[type=submit]').attr('disabled'), "Should not disable submit button when told");
+});
 
 });</script>
 
@@ -99,25 +104,48 @@ else {
 <h2 id="qunit-userAgent"></h2>
 <ol id="qunit-tests"></ol>
 
-<p>Test form follows</p>
-<form id="good-form">
-  <span id="upload_button"></span>
-  <input type="hidden" id="the-file" />
+<h2>Test forms follow</h2>
+<form id="form-1" class="good-form">
+  <input type="hidden" id="file-1" />
 </form>
 <script type="text/javascript">
-$('#the-file').pandaUploader(<%= @panda.signed_params("POST", "/videos.json").to_json %>, {
-    upload_filename_id: 'upload_filename',
-    upload_progress_id: 'upload_progress',
-    api_url: '<%= @panda.api_url %>',
-    uploader_dir: '/panda_uploader'
+$('#file-1').pandaUploader(<%= @panda.signed_params("POST", "/videos.json").to_json %>);
+</script>
+
+<hr/>
+
+<div id="form-2" class="bad-form">
+  <input type="hidden" id="file-2" />
+</div>
+
+<hr/>
+
+<form id="form-3" class="bad-form">
+  <input type="hidden" id="file-3" />
+  <input name="submit" type="submit" />
+</form>
+
+<hr/>
+
+<form id="form-4" class="good-form">
+  <input type="hidden" id="file-4" />
+  <input type="submit" />
+</form>
+<script type="text/javascript">
+$('#file-4').pandaUploader(<%= @panda.signed_params("POST", "/videos.json").to_json %>, {
+  upload_strategy: new PandaUploader.UploadOnSubmit()
 });
 </script>
 
-<span id="bad_upload_button"></span>
-<input type="hidden" id="bad-file" />
-
-<form id="bad-form">
-  <span id="another_upload_button"></span>
-  <input type="hidden" id="another-file" />
-  <input name="submit" type="submit" />
+<form id="form-5" class="good-form">
+  <input type="hidden" id="file-5" />
+  <input type="submit" />
 </form>
+<script type="text/javascript">
+$('#file-5').pandaUploader(<%= @panda.signed_params("POST", "/videos.json").to_json %>, {
+  upload_strategy: new PandaUploader.UploadOnSubmit({
+    disable_submit_button: false
+  })
+});
+</script>
+
