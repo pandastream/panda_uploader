@@ -82,12 +82,19 @@ if (PandaUploader.supportHTML5Widget()) {
   });
 }
 
-test("Flash widget load", function() {
-  var query = $('#form-6 #SWFUpload_0')
-  equal(query.length, 1, "Check that a file upload field has been added");
+asyncTest("Flash widget load", function() {
+  setTimeout(function(){
+    var found = false;
+    $('#form-6 object').each(function(){
+      found = found || this.id.match(/^SWFUpload_\d$/)
+    });
+    ok(found, "Check that a file upload field has been added");
 
-  var query = $('#form-6 input#file-6_orig-filename[type=text]')
-  equal(query.length, 1, "Check that a field for the filename has been added");
+    var query = $('#form-6 input#file-6_orig-filename[type=text]')
+    equal(query.length, 1, "Check that a field for the filename has been added");
+    
+    start();
+  }, 100);
 });
 
 asyncTest("Upload on submit", function() {
