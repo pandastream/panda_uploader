@@ -90,10 +90,14 @@ test("Flash widget load", function() {
   equal(query.length, 1, "Check that a field for the filename has been added");
 });
 
-test("Upload on submit", function() {
-  ok($('#form-4 input[type=submit]').attr('disabled'), "Should disable submit button by default");
-  ok( ! $('#form-5 input[type=submit]').attr('disabled'), "Should not disable submit button when told");
+asyncTest("Upload on submit", function() {
+  setTimeout(function(){
+    ok($('#form-4 input[type=submit]').attr('disabled'), "Should disable submit button by default");
+    ok( ! $('#form-5 input[type=submit]').attr('disabled'), "Should not disable submit button when told");
+    start();
+  }, 100);
 });
+
 
 });</script>
 
@@ -137,15 +141,24 @@ $('#file-4').pandaUploader(<%= @panda.signed_params("POST", "/videos.json").to_j
 
 <hr/>
 
+<form id="form-5" class="good-form">
+  <input type="hidden" id="file-5" />
+  <input type="submit" />
+</form>
+<script type="text/javascript">
+$('#file-5').pandaUploader(<%= @panda.signed_params("POST", "/videos.json").to_json %>, {
+  upload_strategy: new PandaUploader.UploadOnSubmit({ disable_submit_button: false })
+});
+</script>
+
+<hr/>
+
 <form id="form-6" class="good-form flash-forced">
   <input type="hidden" id="file-6" />
   <input type="submit" />
 </form>
 <script type="text/javascript">
 $('#file-6').pandaUploader(<%= @panda.signed_params("POST", "/videos.json").to_json %>, {
-  upload_strategy: new PandaUploader.UploadOnSubmit({
-    disable_submit_button: false
-  }),
   widget: new PandaUploader.FlashWidget(),
 });
 </script>
