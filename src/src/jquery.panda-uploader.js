@@ -27,7 +27,7 @@ jQuery.fn.checkPandaUploaderOptions = function(signed_params, options) {
     return true;
 }
 
-jQuery.fn.pandaUploader = function(signed_params, options, widget_options) {
+jQuery.fn.pandaUploader = function(signed_params, options) {
     options = options === undefined ? {} : options;
     if ( ! this.checkPandaUploaderOptions(signed_params, options)) {
         return false;
