@@ -123,43 +123,35 @@ At the moment, the following arguments are supported:
 * **`upload_progress_id`**: the ID of DIV that will contain the progress bar.
 * **`api_host`**: alternative host for the Panda API. Needs to change to `api.eu.pandastream.com` if you signed up for the EU region cloud.
 * **`uploader_dir`**: path were the uploader files are located in the web server. By default "`/panda_uploader`"
-* **`upload_cancel_button_id`**: The ID of an HTML element that will trigger the cancel upload on a click event.
-* **`disable_submit_button`**: Disable the submit button. true by default
-* **`start/success/complete/error/cancel`**: Event handlers
-* **`strategy`**: valid options are `upload_on_submit` (default) and `upload_on_select`. See "repeated uploads" below for more info.
+* **`upload_strategy`**: see below.
+* **`widget`**: force use of HTML5-based or Flash-based widget. By default, HTML5 widget is used if supported, falling back to Flash if not. See below.
 
-### Event handlers
-Panda uploader gives you full control of swfupload events.
+### Upload strategies
 
-    {
-      start: function(event, file) {
-        // the video upload has started
-      },
-      
-      success: function(event, file, video_id) {
-        // the video `video_id` has been uploaded
-      },
+This plugin allows for two "strategies" to upload the video file:
 
-      error: function(event, file, message) {
-        // An error occured during the upload
-        // find out why by checking the message
-      },
+1. **Upload on submit**: the file will be uploaded when the form is submitted.
+2. **Upload on select**: the file will be uploaded as soon as it is selected.
 
-      complete: function (event) {
-        // All videos have been uploaded
-        // The form is not submitted
-      },
+The default behaviour is upload on submit. If you wish to upload on select instead, you'll need to specify this explicitly:
 
-      cancel: function (event) {
-        // Upload canceled
-      }
-    }
-    
-### Multiple uploads
+    jQuery("#returned_video_id").pandaUploader(panda_access_details, {
+        upload_strategy: new PandaUploader.UploadOnSelect()
+    });
 
-Upload of multiple files is supported. Just make sure to replicate the necessary HTML elements, giving them different IDs.
+### Upload on submit
 
-As for error handling, the default behaviour is that the form is submitted as long as one of the many uploads is successful. If this does not do the trick for you, you'll have to modify the code yourself. (It should be fairly simple).
+The "upload on submit" strategy also accepts an option:
+
+* **`disable_submit_button`**: defaults to true. When true, it will disable the form's submit button until a video is selected.
+
+To specify strategy options, do the following:
+
+    jQuery("#returned_video_id").pandaUploader(panda_access_details, {
+        upload_strategy: new PandaUploader.UploadOnSubmit({
+            disable_submit_button: false
+        })
+    });
 
 ### Repeated uploads
 
@@ -181,18 +173,24 @@ OK, ok, I know that's a bit too much. You are better off by having a look at [so
 
 I hope that helps...
 
-### Custom button design
+### Forcing the Flash widget
 
-pandaUploader() accepts a third argument: a hash with parameters that will be passed on to the SWFUpload constructor. This can be useful in many ways. For example, if you want the selector to use a different button, do this:
+By default, the plugin checks if the browser supports Flash-less uploads using HTML5 features (supported in Gecko and Webkit browsers). If this is not the case, a Flash solution is used.
+
+If you instead want to use Flash in all cases, you may specify so by using the `widget` option:
 
     jQuery("#returned_video_id").pandaUploader(panda_access_details, {
-        upload_button_id: 'upload_button',
-        upload_filename_id: 'upload_filename',
-        upload_progress_id: 'upload_progress'
-    }, {
-        button_image_url : "/my-cool-button.png",
-        button_width : 70,
-        button_height : 30
+        widget: new PandaUploader.FlashWidget()
+    });
+
+The constructor of the widget accepts an argument: a hash of options to be passed on to swfupload. For example, if you want to show a different button, do:
+
+    jQuery("#returned_video_id").pandaUploader(panda_access_details, {
+        widget: new PandaUploader.FlashWidget({
+            button_image_url : "/my-cool-button.png",
+            button_width : 70,
+            button_height : 30
+        })
     });
 
 All available arguments are documented at the [SWFUpload site](http://demo.swfupload.org/Documentation).
