@@ -1,7 +1,7 @@
 Panda uploader
 ==============
 
-Panda uploader allows you to upload videos from your applications to Panda.
+Panda uploader allows you to upload videos from your applications to Panda. It uses an HTML5-based upload method or, if this is not supported, falls back to a Flash-based solution.
 
 It works as a jQuery plugin, and requires requires JQuery version 1.3.
 
@@ -10,7 +10,7 @@ First of all
 
 Copy the `panda_uploader` directory to your app's public path.
 
-And don't forget to include the following declaration in your page, normally in your `<HEAD>` element:
+Include the following declaration in your page, normally in your `<HEAD>` element. Replace `VERSION` by the correct number:
 
     <script src="/panda_uploader/jquery.panda-uploader-VERSION.min.js" type="text/javascript"></script> 
 
@@ -46,7 +46,7 @@ Then convert the returned details to JSON and add them to your HTML template.
 Simplest example
 ----------------
 
-The following is the simplest working form to upload a video:
+The following is the simplest working form that will upload a video:
 
     <form action="/path/to/action">
         <!-- the control will appear next to this, and the video ID will be stored here after the upload -->
