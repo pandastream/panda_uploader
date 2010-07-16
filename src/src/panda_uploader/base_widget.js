@@ -9,6 +9,24 @@ PandaUploader.BaseWidget.prototype = {
         this.upload_strategy = this.options.upload_strategy;
     },
     
+    triggerEvent: function(event_name, args) {
+        var handler = this.upload_strategy[event_name];
+        if (handler) {
+            handler.apply(this.upload_strategy, args);
+            var user_handler = this.options[event_name];
+            if (user_handler) {
+                user_handler(arguments)
+            }
+        }
+    },
+    
+    boundHandler: function(event_name) {
+        var triggerEvent = PandaUploader.bind(this, 'triggerEvent');
+        return function() {
+            triggerEvent(event_name, arguments);
+        };
+    },
+    
     getForm: function() {
         throw "Unimplemented method getForm()";
     },

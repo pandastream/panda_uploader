@@ -30,28 +30,28 @@ PandaUploader.FlashWidget.prototype.init = function() {
         debug: false
     }, this.swfupload_options));
 
-    this.swfupload.bind('swfuploadLoaded', PandaUploader.bind(this.upload_strategy, 'onwidgetload'));
+    this.swfupload.bind('swfuploadLoaded', this.boundHandler('onwidgetload'));
     this.swfupload.bind('fileQueued', PandaUploader.bind(this, 'fileQueued'));
     this.swfupload.bind('uploadStart', PandaUploader.bind(this, 'uploadStart'));
     this.swfupload.bind('uploadProgress', PandaUploader.bind(this, 'uploadProgress'));
     this.swfupload.bind('uploadSuccess', PandaUploader.bind(this, 'uploadSuccess'));
-    this.swfupload.bind('uploadError', PandaUploader.bind(this.upload_strategy, 'onerror'));
+    this.swfupload.bind('uploadError', this.boundHandler('onerror'));
 };
 
 
 PandaUploader.FlashWidget.prototype.fileQueued = function(evt, file) {
     this.file = file;
     $('#' + this.filename_field_id).val(file.name);
-    this.upload_strategy.onchange();
+    this.triggerEvent('onchange');
 };
 PandaUploader.FlashWidget.prototype.uploadStart = function(_file) {
     this.swfupload.data('__swfu').setPostParams(this.getSignedParams());
-    this.upload_strategy.onloadstart();
+    this.triggerEvent('onloadstart');
 };
 PandaUploader.FlashWidget.prototype.uploadProgress = function(evt, _file, bytesLoaded, bytesTotal) {
     evt.loaded = bytesLoaded;
     evt.total = bytesTotal;
-    this.upload_strategy.onprogress(evt);
+    this.triggerEvent('onprogress', [evt]);
 };
 PandaUploader.FlashWidget.prototype.uploadSuccess = function(evt, file, response) {
     var event = {
@@ -60,7 +60,7 @@ PandaUploader.FlashWidget.prototype.uploadSuccess = function(evt, file, response
             responseText: response
         }
     };
-    this.upload_strategy.onreadystatechange(event);
+    this.triggerEvent('onreadystatechange', [event]);
 };
 
 PandaUploader.FlashWidget.prototype.getFile = function() {

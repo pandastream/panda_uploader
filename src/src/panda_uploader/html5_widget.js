@@ -9,17 +9,17 @@ PandaUploader.HTML5Widget.prototype.init = function() {
     PandaUploader.BaseWidget.prototype.init.apply(this, arguments);
     
     this.xhr = PandaUploader.createXRequestObject();
-    this.xhr.upload.addEventListener('loadstart', PandaUploader.bind(this.upload_strategy, 'onloadstart'), false);
-    this.xhr.upload.addEventListener('progress', PandaUploader.bind(this.upload_strategy, 'onprogress'), false);
-    this.xhr.upload.addEventListener('load', PandaUploader.bind(this.upload_strategy, 'onload'), false);
-    this.xhr.upload.addEventListener('error', PandaUploader.bind(this.upload_strategy, 'onerror'), false);
-    this.xhr.upload.addEventListener('abort', PandaUploader.bind(this.upload_strategy, 'onabort'), false);
-    this.xhr.addEventListener('readystatechange', PandaUploader.bind(this.upload_strategy, 'onreadystatechange'), false);
+    this.xhr.upload.addEventListener('loadstart', this.boundHandler('onloadstart'), false);
+    this.xhr.upload.addEventListener('progress', this.boundHandler('onprogress'), false);
+    this.xhr.upload.addEventListener('load', this.boundHandler('onload'), false);
+    this.xhr.upload.addEventListener('error', this.boundHandler('onerror'), false);
+    this.xhr.upload.addEventListener('abort', this.boundHandler('onabort'), false);
+    this.xhr.addEventListener('readystatechange', this.boundHandler('onreadystatechange'), false);
 
     this.query.after('<input type="file" />');
-    $(this.getField()).change(PandaUploader.bind(this.upload_strategy, 'onchange'));
+    $(this.getField()).change(this.boundHandler('onchange'));
     
-    this.upload_strategy.onwidgetload();
+    this.triggerEvent('onwidgetload');
 };
 
 PandaUploader.HTML5Widget.prototype.getForm = function() {
