@@ -202,7 +202,7 @@ This plugin also provides a number of events where you can plug your own actions
 * onwidgetload: widget has been initialised and rendered on the page
 * onchange: a new file has been selected
 * onprogress: called multiple times when the file is being uploaded
-* onreadystatechange: called when the server responds to preflight ([http://www.w3.org/TR/XMLHttpRequest2](see W3C spec)) and upload requests
+* onreadystatechange: called when the server responds to preflight ([see W3C spec](http://www.w3.org/TR/XMLHttpRequest2)) and upload requests
 * onload: file has been uploaded successfully
 
 Example:
