@@ -10,7 +10,7 @@ First of all
 
 Copy the `panda_uploader` directory to your app's public path.
 
-Include the following declaration in your page, normally in your `<HEAD>` element. Replace `VERSION` by the correct number:
+Include the following declaration in your page, after loading jQuery. Replace `VERSION` with the correct number:
 
     <script src="/panda_uploader/jquery.panda-uploader-VERSION.min.js" type="text/javascript"></script> 
 
@@ -121,7 +121,7 @@ Advanced usage
 At the moment, the following arguments are supported:
 
 * **`upload_progress_id`**: the ID of DIV that will contain the progress bar.
-* **`api_host`**: alternative host for the Panda API. Needs to change to `api.eu.pandastream.com` if you signed up for the EU region cloud.
+* **`api_host`**: alternative host for the Panda API. Must be set to `api.eu.pandastream.com` if you signed up for the EU region cloud.
 * **`uploader_dir`**: path were the uploader files are located in the web server. By default "`/panda_uploader`"
 * **`upload_strategy`**: see below.
 * **`widget`**: force use of HTML5-based or Flash-based widget. By default, HTML5 widget is used if supported, falling back to Flash if not. See below.
@@ -153,11 +153,9 @@ To specify strategy options, do the following:
         })
     });
 
-### Repeated uploads
+### Repeated uploads with "Upload on select"
 
-You can specify that the files start to upload just after being selected (before submitting the form). The form won't then be submitted until the user hits the submit button.
-
-For this, you'll have to specify the optional argument `{strategy: 'upload_on_select'}`. However, there is another detail to bear in mind: if you want to use this to enable users to upload new files that replace those already uploaded, these new uploads require a new cryptographic signature.
+When using the "upload on select" strategy, you have to bear this in mind: users may upload a file, then change their minds about it and upload another one in its place. If you want this to work correctly, you have to make sure that each separate upload uses a different cryptographic signature.
 
 How to generate another signature?:
 
@@ -195,13 +193,6 @@ The constructor of the widget accepts an argument: a hash of options to be passe
 
 All available arguments are documented at the [SWFUpload site](http://demo.swfupload.org/Documentation).
 
-### Events
-
-This script works on top of [Adam Royle's swfupload-jquery-plugin](http://github.com/ifunk/swfupload-jquery-plugin). This means you can bind SWFUpload events to the returned object like follows:
-
-    jQuery("#returned_video_id")
-        .pandaUploader(panda_access_details, options)
-        .bind('uploadStart', function(){ alert("Stuff"); });
 
 
 Notes
