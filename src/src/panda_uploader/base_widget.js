@@ -12,6 +12,9 @@ PandaUploader.BaseWidget.prototype = {
     triggerEvent: function(event_name, args) {
         var handler = this.upload_strategy[event_name];
         if (handler) {
+            if ( ! args) {
+                args = [];
+            }
             handler.apply(this.upload_strategy, args);
             var user_handler = this.options[event_name];
             if (user_handler) {

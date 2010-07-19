@@ -22,7 +22,9 @@ $('#returned_video_id').pandaUploader(<%= @panda.signed_params("POST", "/videos.
     upload_progress_id: 'upload_progress',
     api_url: '<%= @panda.api_url %>',
     uploader_dir: '/panda_uploader',
+//    widget: new PandaUploader.FlashWidget(),
     onwidgetload: onwidgetload,
+    onchange: onchange,
     onprogress: onprogress,
     onreadystatechange: onreadystatechange,
     onload: onload
@@ -30,6 +32,9 @@ $('#returned_video_id').pandaUploader(<%= @panda.signed_params("POST", "/videos.
 
 function onwidgetload() {
   scoreEvent('onwidgetload');
+}
+function onchange() {
+  scoreEvent('onchange');
 }
 function onprogress() {
   scoreEvent('onprogress');
@@ -45,7 +50,6 @@ function scoreEvent(name) {
   var points = $('#points').text()*1;
   $('#points').text(points+1);
   var selector = '#score table tr.' + name;
-  console.log(selector)
   if ($(selector).size() == 0) {
     $('#score table').append('<tr class="' + name + '"><th>' + name + '</th><td class="count">0</td></tr>');
   }
