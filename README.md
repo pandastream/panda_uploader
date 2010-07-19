@@ -125,6 +125,8 @@ At the moment, the following arguments are supported:
 * **`uploader_dir`**: path were the uploader files are located in the web server. By default "`/panda_uploader`"
 * **`upload_strategy`**: see below.
 * **`widget`**: force use of HTML5-based or Flash-based widget. By default, HTML5 widget is used if supported, falling back to Flash if not. See below.
+* and several events: `onwidgetload`, `onchange`, `onprogress`, `onreadystatechange`, `onreadystatechange`, `onload`. See below.
+
 
 ### Upload strategies
 
@@ -193,6 +195,23 @@ The constructor of the widget accepts an argument: a hash of options to be passe
 
 All available arguments are documented at the [SWFUpload site](http://demo.swfupload.org/Documentation).
 
+### Custom events
+
+This plugin also provides a number of events where you can plug your own actions:
+
+* onwidgetload: widget has been initialised and rendered on the page
+* onchange: a new file has been selected
+* onprogress: called multiple times when the file is being uploaded
+* onreadystatechange: called when the server responds to preflight ([http://www.w3.org/TR/XMLHttpRequest2](see W3C spec)) and upload requests
+* onload: file has been uploaded successfully
+
+Example:
+
+    $('#returned_video_id').pandaUploader(panda_access_details, {
+        onchange: function() {
+            alert("New file selected");
+        },
+    });
 
 
 Notes
