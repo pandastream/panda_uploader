@@ -12,12 +12,56 @@ PandaUploader.UploadOnSubmit = function() {
 PandaUploader.UploadOnSubmit.prototype = new PandaUploader.BaseStrategy();
 PandaUploader.UploadOnSubmit.prototype.constructor = PandaUploader.UploadOnSubmit;
 
+PandaUploader.UploadOnSubmit.prototype.init = function() {
+    var form = this.widget.query.parents("form")[0];
+
+    if ( ! form) {
+        PandaUploader.alert("Could not find a suitable form. Please place the call to pandaUploader() after the form, or to be executed onload().");
+        return false;
+    }
+
+    if ($(form).find('[name=submit], #submit').length != 0) {
+        PandaUploader.alert("An element of your video upload form is incorrect (most probably the submit button). Neither NAME nor ID can be set to \"submit\" on any field.");
+        return false;
+    }
+
+    return PandaUploader.BaseStrategy.prototype.init.apply(this, arguments);
+};
+
+PandaUploader.UploadOnSubmit.prototype.disableSubmitButton = function(){
+    $(this.getSubmitButton()).attr('disabled', true);
+};
+
+PandaUploader.UploadOnSubmit.prototype.enableSubmitButton = function(){
+    return $(this.getSubmitButton()).removeAttr('disabled');
+};
+
+PandaUploader.UploadOnSubmit.prototype.getSubmitButton = function() {
+    return $(this.getForm()).find('input[type=submit]');
+};
+
+PandaUploader.UploadOnSubmit.prototype.getForm = function() {
+    return this.widget.query.parents('form').get(0);
+};
+
+
 PandaUploader.UploadOnSubmit.prototype.onchange = function() {
     this.enableSubmitButton();
 };
 
 PandaUploader.UploadOnSubmit.prototype.onwidgetload = function() {
-    $(this.widget.getForm()).submit(PandaUploader.bind(this, 'onsubmit'));
+    if ( ! this.widget) {
+      return;
+    }
+
+    var form = this.getForm();
+
+    if ( ! form) {
+      return;
+    }
+
+    $(form).submit(PandaUploader.bind(this, 'onsubmit'));
+
     if(this.disable_submit_button) {
         this.disableSubmitButton();
     }

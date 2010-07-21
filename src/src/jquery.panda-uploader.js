@@ -2,8 +2,6 @@
 
 
 jQuery.fn.checkPandaUploaderOptions = function(signed_params, options) {
-    var form = this.parents("form")[0];
-    
     if (signed_params === undefined) {
         PandaUploader.alert("There was an error setting up the upload form. (The upload parameters were not specified).");
         return false;
@@ -11,16 +9,6 @@ jQuery.fn.checkPandaUploaderOptions = function(signed_params, options) {
     
     if (this.size() == 0) {
         PandaUploader.alert("The jQuery element is empty. Method pandaUploader() cannot be executed");
-        return false;
-    }
-    
-    if ( ! form) {
-        PandaUploader.alert("Could not find a suitable form. Please place the call to pandaUploader() after the form, or to be executed onload().");
-        return false;
-    }
-    
-    if ($(form).find('[name=submit], #submit').length != 0) {
-        PandaUploader.alert("An element of your video upload form is incorrect (most probably the submit button). Neither NAME nor ID can be set to \"submit\" on any field.");
         return false;
     }
     

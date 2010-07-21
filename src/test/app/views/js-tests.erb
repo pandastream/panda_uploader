@@ -9,11 +9,11 @@
 <h2>Test dummies follow</h2>
 
 <h3>Setup</h3>
-<script>$(document).ready(function(){
-  PandaUploader.alert = function(msg) {
-    PandaUploader.latest_alert = msg;
-  };
-});</script>
+<script>
+PandaUploader.alert = function(msg) {
+  PandaUploader.latest_alert = msg;
+};
+</script>
 
 <h3>Detection of features</h3>
 <script>$(document).ready(function(){
@@ -72,13 +72,6 @@
   <script type="text/javascript">
   $('#options-validation .file-1').pandaUploader(<%= @panda.signed_params("POST", "/videos.json").to_json %>);
   </script>
-
-  <input type="hidden" class="file-2" />
-
-  <form>
-    <input type="hidden" class="file-3" />
-    <input name="submit" type="submit" />
-  </form>
 </div>
 <script>$(document).ready(function(){
   test("Options validation", function () {
@@ -89,14 +82,6 @@
     PandaUploader.latest_alert = '';
     $('#options-validation .no-file').checkPandaUploaderOptions({}, {});
     ok(PandaUploader.latest_alert.indexOf('jQuery element is empty') != -1, 'Check that the jQuery object is not empty');
-
-    PandaUploader.latest_alert = '';
-    $('#options-validation .file-2').checkPandaUploaderOptions({}, {});
-    ok(PandaUploader.latest_alert.indexOf('Could not find a suitable form') != -1, 'Check that a suitable form exists');
-
-    PandaUploader.latest_alert = '';
-    $('#options-validation .file-3').checkPandaUploaderOptions({}, {});
-    ok(PandaUploader.latest_alert.indexOf('Neither NAME nor ID can') != -1, 'Check that there are no elements with a "submit" name/ID');
 
     PandaUploader.latest_alert = '';
     $('#options-validation .file-1').checkPandaUploaderOptions({}, {upload_button_id: 'upload_button'});
@@ -169,15 +154,29 @@
     upload_strategy: new PandaUploader.UploadOnSubmit({ disable_submit_button: false })
   });
   </script>
+
+  <input type="hidden" class="file-3" />
+  
+  <form class="form-4">
+    <input type="hidden" class="file-4" />
+    <input type="submit" id="submit" />
+  </form>
 </div>
 <script>$(document).ready(function(){
   asyncTest("Upload on submit", function() {
     setTimeout(function(){
       ok($('#upload-on-submit .form-1 input[type=submit]').attr('disabled'), "Should disable submit button by default");
       ok( ! $('#upload-on-submit .form-2 input[type=submit]').attr('disabled'), "Should not disable submit button when told");
+
+      PandaUploader.latest_alert = '';
+      $('#upload-on-submit .file-3').pandaUploader({});
+      ok(PandaUploader.latest_alert.indexOf('Could not find a suitable form') != -1, 'Check that a suitable form exists');
+
+      PandaUploader.latest_alert = '';
+      $('#upload-on-submit .file-4').pandaUploader({});
+      ok(PandaUploader.latest_alert.indexOf('Neither NAME nor ID can') != -1, 'Check that there are no elements with a "submit" name/ID');
+
       start();
     }, 100);
   });
 });</script>
-
-

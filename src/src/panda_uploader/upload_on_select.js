@@ -10,8 +10,6 @@ PandaUploader.UploadOnSelect.prototype.onchange = function(event, file) {
 
 PandaUploader.UploadOnSelect.prototype.onloadstart = function() {
     this.widget.options.progress_handler.reset();
-
-    this.disableSubmitButton();
     if (this.widget.options.progress_handler) {
         this.widget.options.progress_handler.start(this.widget.getFile());
     }
@@ -22,9 +20,6 @@ PandaUploader.UploadOnSelect.prototype.onabort = function(event) {
     this.enable();
 
     this.widget.options.progress_handler.reset();
-    if (this.widget.options.disableSubmitButton) {
-        this.disableSubmitButton();
-    }
 };
 
 PandaUploader.UploadOnSelect.prototype.onerror = function(event, file, code, message, more) {

@@ -22,10 +22,6 @@ PandaUploader.HTML5Widget.prototype.init = function() {
     this.triggerEvent('onwidgetload');
 };
 
-PandaUploader.HTML5Widget.prototype.getForm = function() {
-    return this.query.parents('form').get(0);
-};
-
 PandaUploader.HTML5Widget.prototype.start = function() {
     var file = this.getFile();
     var params = this.getSignedParams();

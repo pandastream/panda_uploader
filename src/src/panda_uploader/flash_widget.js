@@ -67,10 +67,6 @@ PandaUploader.FlashWidget.prototype.getFile = function() {
     return this.file;
 };
 
-PandaUploader.FlashWidget.prototype.getForm = function() {
-    return this.swfupload.parents('form').get(0);
-};
-
 PandaUploader.FlashWidget.prototype.start = function() {
     return this.swfupload.swfupload('startUpload');
 };

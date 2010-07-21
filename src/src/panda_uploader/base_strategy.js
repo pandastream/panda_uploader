@@ -5,19 +5,10 @@ PandaUploader.BaseStrategy.prototype = {
     setUploadWidget: function (upload_widget) {
         this.widget = upload_widget;
     },
-    
-    disableSubmitButton: function(){
-        $(this.getSubmitButton()).attr('disabled', true);
-    },
 
-    enableSubmitButton: function(){
-        return $(this.getSubmitButton()).removeAttr('disabled');
+    init: function () {
+        return true;
     },
-    
-    getSubmitButton: function() {
-        return $(this.widget.getForm()).find('input[type=submit]');
-    },
-    
     
     // The widget has been set, about to return control to caller
     onwidgetload: function() {

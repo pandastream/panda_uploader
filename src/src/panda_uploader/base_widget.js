@@ -7,6 +7,7 @@ PandaUploader.BaseWidget.prototype = {
         this.signed_params = signed_params;
         this.options = options;
         this.upload_strategy = this.options.upload_strategy;
+        this.upload_strategy.init();
     },
     
     triggerEvent: function(event_name, args) {
@@ -28,10 +29,6 @@ PandaUploader.BaseWidget.prototype = {
         return function() {
             triggerEvent(event_name, arguments);
         };
-    },
-    
-    getForm: function() {
-        throw "Unimplemented method getForm()";
     },
     
     getSignedParams: function() {
