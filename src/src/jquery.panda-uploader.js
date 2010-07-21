@@ -227,6 +227,7 @@ UploadOnSubmit.prototype.onSuccess = function(event, file, response) {
 
 UploadOnSubmit.prototype.onError = function(event, file, code, message, more) {
     jQuery('#' + this.options.upload_filename_id).val('');
+    this.uploader.swfupload('setButtonDisabled', false);
     this.options.progress_handler.reset();
 
     this.num_pending--;
