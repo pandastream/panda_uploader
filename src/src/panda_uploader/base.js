@@ -21,7 +21,7 @@ PandaUploader.supportAjaxProgressEvents = function() {
 
 PandaUploader.supportHTML5Widget = function() {
     return PandaUploader.supportAjaxUpload() && PandaUploader.supportAjaxProgressEvents();
-}
+};
 
 PandaUploader.createXRequestObject = function() {
     if (typeof XDomainRequest != 'undefined') {
@@ -53,7 +53,6 @@ PandaUploader.bind = function(object, method_name) {
         }
     }
 };
-
 
 PandaUploader.alert = function(msg) {
     return alert(msg);
