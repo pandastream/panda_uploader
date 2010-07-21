@@ -173,7 +173,7 @@ OK, ok, I know that's a bit too much. You are better off by having a look at [so
 
 I hope that helps...
 
-### Forcing the Flash widget
+### Flash widget
 
 By default, the plugin checks if the browser supports Flash-less uploads using HTML5 features (supported in Gecko and Webkit browsers). If this is not the case, a Flash solution is used.
 
@@ -194,6 +194,10 @@ The constructor of the widget accepts an argument: a hash of options to be passe
     });
 
 All available arguments are documented at the [SWFUpload site](http://demo.swfupload.org/Documentation).
+
+In addition to SWFUpload options, the Flash widget accepts one additional argument:
+
+* **`add_filename_field`**: add a text field next to the widget. This will show the name of the currently selected file, mimicking the behaviour of a standard HTML file field. Defaults to `true`.
 
 ### Custom events
 
