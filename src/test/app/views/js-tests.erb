@@ -109,7 +109,7 @@ PandaUploader.alert = function(msg) {
 
 <h3>Flash widget</h3>
 <div id="flash-widget">
-  <form>
+  <form class="form-1">
     <input type="hidden" class="file-1" id="flash-widget-file-1" />
   </form>
   <script type="text/javascript">
@@ -117,19 +117,35 @@ PandaUploader.alert = function(msg) {
     widget: new PandaUploader.FlashWidget()
   });
   </script>
+
+  <form class="form-2">
+    <input type="hidden" class="file-2" />
+  </form>
+  <script type="text/javascript">
+  console.group('flash-widget form-2');
+  $('#flash-widget .file-2').pandaUploader(<%= @panda.signed_params("POST", "/videos.json").to_json %>, {
+    widget: new PandaUploader.FlashWidget({
+      add_filename_field: false
+    })
+  });
+  console.groupEnd()
+  </script>
 </div>
 <script>$(document).ready(function(){
   asyncTest("Flash widget", function() {
     setTimeout(function(){
-      var found = false;
+      var count = 0;
       $('#flash-widget object').each(function(){
-        found = found || this.id.match(/^SWFUpload_\d$/)
+        count += this.id.match(/^SWFUpload_\d$/) ? 1 : 0;
       });
-      ok(found, "Check that a file upload field has been added");
+      equal(count, 2, "Check that file upload fields have been added");
 
-      var query = $('#flash-widget input#flash-widget-file-1_orig-filename[type=text]')
+      var query = $('#flash-widget .form-1 input#flash-widget-file-1_orig-filename[type=text]')
       equal(query.length, 1, "Check that a field for the filename has been added");
-    
+
+      var query = $('#flash-widget .form-2 input[type=text]')
+      equal(query.length, 0, "Should allow omitting the filename field");
+
       start();
     }, 100);
   });
