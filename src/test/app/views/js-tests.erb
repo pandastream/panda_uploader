@@ -89,45 +89,45 @@ PandaUploader.alert = function(msg) {
   });
 });</script>
 
-<h3>HTML5 widget load</h3>
-<div id="html5-widget-load">
+<h3>HTML5 widget</h3>
+<div id="html5-widget">
   <form>
     <input type="hidden" class="file-1" />
   </form>
   <script type="text/javascript">
-  $('#html5-widget-load .file-1').pandaUploader(<%= @panda.signed_params("POST", "/videos.json").to_json %>);
+  $('#html5-widget .file-1').pandaUploader(<%= @panda.signed_params("POST", "/videos.json").to_json %>);
   </script>
 </div>
 <script>$(document).ready(function(){
   if (PandaUploader.supportHTML5Widget()) {
-    test("HTML5 widget load", function() {
-      var query = $('#html5-widget-load input[type=file]');
+    test("HTML5 widget", function() {
+      var query = $('#html5-widget input[type=file]');
       equal(query.length, 1, "Check that a file upload field has been added");
     });
   }
 });</script>
 
-<h3>Flash widget load</h3>
-<div id="flash-widget-load">
+<h3>Flash widget</h3>
+<div id="flash-widget">
   <form>
-    <input type="hidden" class="file-1" id="flash-widget-load-file-1" />
+    <input type="hidden" class="file-1" id="flash-widget-file-1" />
   </form>
   <script type="text/javascript">
-  $('#flash-widget-load .file-1').pandaUploader(<%= @panda.signed_params("POST", "/videos.json").to_json %>, {
+  $('#flash-widget .file-1').pandaUploader(<%= @panda.signed_params("POST", "/videos.json").to_json %>, {
     widget: new PandaUploader.FlashWidget()
   });
   </script>
 </div>
 <script>$(document).ready(function(){
-  asyncTest("Flash widget load", function() {
+  asyncTest("Flash widget", function() {
     setTimeout(function(){
       var found = false;
-      $('#flash-widget-load object').each(function(){
+      $('#flash-widget object').each(function(){
         found = found || this.id.match(/^SWFUpload_\d$/)
       });
       ok(found, "Check that a file upload field has been added");
 
-      var query = $('#flash-widget-load input#flash-widget-load-file-1_orig-filename[type=text]')
+      var query = $('#flash-widget input#flash-widget-file-1_orig-filename[type=text]')
       equal(query.length, 1, "Check that a field for the filename has been added");
     
       start();
