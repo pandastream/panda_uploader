@@ -42,9 +42,5 @@ PandaUploader.BaseStrategy.prototype = {
     
     // Upload was aborted by the user
     onabort: function() {
-    },
-    
-    // Containing form is being submitted
-    onsubmit: function() {
     }
 };

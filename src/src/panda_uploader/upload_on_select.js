@@ -25,19 +25,3 @@ PandaUploader.UploadOnSelect.prototype.onabort = function(event) {
 PandaUploader.UploadOnSelect.prototype.onerror = function(event, file, code, message, more) {
     this.widget.options.progress_handler.reset();
 };
-
-PandaUploader.UploadOnSelect.prototype.onreadystatechange = function(event) {
-    var status = null;
-
-    try {
-        status = event.target.status;
-    }
-    catch(e) {
-        return;
-    }
-
-    if (status == '200' && event.target.responseText) {
-        var response = jQuery.parseJSON(event.target.responseText);
-        this.widget.setValue(response.id);
-    }
-};

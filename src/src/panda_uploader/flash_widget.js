@@ -67,7 +67,7 @@ PandaUploader.FlashWidget.prototype.uploadSuccess = function(evt, file, response
             responseText: response
         }
     };
-    this.triggerEvent('onreadystatechange', [event]);
+    this.triggerEvent('onsuccess', [event]);
 };
 
 PandaUploader.FlashWidget.prototype.getFile = function() {

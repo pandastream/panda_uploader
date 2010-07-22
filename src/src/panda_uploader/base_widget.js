@@ -17,11 +17,15 @@ PandaUploader.BaseWidget.prototype = {
                 args = [];
             }
             handler.apply(this.upload_strategy, args);
-            var user_handler = this.options[event_name];
-            if (user_handler) {
-                user_handler(arguments)
-            }
         }
+        this.triggerUserEvent(event_name, args);
+    },
+
+    triggerUserEvent: function(event_name, args) {
+      var user_handler = this.options[event_name];
+      if (user_handler) {
+          user_handler.apply(window, args)
+      }
     },
     
     boundHandler: function(event_name) {

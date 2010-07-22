@@ -14,7 +14,7 @@ PandaUploader.HTML5Widget.prototype.init = function() {
     this.xhr.upload.addEventListener('load', this.boundHandler('onload'), false);
     this.xhr.upload.addEventListener('error', this.boundHandler('onerror'), false);
     this.xhr.upload.addEventListener('abort', this.boundHandler('onabort'), false);
-    this.xhr.addEventListener('readystatechange', this.boundHandler('onreadystatechange'), false);
+    this.xhr.addEventListener('readystatechange', PandaUploader.bind(this, 'onreadystatechange'), false);
 
     this.query.after('<input type="file" />');
     $(this.getField()).change(this.boundHandler('onchange'));
@@ -54,3 +54,20 @@ PandaUploader.HTML5Widget.prototype.enable = function() {
 PandaUploader.HTML5Widget.prototype.getField = function() {
     return this.query.next().get(0);
 };
+
+PandaUploader.HTML5Widget.prototype.onreadystatechange = function(event) {
+    var status = null;
+
+    try {
+        status = event.target.status;
+    }
+    catch(e) {
+        return;
+    }
+
+    if (status == '200' && event.target.responseText) {
+        var response = jQuery.parseJSON(event.target.responseText);
+        this.setValue(response.id);
+        this.triggerEvent('onsuccess', [event]);
+    }
+}

@@ -76,21 +76,8 @@ PandaUploader.UploadOnSubmit.prototype.onloadstart = function() {
     }
 };
 
-PandaUploader.UploadOnSubmit.prototype.onreadystatechange = function(event) {
-    var status = null;
-
-    try {
-        status = event.target.status;
-    }
-    catch(e) {
-        return;
-    }
-
-    if (status == '200' && event.target.responseText) {
-        var response = jQuery.parseJSON(event.target.responseText);
-        this.widget.setValue(response.id);
-        this.widget.getForm().submit();
-    }
+PandaUploader.UploadOnSubmit.prototype.onsuccess = function(event) {
+    this.getForm().submit();
 };
 
 PandaUploader.UploadOnSubmit.prototype.onerror = function() {
