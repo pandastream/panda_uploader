@@ -1,4 +1,5 @@
 require 'yaml'
+require 'json'
 require 'sinatra/base'
 require 'panda'
 require 'pp'
