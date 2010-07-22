@@ -61,12 +61,16 @@ PandaUploader.FlashWidget.prototype.uploadProgress = function(evt, _file, bytesL
     this.triggerEvent('onprogress', [evt]);
 };
 PandaUploader.FlashWidget.prototype.uploadSuccess = function(evt, file, response) {
+    var resObj = jQuery.parseJSON(response);
+    this.setValue(resObj.id);
+
     var event = {
         target: {
             status: '200',
             responseText: response
         }
     };
+    this.triggerEvent('onreadystatechange', [event]);
     this.triggerEvent('onsuccess', [event]);
 };
 

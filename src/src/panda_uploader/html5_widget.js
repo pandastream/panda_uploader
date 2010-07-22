@@ -56,6 +56,8 @@ PandaUploader.HTML5Widget.prototype.getField = function() {
 };
 
 PandaUploader.HTML5Widget.prototype.onreadystatechange = function(event) {
+    this.triggerEvent('onreadystatechange');
+
     var status = null;
 
     try {

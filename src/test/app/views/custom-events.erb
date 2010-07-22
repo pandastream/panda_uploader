@@ -22,28 +22,20 @@ $('#returned_video_id').pandaUploader(<%= @panda.signed_params("POST", "/videos.
     upload_progress_id: 'upload_progress',
     api_url: '<%= @panda.api_url %>',
     uploader_dir: '/panda_uploader',
-//    widget: new PandaUploader.FlashWidget(),
-    onwidgetload: onwidgetload,
-    onchange: onchange,
-    onprogress: onprogress,
-    onreadystatechange: onreadystatechange,
-    onload: onload
+    upload_strategy: new PandaUploader.UploadOnSelect(),
+    // widget: new PandaUploader.FlashWidget(),
+    onwidgetload: handle('onwidgetload'),
+    onchange: handle('onchange'),
+    onprogress: handle('onprogress'),
+    onreadystatechange: handle('onreadystatechange'),
+    onload: handle('onload'),
+    onsuccess: handle('onsuccess')
 });
 
-function onwidgetload() {
-  scoreEvent('onwidgetload');
-}
-function onchange() {
-  scoreEvent('onchange');
-}
-function onprogress() {
-  scoreEvent('onprogress');
-}
-function onreadystatechange() {
-  scoreEvent('onreadystatechange');
-}
-function onload() {
-  scoreEvent('onload');
+function handle(name) {
+  return function () {
+    scoreEvent(name);
+  }
 }
 
 function scoreEvent(name) {
