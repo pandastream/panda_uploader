@@ -125,7 +125,7 @@ At the moment, the following arguments are supported:
 * **`uploader_dir`**: path were the uploader files are located in the web server. By default "`/panda_uploader`"
 * **`upload_strategy`**: see below.
 * **`widget`**: force use of HTML5-based or Flash-based widget. By default, HTML5 widget is used if supported, falling back to Flash if not. See below.
-* and several events: `onwidgetload`, `onchange`, `onprogress`, `onreadystatechange`, `onreadystatechange`, `onload`. See below.
+* and several events: `onwidgetload`, `onchange`, `onprogress`, `onreadystatechange`, `onsuccess`, `onload`. See below.
 
 
 ### Upload strategies
@@ -207,7 +207,8 @@ This plugin also provides a number of events where you can plug your own actions
 * onchange: a new file has been selected
 * onprogress: called multiple times when the file is being uploaded
 * onreadystatechange: called when the server responds to preflight ([see W3C spec](http://www.w3.org/TR/XMLHttpRequest2)) and upload requests
-* onload: file has been uploaded successfully
+* onload: file upload completed (successfully or not). Results are not yet available.
+* onsuccess: operation completed successfully
 
 Example:
 
