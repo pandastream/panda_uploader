@@ -39,4 +39,8 @@ class PandaUploaderTestApp < Sinatra::Base
     erb :with_other_libraries
   end
 
+  get '/with_cancel_button' do
+    erb :with_cancel_button
+  end
+
 end
