@@ -37,6 +37,10 @@ $('#returned_video_id').pandaUploader(<%= @panda.signed_params("POST", "/videos.
 function handle(name) {
   return function () {
     scoreEvent(name);
+    var handler = window[name];
+    if (handler) {
+      handler.apply(window, arguments)
+    }
   }
 }
 
