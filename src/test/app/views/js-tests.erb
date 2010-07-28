@@ -23,7 +23,7 @@ PandaUploader.alert = function(msg) {
       ok(support, 'Detect support for Ajax file upload in Webkit and Mozilla');
     }
     else {
-      ok(!support, 'Detect lack of support for Ajax file upload in MSIE');
+      ok(!support, 'Detect lack of support for Ajax file upload in MSIE and Opera');
     }
 
     var support = PandaUploader.supportAjaxUploadProgressEvents();
@@ -32,7 +32,7 @@ PandaUploader.alert = function(msg) {
       ok(support, 'Detect support for Ajax upload progress events in Webkit and Mozilla');
     }
     else {
-      ok(!support, 'Detect lack of support for Ajax progress events in MSIE');
+      ok(!support, 'Detect lack of support for Ajax progress events in MSIE and Opera');
     }
 
     var support = PandaUploader.supportCORS();
@@ -41,7 +41,7 @@ PandaUploader.alert = function(msg) {
       ok(support, 'Detect support for CORS in Webkit, Mozilla and MSIE8+');
     }
     else {
-      ok(!support, 'Detect lack of support for CORS in MSIE < 8');
+      ok(!support, 'Detect lack of support for CORS in MSIE < 8 and Opera');
     }
 
     var support = PandaUploader.supportHTML5Widget();
@@ -50,7 +50,7 @@ PandaUploader.alert = function(msg) {
       ok(support, 'Detect support for the HTML5 widget in Webkit and Mozilla');
     }
     else {
-      ok(!support, 'Detect lack of support for the HTML5 widget in MSIE');
+      ok(!support, 'Detect lack of support for the HTML5 widget in MSIE and Opera');
     }
   });
 });</script>
