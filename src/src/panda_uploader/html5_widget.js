@@ -8,7 +8,7 @@ PandaUploader.HTML5Widget.prototype.constructor = PandaUploader.HTML5Widget;
 PandaUploader.HTML5Widget.prototype.init = function() {
     PandaUploader.BaseWidget.prototype.init.apply(this, arguments);
     
-    this.xhr = PandaUploader.createXRequestObject();
+    this.xhr = PandaUploader.createXHRObject();
     this.xhr.upload.addEventListener('loadstart', this.boundHandler('onloadstart'), false);
     this.xhr.upload.addEventListener('progress', this.boundHandler('onprogress'), false);
     this.xhr.upload.addEventListener('load', this.boundHandler('onload'), false);
@@ -31,7 +31,7 @@ PandaUploader.HTML5Widget.prototype.start = function() {
     this.xhr.setRequestHeader("Content-Type", "application/octet-stream");
     this.xhr.setRequestHeader("X-Requested-With", "XMLHttpRequest");
     this.xhr.setRequestHeader("X-File-Name", file.fileName);
-    this.xhr.setRequestHeader("X-Panda-Params", json_string);
+    this.xhr.setRequestHeader("X-Query-Params", json_string);
     this.xhr.send(file);
 };
 

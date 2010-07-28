@@ -23,16 +23,25 @@ PandaUploader.alert = function(msg) {
       ok(support, 'Detect support for Ajax file upload in Webkit and Mozilla');
     }
     else {
-      ok(!support, 'Detect lack of support for Ajax file upload in IE');
+      ok(!support, 'Detect lack of support for Ajax file upload in MSIE');
     }
 
-    var support = PandaUploader.supportAjaxProgressEvents();
+    var support = PandaUploader.supportAjaxUploadProgressEvents();
     var b = jQuery.browser;
-    if (b.webkit || b.mozilla || b.msie && b.version >= 8) {
-      ok(support, 'Detect support for Ajax progress events in Webkit, Mozilla and MSIE8+');
+    if (b.webkit || b.mozilla) {
+      ok(support, 'Detect support for Ajax upload progress events in Webkit and Mozilla');
     }
     else {
-      ok(!support, 'Detect lack of support for Ajax progress events in MSIE < 8');
+      ok(!support, 'Detect lack of support for Ajax progress events in MSIE');
+    }
+
+    var support = PandaUploader.supportCORS();
+    var b = jQuery.browser;
+    if (b.webkit || b.mozilla || b.msie && b.version >= 8) {
+      ok(support, 'Detect support for CORS in Webkit, Mozilla and MSIE8+');
+    }
+    else {
+      ok(!support, 'Detect lack of support for CORS in MSIE < 8');
     }
 
     var support = PandaUploader.supportHTML5Widget();
@@ -46,20 +55,20 @@ PandaUploader.alert = function(msg) {
   });
 });</script>
 
-<h3>Generate cross-site request object</h3>
+<h3>Generate Ajax request object</h3>
 <script>$(document).ready(function(){
-  test("Generate cross-site request object", function() {
-    var xro = PandaUploader.createXRequestObject();
+  test("Generate Ajax request object", function() {
+    var xro = PandaUploader.createXHRObject();
     var b = jQuery.browser;
 
-    if (b.webkit || b.mozilla) {
-      ok(xro instanceof XMLHttpRequest, 'XMLHttpRequest');
+    if (b.webkit || b.mozilla || b.opera) {
+      ok(xro instanceof XMLHttpRequest, 'Should use XMLHttpRequest in Webkit, Mozilla and Opera');
     }
     else if(b.msie && b.version >= 8) {
-      ok(xro instanceof XDomainRequest, 'XDomainRequest');
+      ok(xro instanceof XDomainRequest, 'Should use XDomainRequest in MSIE8+');
     }
     else {
-      equal(xro, null);
+      ok('send' in xro, 'Should use strange stuff in MSIE < 8');
     }
   });
 });</script>

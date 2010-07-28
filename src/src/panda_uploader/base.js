@@ -6,7 +6,12 @@ PandaUploader.supportAjaxUpload = function() {
     return 'files' in fi;
 };
 
-PandaUploader.supportAjaxProgressEvents = function() {
+PandaUploader.supportAjaxUploadProgressEvents = function() {
+    var xhr = PandaUploader.createXHRObject();
+    return !! (xhr && ('upload' in xhr) && ('onprogress' in xhr.upload));
+}
+
+PandaUploader.supportCORS = function() {
     if (typeof XDomainRequest != 'undefined') {
         return true;
     }
@@ -20,20 +25,35 @@ PandaUploader.supportAjaxProgressEvents = function() {
 };
 
 PandaUploader.supportHTML5Widget = function() {
-    return PandaUploader.supportAjaxUpload() && PandaUploader.supportAjaxProgressEvents();
+    return PandaUploader.supportAjaxUpload() &&
+      PandaUploader.supportAjaxUploadProgressEvents() &&
+      PandaUploader.supportCORS();
 };
 
-PandaUploader.createXRequestObject = function() {
-    if (typeof XDomainRequest != 'undefined') {
-        return new XDomainRequest();
+// A variation of PPK's http://www.quirksmode.org/js/xmlhttp.html
+PandaUploader.createXHRObject = function() {
+    if (typeof this.XMLHttpFactories == 'undefined') {
+        this.XMLHttpFactories = [
+            function () { return new XDomainRequest(); },
+            function () { return new XMLHttpRequest(); },
+            function () { return new ActiveXObject("Msxml2.XMLHTTP"); },
+            function () { return new ActiveXObject("Msxml3.XMLHTTP"); },
+            function () { return new ActiveXObject("Microsoft.XMLHTTP"); }
+        ];
     }
-    else if (typeof XMLHttpRequest != 'undefined') {
-        var ret = new XMLHttpRequest()
-        return 'withCredentials' in ret ? ret : null;
+
+    var xmlhttp = null;
+    for (var i = 0; i < this.XMLHttpFactories.length; i++) {
+        try {
+            xmlhttp = this.XMLHttpFactories[i]();
+        }
+        catch (e) {
+            continue;
+        }
+        break;
     }
-    else {
-        return null;
-    }
+    
+    return xmlhttp;
 };
 
 PandaUploader.createWidget = function() {
