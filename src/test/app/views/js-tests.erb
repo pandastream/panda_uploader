@@ -18,12 +18,12 @@ PandaUploader.alert = function(msg) {
 <h3>Detection of features</h3>
 <script>$(document).ready(function(){
   test("Detection of features", function() {
-    var support = PandaUploader.supportAjaxUpload();
+    var support = PandaUploader.supportFileAPI();
     if (jQuery.browser.webkit || jQuery.browser.mozilla) {
-      ok(support, 'Detect support for Ajax file upload in Webkit and Mozilla');
+      ok(support, 'Detect support for File API in Webkit and Mozilla');
     }
     else {
-      ok(!support, 'Detect lack of support for Ajax file upload in MSIE and Opera');
+      ok(!support, 'Detect lack of support for File API in MSIE and Opera');
     }
 
     var support = PandaUploader.supportAjaxUploadProgressEvents();

@@ -1,6 +1,6 @@
 function PandaUploader(){}
 
-PandaUploader.supportAjaxUpload = function() {
+PandaUploader.supportFileAPI = function() {
     var fi = document.createElement('INPUT');
     fi.type = 'file';
     return 'files' in fi;
@@ -25,7 +25,7 @@ PandaUploader.supportCORS = function() {
 };
 
 PandaUploader.supportHTML5Widget = function() {
-    return PandaUploader.supportAjaxUpload() &&
+    return PandaUploader.supportFileAPI() &&
       PandaUploader.supportAjaxUploadProgressEvents() &&
       PandaUploader.supportCORS();
 };
