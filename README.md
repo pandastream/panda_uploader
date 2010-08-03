@@ -231,6 +231,11 @@ Example:
     });
 
 
+### Styling up the HTML5 widget
+
+If you want to change the style of the HTML5 widget, we recommend the following article: http://www.quirksmode.org/dom/inputfile.html
+
+
 Notes
 -----
 
