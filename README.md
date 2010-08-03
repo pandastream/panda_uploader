@@ -199,6 +199,18 @@ In addition to SWFUpload options, the Flash widget accepts one additional argume
 
 * **`add_filename_field`**: add a text field next to the widget. This will show the name of the currently selected file, mimicking the behaviour of a standard HTML file field. Defaults to `true`.
 
+
+### How to use HTML5 if possible, and if not use Flash with additional options
+
+If you want the HTML5 widget to be user if possible, but still want to be able to pass options to the Flash widget as above, use the SmartWidget:
+
+    var html5_options = {}; // None available just yet
+    var flash_options = { button_image_url : "/my-cool-button.png" };
+    jQuery("#returned_video_id").pandaUploader(panda_access_details, {
+        widget: new PandaUploader.SmartWidget(html5_options, flash_options)
+    });
+
+
 ### Custom events
 
 This plugin also provides a number of events where you can plug your own actions:

@@ -56,15 +56,6 @@ PandaUploader.createXHRObject = function() {
     return xmlhttp;
 };
 
-PandaUploader.createWidget = function() {
-    if (PandaUploader.supportHTML5Widget()) {
-        return new PandaUploader.HTML5Widget();
-    }
-    else {
-        return new PandaUploader.FlashWidget();
-    }
-};
-
 PandaUploader.bind = function(object, method_name) {
     return function() {
         var method = object[method_name];

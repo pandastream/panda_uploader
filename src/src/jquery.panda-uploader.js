@@ -37,7 +37,7 @@ jQuery.fn.pandaUploader = function(signed_params, options) {
     
     var widget = options.widget;
     if ( ! widget) {
-        widget = PandaUploader.createWidget();
+        widget = new PandaUploader.SmartWidget();
     }
     
     if ( ! options.upload_strategy) {

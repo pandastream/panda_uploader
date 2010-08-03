@@ -12,6 +12,7 @@ PU_CAT = ${DIST_DIR}/jquery.panda-uploader-${PANDA_UPLOADER_VERSION}.cat.js
 PU_MIN = ${PANDA_DIST_DIR}/jquery.panda-uploader-${PANDA_UPLOADER_VERSION}.min.js
 PU_FILES = ${SRC_DIR}/panda_uploader/base.js\
 	${SRC_DIR}/panda_uploader/base_widget.js\
+	${SRC_DIR}/panda_uploader/smart_widget.js\
 	${SRC_DIR}/panda_uploader/flash_widget.js\
 	${SRC_DIR}/panda_uploader/html5_widget.js\
 	${SRC_DIR}/panda_uploader/base_strategy.js\
