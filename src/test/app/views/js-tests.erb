@@ -19,7 +19,7 @@ PandaUploader.alert = function(msg) {
 <script>$(document).ready(function(){
   test("Detection of features", function() {
     var support = PandaUploader.supportFileAPI();
-    if (jQuery.browser.webkit || jQuery.browser.mozilla) {
+    if (jQuery.browser.webkit || jQuery.browser.mozilla || jQuery.browser.safari) {
       ok(support, 'Detect support for File API in Webkit and Mozilla');
     }
     else {
@@ -28,7 +28,7 @@ PandaUploader.alert = function(msg) {
 
     var support = PandaUploader.supportAjaxUploadProgressEvents();
     var b = jQuery.browser;
-    if (b.webkit || b.mozilla) {
+    if (b.webkit || b.mozilla || jQuery.browser.safari) {
       ok(support, 'Detect support for Ajax upload progress events in Webkit and Mozilla');
     }
     else {
@@ -37,7 +37,7 @@ PandaUploader.alert = function(msg) {
 
     var support = PandaUploader.supportCORS();
     var b = jQuery.browser;
-    if (b.webkit || b.mozilla || b.msie && b.version >= 8) {
+    if (b.webkit || b.mozilla || b.msie && b.version >= 8 || jQuery.browser.safari) {
       ok(support, 'Detect support for CORS in Webkit, Mozilla and MSIE8+');
     }
     else {
@@ -46,7 +46,7 @@ PandaUploader.alert = function(msg) {
 
     var support = PandaUploader.supportHTML5Widget();
     var b = jQuery.browser;
-    if (b.webkit || b.mozilla) {
+    if (b.webkit || b.mozilla || jQuery.browser.safari) {
       ok(support, 'Detect support for the HTML5 widget in Webkit and Mozilla');
     }
     else {

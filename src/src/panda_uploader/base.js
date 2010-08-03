@@ -77,3 +77,12 @@ PandaUploader.bind = function(object, method_name) {
 PandaUploader.alert = function(msg) {
     return alert(msg);
 };
+
+PandaUploader.parseJSON = function(json_str) {
+  if (jQuery && jQuery.parseJSON) {
+      return jQuery.parseJSON(json_str);
+  }
+  else {
+      return eval('(' + json_str + ')');
+  }
+};

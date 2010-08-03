@@ -68,7 +68,7 @@ PandaUploader.HTML5Widget.prototype.onreadystatechange = function(event) {
     }
 
     if (status == '200' && event.target.responseText) {
-        var response = jQuery.parseJSON(event.target.responseText);
+        var response = PandaUploader.parseJSON(event.target.responseText);
         this.setValue(response.id);
         this.triggerEvent('onsuccess', [event]);
     }
