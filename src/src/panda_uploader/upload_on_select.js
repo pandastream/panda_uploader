@@ -16,7 +16,7 @@ PandaUploader.UploadOnSelect.prototype.onloadstart = function() {
 };
 
 PandaUploader.UploadOnSelect.prototype.onabort = function(event) {
-    this.enable();
+    this.widget.enable();
 
     this.widget.options.progress_handler.reset();
 };

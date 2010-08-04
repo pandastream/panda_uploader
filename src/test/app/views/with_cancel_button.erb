@@ -18,6 +18,7 @@ $('#returned_video_id').pandaUploader(<%= @panda.signed_params("POST", "/videos.
     api_url: '<%= @panda.api_url %>',
     uploader_dir: '/panda_uploader',
     widget: widget,
+    upload_strategy: new PandaUploader.UploadOnSelect(),
     onabort: function(){ alert("onabort was called!"); }
 });
 
