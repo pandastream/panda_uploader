@@ -35,6 +35,10 @@ PandaUploader.HTML5Widget.prototype.start = function() {
     this.xhr.send(file);
 };
 
+PandaUploader.HTML5Widget.prototype.abort = function() {
+    this.xhr.abort();
+}
+
 PandaUploader.HTML5Widget.prototype.getFile = function() {
     return $(this.getField()).get(0).files[0];
 };

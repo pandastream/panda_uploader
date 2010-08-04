@@ -90,8 +90,9 @@ PandaUploader.FlashWidget.prototype.enable = function() {
     return this.swfupload.swfupload('setButtonDisabled', false);
 };
 
-PandaUploader.FlashWidget.prototype.cancel = function() {
-    return this.swfupload.swfupload('cancelUpload', '', false);
+PandaUploader.FlashWidget.prototype.abort = function() {
+    this.swfupload.swfupload('cancelUpload', '', false);
+    this.triggerEvent('onabort');
 };
 
 PandaUploader.FlashWidget.prototype.setValue = function(value) {

@@ -85,7 +85,6 @@ PandaUploader.UploadOnSubmit.prototype.onerror = function() {
 };
 
 PandaUploader.UploadOnSubmit.prototype.onabort = function() {
-    this.widget.cancel();
     this.widget.enable();
     
     this.widget.options.progress_handler.reset();
