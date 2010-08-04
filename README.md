@@ -236,6 +236,26 @@ Example:
 If you want to change the style of the HTML5 widget, we recommend the following article: http://www.quirksmode.org/dom/inputfile.html
 
 
+### Aborting uploads
+
+If you want to abort an upload that is currently taking place, use the `abort()` function of the widget:
+
+    // Create the widget separately
+    var widget = new PandaUploader.SmartWidget();
+    
+    // Initialize the uploader
+    $('#returned_video_id').pandaUploader(<%= @panda.signed_params("POST", "/videos.json").to_json %>, {
+        widget: widget,
+        onabort: function(){ alert("onabort was called!"); }
+    });
+    
+    // Attaching to example cancel button
+    $('#cancel_button').click(function() {
+        // Actually aborting the upload
+        widget.abort();
+    });
+
+
 Notes
 -----
 
