@@ -5,8 +5,6 @@ Panda uploader allows you to upload videos from your applications to Panda. It u
 
 ![jQuery client uploader](http://www.pandastream.com/images/upload_example.png)
 
-![jQuery client uploader](http://www.pandastream.com/images/upload_example.png)
-
 It works as a jQuery plugin, and requires requires JQuery version 1.3.
 
 Warning: compatibility with older versions
