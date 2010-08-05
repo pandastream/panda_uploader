@@ -4,22 +4,25 @@
 
 <form action="/player" method="get" id="upload-form">
     <label>Upload a video<br/></label>
-    
-    <span id="upload_button"></span>
-    <input type="text" id="upload_filename" disabled="true" class="panda_upload_filename" />
-    <div id="upload_progress" class="panda_upload_progress"></div>
-    <input type="hidden" id="returned_video_id" name="panda_video_id" />
-    <input id="cancel_button" type="button" value="Cancel" />
 
+    <input type="hidden" id="returned_video_id" name="panda_video_id" />
+    <div id="upload_progress" class="panda_upload_progress"></div>
+    <input id="cancel_button" type="button" value="Cancel" />
+    
     <p><input type="submit" value="Save" /></p>
 </form>
 <script type="text/javascript">
+var widget = new PandaUploader.SmartWidget();
 $('#returned_video_id').pandaUploader(<%= @panda.signed_params("POST", "/videos.json").to_json %>, {
-    upload_button_id: 'upload_button',
-    upload_filename_id: 'upload_filename',
     upload_progress_id: 'upload_progress',
     api_url: '<%= @panda.api_url %>',
     uploader_dir: '/panda_uploader',
-    upload_cancel_button_id: 'cancel_button'
+    widget: widget,
+    upload_strategy: new PandaUploader.UploadOnSelect(),
+    onabort: function(){ alert("onabort was called!"); }
+});
+
+$('#cancel_button').click(function() {
+  widget.abort();
 });
 </script>
