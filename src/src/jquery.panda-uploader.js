@@ -100,7 +100,7 @@ ProgressUpload.prototype = {
             return;
         }
         var percent = Math.ceil(loaded*100/total);
-        $(this.progress).css('width', percent + '%');
+        jQuery(this.progress).css('width', percent + '%');
     },
     
     animateBarBg: function() {
@@ -118,7 +118,7 @@ ProgressUpload.prototype = {
     
     reset: function(){
         clearInterval(this.timer)
-        $(this.progress).css('width', '0%');
+        jQuery(this.progress).css('width', '0%');
         this.$p.css('display', 'none');
     }
 };

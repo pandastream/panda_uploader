@@ -17,7 +17,7 @@ PandaUploader.HTML5Widget.prototype.init = function() {
     this.xhr.addEventListener('readystatechange', PandaUploader.bind(this, 'onreadystatechange'), false);
 
     this.query.after('<input type="file" />');
-    $(this.getField()).change(this.boundHandler('onchange'));
+    jQuery(this.getField()).change(this.boundHandler('onchange'));
     
     this.triggerEvent('onwidgetload');
 };
@@ -40,7 +40,7 @@ PandaUploader.HTML5Widget.prototype.abort = function() {
 }
 
 PandaUploader.HTML5Widget.prototype.getFile = function() {
-    return $(this.getField()).get(0).files[0];
+    return jQuery(this.getField()).get(0).files[0];
 };
 
 PandaUploader.HTML5Widget.prototype.setValue = function(value) {
@@ -48,11 +48,11 @@ PandaUploader.HTML5Widget.prototype.setValue = function(value) {
 };
 
 PandaUploader.HTML5Widget.prototype.disable = function() {
-    $(this.getField()).attr('disabled', true);
+    jQuery(this.getField()).attr('disabled', true);
 };
 
 PandaUploader.HTML5Widget.prototype.enable = function() {
-    $(this.getField()).removeAttr('disabled');
+    jQuery(this.getField()).removeAttr('disabled');
 };
 
 PandaUploader.HTML5Widget.prototype.getField = function() {

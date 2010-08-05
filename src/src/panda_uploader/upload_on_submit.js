@@ -20,7 +20,7 @@ PandaUploader.UploadOnSubmit.prototype.init = function() {
         return false;
     }
 
-    if ($(form).find('[name=submit], #submit').length != 0) {
+    if (jQuery(form).find('[name=submit], #submit').length != 0) {
         PandaUploader.alert("An element of your video upload form is incorrect (most probably the submit button). Neither NAME nor ID can be set to \"submit\" on any field.");
         return false;
     }
@@ -29,15 +29,15 @@ PandaUploader.UploadOnSubmit.prototype.init = function() {
 };
 
 PandaUploader.UploadOnSubmit.prototype.disableSubmitButton = function(){
-    $(this.getSubmitButton()).attr('disabled', true);
+    jQuery(this.getSubmitButton()).attr('disabled', true);
 };
 
 PandaUploader.UploadOnSubmit.prototype.enableSubmitButton = function(){
-    return $(this.getSubmitButton()).removeAttr('disabled');
+    return jQuery(this.getSubmitButton()).removeAttr('disabled');
 };
 
 PandaUploader.UploadOnSubmit.prototype.getSubmitButton = function() {
-    return $(this.getForm()).find('input[type=submit]');
+    return jQuery(this.getForm()).find('input[type=submit]');
 };
 
 PandaUploader.UploadOnSubmit.prototype.getForm = function() {
@@ -60,7 +60,7 @@ PandaUploader.UploadOnSubmit.prototype.onwidgetload = function() {
       return;
     }
 
-    $(form).submit(PandaUploader.bind(this, 'onsubmit'));
+    jQuery(form).submit(PandaUploader.bind(this, 'onsubmit'));
 
     if(this.disable_submit_button) {
         this.disableSubmitButton();
