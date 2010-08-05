@@ -1,6 +1,7 @@
+require 'yaml'
+require 'json'
 require 'sinatra/base'
 require 'panda'
-require 'json'
 require 'pp'
 
 class PandaUploaderTestApp < Sinatra::Base
@@ -15,8 +16,11 @@ class PandaUploaderTestApp < Sinatra::Base
   end
 
   get '/' do
+    @this_is_the_index = true
     erb :index
   end
+  
+  get('/favicon.ico'){ 404 }
   
   get '/player' do
     @video_id = params[:panda_video_id]
@@ -27,12 +31,21 @@ class PandaUploaderTestApp < Sinatra::Base
     erb :player
   end
 
-  get '/basic' do
-    erb :basic
+  get '/signatures' do
+    content_type :json
+    @panda.signed_params("POST", "/videos.json").to_json
   end
 
-  get '/with_other_controls' do
-    erb :with_other_controls
+  get '/:page' do |page|
+    erb page.to_sym
+  end
+
+  helpers do
+    def panda_uploader_link_tag
+      dirpath = File.join(APP_ROOT, *%w{public panda_uploader})
+      filename = Dir.entries(dirpath).find{|entry| entry =~ %r{jquery.panda-uploader-([\.\d]|beta)+.min.js} }
+      %{<script src="/panda_uploader/#{filename}"></script>}
+    end
   end
 
   get '/with_other_libraries' do

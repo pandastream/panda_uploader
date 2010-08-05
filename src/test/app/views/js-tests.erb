@@ -1,0 +1,205 @@
+<link href="/qunit/qunit.css" rel="stylesheet" type="text/css" />
+<script src="/qunit/qunit.js"></script>
+
+<h1 id="qunit-header"><code>panda_uploader</code> JS unit tests</h1>
+<h2 id="qunit-banner"></h2>
+<h2 id="qunit-userAgent"></h2>
+<ol id="qunit-tests"></ol>
+
+<h2>Test dummies follow</h2>
+
+<h3>Setup</h3>
+<script>
+PandaUploader.alert = function(msg) {
+  PandaUploader.latest_alert = msg;
+};
+</script>
+
+<h3>Detection of features</h3>
+<script>$(document).ready(function(){
+  test("Detection of features", function() {
+    var support = PandaUploader.supportFileAPI();
+    if (jQuery.browser.webkit || jQuery.browser.mozilla || jQuery.browser.safari) {
+      ok(support, 'Detect support for File API in Webkit and Mozilla');
+    }
+    else {
+      ok(!support, 'Detect lack of support for File API in MSIE and Opera');
+    }
+
+    var support = PandaUploader.supportAjaxUploadProgressEvents();
+    var b = jQuery.browser;
+    if (b.webkit || b.mozilla || jQuery.browser.safari) {
+      ok(support, 'Detect support for Ajax upload progress events in Webkit and Mozilla');
+    }
+    else {
+      ok(!support, 'Detect lack of support for Ajax progress events in MSIE and Opera');
+    }
+
+    var support = PandaUploader.supportCORS();
+    var b = jQuery.browser;
+    if (b.webkit || b.mozilla || b.msie && b.version >= 8 || jQuery.browser.safari) {
+      ok(support, 'Detect support for CORS in Webkit, Mozilla and MSIE8+');
+    }
+    else {
+      ok(!support, 'Detect lack of support for CORS in MSIE < 8 and Opera');
+    }
+
+    var support = PandaUploader.supportHTML5Widget();
+    var b = jQuery.browser;
+    if (b.webkit || b.mozilla || jQuery.browser.safari) {
+      ok(support, 'Detect support for the HTML5 widget in Webkit and Mozilla');
+    }
+    else {
+      ok(!support, 'Detect lack of support for the HTML5 widget in MSIE and Opera');
+    }
+  });
+});</script>
+
+<h3>Generate Ajax request object</h3>
+<script>$(document).ready(function(){
+  test("Generate Ajax request object", function() {
+    var xro = PandaUploader.createXHRObject();
+    var b = jQuery.browser;
+
+    if (b.webkit || b.mozilla || b.opera) {
+      ok(xro instanceof XMLHttpRequest, 'Should use XMLHttpRequest in Webkit, Mozilla and Opera');
+    }
+    else if(b.msie && b.version >= 8) {
+      ok(xro instanceof XDomainRequest, 'Should use XDomainRequest in MSIE8+');
+    }
+    else {
+      ok('send' in xro, 'Should use strange stuff in MSIE < 8');
+    }
+  });
+});</script>
+
+<h3>Options validation</h3>
+<div id="options-validation">
+  <form>
+    <input type="hidden" class="file-1" />
+  </form>
+  <script type="text/javascript">
+  $('#options-validation .file-1').pandaUploader(<%= @panda.signed_params("POST", "/videos.json").to_json %>);
+  </script>
+</div>
+<script>$(document).ready(function(){
+  test("Options validation", function () {
+    PandaUploader.latest_alert = '';
+    $('#options-validation .file-1').checkPandaUploaderOptions(undefined, {});
+    ok(PandaUploader.latest_alert.indexOf('error') != -1, 'Check that upload parameters are given');
+
+    PandaUploader.latest_alert = '';
+    $('#options-validation .no-file').checkPandaUploaderOptions({}, {});
+    ok(PandaUploader.latest_alert.indexOf('jQuery element is empty') != -1, 'Check that the jQuery object is not empty');
+
+    PandaUploader.latest_alert = '';
+    $('#options-validation .file-1').checkPandaUploaderOptions({}, {upload_button_id: 'upload_button'});
+    equal(PandaUploader.latest_alert, '', 'No errors show for a correct form')
+  });
+});</script>
+
+<h3>HTML5 widget</h3>
+<div id="html5-widget">
+  <form>
+    <input type="hidden" class="file-1" />
+  </form>
+  <script type="text/javascript">
+  $('#html5-widget .file-1').pandaUploader(<%= @panda.signed_params("POST", "/videos.json").to_json %>);
+  </script>
+</div>
+<script>$(document).ready(function(){
+  if (PandaUploader.supportHTML5Widget()) {
+    test("HTML5 widget", function() {
+      var query = $('#html5-widget input[type=file]');
+      equal(query.length, 1, "Check that a file upload field has been added");
+    });
+  }
+});</script>
+
+<h3>Flash widget</h3>
+<div id="flash-widget">
+  <form class="form-1">
+    <input type="hidden" class="file-1" id="flash-widget-file-1" />
+  </form>
+  <script type="text/javascript">
+  $('#flash-widget .file-1').pandaUploader(<%= @panda.signed_params("POST", "/videos.json").to_json %>, {
+    widget: new PandaUploader.FlashWidget()
+  });
+  </script>
+
+  <form class="form-2">
+    <input type="hidden" class="file-2" />
+  </form>
+  <script type="text/javascript">
+  $('#flash-widget .file-2').pandaUploader(<%= @panda.signed_params("POST", "/videos.json").to_json %>, {
+    widget: new PandaUploader.FlashWidget({
+      add_filename_field: false
+    })
+  });
+  </script>
+</div>
+<script>$(document).ready(function(){
+  asyncTest("Flash widget", function() {
+    setTimeout(function(){
+      var count = 0;
+      $('#flash-widget object').each(function(){
+        count += this.id.match(/^SWFUpload_\d$/) ? 1 : 0;
+      });
+      equal(count, 2, "Check that file upload fields have been added");
+
+      var query = $('#flash-widget .form-1 input#flash-widget-file-1_orig-filename[type=text]')
+      equal(query.length, 1, "Check that a field for the filename has been added");
+
+      var query = $('#flash-widget .form-2 input[type=text]')
+      equal(query.length, 0, "Should allow omitting the filename field");
+
+      start();
+    }, 100);
+  });
+});</script>
+
+<h3>Upload on submit</h3>
+<div id="upload-on-submit">
+  <form class="form-1">
+    <input type="hidden" class="file-1" />
+    <input type="submit" >
+  </form>
+  <script type="text/javascript">
+  $('#upload-on-submit .file-1').pandaUploader(<%= @panda.signed_params("POST", "/videos.json").to_json %>);
+  </script>
+  
+  <form class="form-2">
+    <input type="hidden" class="file-2" />
+    <input type="submit" />
+  </form>
+  <script type="text/javascript">
+  $('#upload-on-submit .file-2').pandaUploader(<%= @panda.signed_params("POST", "/videos.json").to_json %>, {
+    upload_strategy: new PandaUploader.UploadOnSubmit({ disable_submit_button: false })
+  });
+  </script>
+
+  <input type="hidden" class="file-3" />
+  
+  <form class="form-4">
+    <input type="hidden" class="file-4" />
+    <input type="submit" id="submit" />
+  </form>
+</div>
+<script>$(document).ready(function(){
+  asyncTest("Upload on submit", function() {
+    setTimeout(function(){
+      ok($('#upload-on-submit .form-1 input[type=submit]').attr('disabled'), "Should disable submit button by default");
+      ok( ! $('#upload-on-submit .form-2 input[type=submit]').attr('disabled'), "Should not disable submit button when told");
+
+      PandaUploader.latest_alert = '';
+      $('#upload-on-submit .file-3').pandaUploader({});
+      ok(PandaUploader.latest_alert.indexOf('Could not find a suitable form') != -1, 'Check that a suitable form exists');
+
+      PandaUploader.latest_alert = '';
+      $('#upload-on-submit .file-4').pandaUploader({});
+      ok(PandaUploader.latest_alert.indexOf('Neither NAME nor ID can') != -1, 'Check that there are no elements with a "submit" name/ID');
+
+      start();
+    }, 100);
+  });
+});</script>

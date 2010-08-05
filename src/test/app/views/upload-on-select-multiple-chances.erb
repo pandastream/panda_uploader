@@ -1,0 +1,41 @@
+<div class="instructions">
+  <p>Upload on select.</p>
+  <p>Once a file is uploaded, a new one can be uploaded to replace it.</p>
+</div>
+
+<form action="/player" method="get" id="upload-form">
+    <label>Upload a video<br/></label>
+    
+    <input type="hidden" id="returned_video_id" name="panda_video_id" />
+    <div id="upload_progress" class="panda_upload_progress"></div>
+    
+    <p><input type="submit" value="Save" /></p>
+</form>
+<script type="text/javascript">
+var signed_params = <%= @panda.signed_params("POST", "/videos.json").to_json %>;
+
+$('#returned_video_id').pandaUploader(get_signed_params, {
+    upload_progress_id: 'upload_progress',
+    api_url: '<%= @panda.api_url %>',
+    uploader_dir: '/panda_uploader',
+    upload_strategy: new PandaUploader.UploadOnSelect()
+});
+
+function get_signed_params() {
+    var ret = signed_params;
+    $.getJSON('/signatures', {
+        ie_cache_buster: IECacheBuster()
+    }, function(res) {
+        signed_params = res;
+    });
+    return ret;
+}
+
+function IECacheBuster() {
+    if ( ! this.ie_cache_buster) {
+        this.ie_cache_buster = 0;
+    }
+    return ++this.ie_cache_buster;
+}
+</script>
+

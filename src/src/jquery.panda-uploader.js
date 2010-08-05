@@ -1,48 +1,33 @@
 (function(){
 
-UPLOADING=0
-STOP=1
 
-jQuery.fn.pandaUploader = function(signed_params, options, swfupload_options) {
-    var form = this.parents("form")[0];
-    
+jQuery.fn.checkPandaUploaderOptions = function(signed_params, options) {
     if (signed_params === undefined) {
-        alert("There was an error setting up the upload form. (The upload parameters were not specified).");
-        return false;
-    }
-    
-    options = options === undefined ? {} : options;
-    swfupload_options = swfupload_options === undefined ? {} : swfupload_options;
-    
-    if (options.upload_button_id === undefined) {
-        alert("You have to specify the button id");
+        PandaUploader.alert("There was an error setting up the upload form. (The upload parameters were not specified).");
         return false;
     }
     
     if (this.size() == 0) {
-        alert("The jQuery element is empty. Method pandaUploader() cannot be executed");
+        PandaUploader.alert("The jQuery element is empty. Method pandaUploader() cannot be executed");
         return false;
     }
     
-    if ( ! form) {
-        alert("Could not find a suitable form. Please place the call to pandaUploader() after the form, or to be executed onload().");
+    return true;
+}
+
+jQuery.fn.pandaUploader = function(signed_params, options) {
+    options = options === undefined ? {} : options;
+    if ( ! this.checkPandaUploaderOptions(signed_params, options)) {
         return false;
     }
-    
-    if (jQuery(form).find('[name=submit], #submit').length != 0) {
-        alert("An element of your video upload form is incorrect (most probably the submit button). Neither NAME nor ID can be set to \"submit\" on any field.");
-        return false;
-    }
-    
     
     options = jQuery.extend({
-        upload_filename_id: null,
         upload_progress_id: null,
         api_host: 'api.pandastream.com',
         progress_handler: null,
         uploader_dir: "/panda_uploader",
-        disable_submit_button: true,
-        strategy: 'upload_on_submit'
+        upload_strategy: null,
+        widget: null
     }, options);
     options['api_url'] = options['api_url'] || 'http://' + options['api_host'] + '/v2';
     
@@ -50,284 +35,25 @@ jQuery.fn.pandaUploader = function(signed_params, options, swfupload_options) {
         options.progress_handler = new ProgressUpload(options);
     }
     
-    var uploader = this.swfupload(jQuery.extend({
-        upload_url: options.api_url + '/videos.json',
-        file_size_limit : 0,
-        file_types : "*.*",
-        file_types_description : "All Files",
-        file_upload_limit : 0,
-        flash_url : options.uploader_dir + "/swfupload.swf",
-        button_image_url : options.uploader_dir + "/choose_file_button.png",
-        button_width : 87,
-        button_height : 27,
-        button_placeholder_id : options.upload_button_id,
-        file_post_name: "file",
-        debug: false
-    }, swfupload_options));
-    
-    var strategyClass = null;
-    switch(options.strategy) {
-    case 'upload_on_submit':
-        strategyClass = UploadOnSubmit;
-        break;
-    case 'upload_on_select':
-        strategyClass = UploadOnSelect;
-        break;
-    default:
-        strategyClass = options.strategy;
+    var widget = options.widget;
+    if ( ! widget) {
+        widget = new PandaUploader.SmartWidget();
     }
-    strategy = new strategyClass(form, options, uploader);
-
-    uploader.bind('fileQueued', function() {
-        uploader.data('__swfu').setPostParams(signed_params.call ? signed_params() : signed_params)
-    })
-
-    uploader.bind('swfuploadLoaded', bondage(strategy, 'onLoad'));
-    uploader.bind('fileQueued', bondage(strategy, 'onFileQueued'));
-    uploader.bind('uploadStart', bondage(strategy, 'onStart'));
-    uploader.bind('uploadProgress', bondage(strategy, 'onProgress'));
-    uploader.bind('uploadSuccess', bondage(strategy, 'onSuccess'));
-    uploader.bind('uploadError', bondage(strategy, 'onError'));
-    uploader.bind('uploadComplete', bondage(strategy, 'onComplete'));
+    
+    if ( ! options.upload_strategy) {
+        options.upload_strategy = new PandaUploader.UploadOnSubmit();
+    }
+    options.upload_strategy.setUploadWidget(widget)
+    
+    widget.init(this, signed_params, options);
     
     var $cancel_button = jQuery('#' + options.upload_cancel_button_id);
     if ($cancel_button) {
-        $cancel_button.click(bondage(strategy, 'onCancel'));
+        $cancel_button.click(PandaUploader.bind(this.upload_strategy, 'onCancel'));
     }
     
-    return uploader;
-}
-
-
-//
-// BaseStrategy
-//
-
-function BaseStrategy(form, options, uploader) {
-    this.form = form;
-    this.options = options;
-    this.uploader = uploader;
-}
-BaseStrategy.prototype = {
-    disableSubmitButton: function(value){
-        jQuery(this.form).find("input[type=submit]").attr("disabled", value);
-    },
-
-    onLoad: function() {
-        var form = this.uploader.parents("form").eq(0);
-        form.submit(bondage(this, 'onSubmit'));
-        if(this.options.disable_submit_button) {
-            this.disableSubmitButton(true);
-        }
-    },
-    
-    onSubmit: function() {
-    },
-    onFileQueued: function() {
-    },
-    onStart: function() {
-    },
-    onProgress: function() {
-    },
-    onSuccess: function() {
-    },
-    onError: function() {
-    },
-    onComplete: function() {
-    },
-    
-    triggerEvent: function(event, args, alternative) {
-        var handler = this.options[event];
-        if (handler) {
-            handler.apply(this, args);
-        } else if (alternative) {
-            alternative();
-        }
-    }
-}
-
-
-//
-// UploadOnSubmit
-//
-
-function UploadOnSubmit(form, options, uploader) {
-    BaseStrategy.apply(this, [form, options, uploader]);
-    this.num_files = 0;
-    this.num_pending = 0;
-    this.num_errors = 0
-    this.status = STOP
-}
-UploadOnSubmit.prototype = new BaseStrategy();
-UploadOnSubmit.prototype.constructor = UploadOnSubmit;
-
-UploadOnSubmit.prototype.onFileQueued = function(event, file) {
-    this.num_files++;
-    this.num_pending++;
-    var $field = jQuery('#' + this.options.upload_filename_id);
-    if ($field.size() == 0) {
-        return;
-    }
-    $field.val(file.name);
-    this.disableSubmitButton(false)
-}
-
-UploadOnSubmit.prototype.onSubmit = function(event) {
-    if (this.num_files > 0) {
-        this.uploader.swfupload('startUpload');
-        return false;
-    }
-}
-
-UploadOnSubmit.prototype.onStart = function(event, file) {
-    this.status = UPLOADING;
-    this.uploader.swfupload('setButtonDisabled', true);
-    this.options.progress_handler.reset();
-
-    this.disableSubmitButton(true);
-    if (this.options.progress_handler) {
-        this.options.progress_handler.start(file);
-    }
-    this.triggerEvent('start', [event, file]);
-}
-
-UploadOnSubmit.prototype.onCancel = function(event) {
-    this.uploader.swfupload('cancelUpload', '', false);
-    this.uploader.swfupload('setButtonDisabled', false);
-
-    jQuery('#' + this.options.upload_filename_id).val('');
-    this.options.progress_handler.reset();
-    this.num_files = 0;
-    this.num_pending = 0;
-    this.num_errors = 0;
-    if (this.options.disableSubmitButton) {
-        this.disableSubmitButton(true);
-    }
-    
-    if(this.uploader.status == UPLOADING) {
-        this.triggerEvent('cancel', [event]);
-    }
-    this.status = STOP;
-}
-
-UploadOnSubmit.prototype.onProgress = function(event, file, bytesLoaded, bytesTotal) {
-    try {
-        if (this.options.progress_handler) {
-            this.options.progress_handler.setProgress(file, bytesLoaded, bytesTotal);
-        }
-    } catch (ex) {
-    }
-}
-
-UploadOnSubmit.prototype.onSuccess = function(event, file, response) {
-    this.uploader.val(eval('(' + response + ')').id);
-    this.num_pending--;
-    this.triggerEvent('success', [event, file, response]);
-}
-
-UploadOnSubmit.prototype.onError = function(event, file, code, message, more) {
-    jQuery('#' + this.options.upload_filename_id).val('');
-    this.uploader.swfupload('setButtonDisabled', false);
-    this.options.progress_handler.reset();
-
-    this.num_pending--;
-    this.num_errors++;
-
-    this.triggerEvent('error', [event, file, message], function() {
-        alert("There was an error uploading the file.\n\nHTTP error code " + message);
-    });
-}
-
-UploadOnSubmit.prototype.onComplete = function(event, num_uploads) {
-    if (this.num_files > 0 && this.num_pending <= 0 && this.num_errors <= 0) {
-        if ( ! this.uploader.val()) {
-            alert('The video ID was not stored on the form');
-            return;
-        }
-
-        this.status = STOP;
-        this.triggerEvent('complete', [event], bondage(this.form, 'submit'));
-    }
-}
-
-
-//
-// UploadOnSelect
-//
-
-function UploadOnSelect(form, options, uploader) {
-    BaseStrategy.apply(this, [form, options, uploader]);
-}
-UploadOnSelect.prototype = new BaseStrategy();
-UploadOnSelect.prototype.constructor = UploadOnSelect;
-
-UploadOnSelect.prototype.onFileQueued = function(event, file) {
-    this.uploader.swfupload('startUpload');
-}
-
-UploadOnSelect.prototype.onStart = function(event, file) {
-    this.options.progress_handler.reset();
-
-    this.disableSubmitButton(true);
-    if (this.options.progress_handler) {
-        this.options.progress_handler.start(file);
-    }
-    this.triggerEvent('start', [event, file]);
-}
-
-UploadOnSelect.prototype.onCancel = function(event) {
-    this.uploader.swfupload('cancelUpload', '', false);
-    this.uploader.swfupload('setButtonDisabled', false);
-
-    jQuery('#' + this.options.upload_filename_id).val('');
-    this.options.progress_handler.reset();
-    if (this.options.disableSubmitButton) {
-        this.disableSubmitButton(true);
-    }
-
-    if(this.uploader.status == UPLOADING) {
-        this.triggerEvent('cancel', [event]);
-    }
-}
-
-UploadOnSelect.prototype.onProgress = function(event, file, bytesLoaded, bytesTotal) {
-    try {
-        if (this.options.progress_handler) {
-            this.options.progress_handler.setProgress(file, bytesLoaded, bytesTotal);
-        }
-    } catch (ex) {
-    }
-}
-
-UploadOnSelect.prototype.onSuccess = function(event, file, response) {
-    this.uploader.val(eval('(' + response + ')').id);
-    this.num_pending--;
-
-    this.triggerEvent('success', [event, file, response]);
-}
-
-UploadOnSelect.prototype.onError = function(event, file, code, message, more) {
-    jQuery('#' + this.options.upload_filename_id).val('');
-    this.options.progress_handler.reset();
-
-    this.num_pending--;
-    this.num_errors++;
-
-    this.triggerEvent('error', [event, file, message], function() {
-        alert("There was an error uploading the file.\n\nHTTP error code " + message);
-    });
-}
-
-UploadOnSelect.prototype.onComplete = function(event, num_uploads) {
-    if ( ! this.uploader.val()) {
-        alert('The video ID was not stored on the form');
-        return;
-    }
-    this.disableSubmitButton(false);
-
-    this.status = STOP;
-    this.triggerEvent('complete', [event]);
-}
+    return this;
+};
 
 
 //
@@ -337,9 +63,15 @@ UploadOnSelect.prototype.onComplete = function(event, num_uploads) {
 function ProgressUpload(options) {
     this.options = options;
     this.$p = jQuery('#' + this.options.upload_progress_id);
-    this.$p.css('display', 'none');
+    this.$p.css({
+        display: 'none',
+        width: '250px',
+        height: '26px',
+        border: '1px solid #0c3c7e',
+        background: 'url(' + this.options.uploader_dir + '/progress_bg.gif) repeat scroll left top'
+    });
     this.count = 0;
-}
+};
 
 ProgressUpload.prototype = {
     start: function(file) {
@@ -353,18 +85,22 @@ ProgressUpload.prototype = {
         }
         
         this.progress = this.$p.find('.progress-inside');
+        this.progress.css({
+            height: '100%',
+            backgroundImage: 'url(' + this.options.uploader_dir + '/progress_fg.gif)'
+        });
         this.setProgress(file, 0, file.size);
         this.$p.css('display', 'block');
         var self = this;
-        this.timer = setInterval(function(){self.animateBarBg()}, 20);
+        this.timer = setInterval(function(){ self.animateBarBg() }, 20);
     },
     
-    setProgress: function(file, bytesLoaded, bytesTotal) {
+    setProgress: function(file, loaded, total) {
         if ( ! this.progress) {
             return;
         }
-        var percent = Math.ceil((bytesLoaded / bytesTotal) * 100);
-        jQuery(this.progress).css('width', percent + '%');
+        var percent = Math.ceil(loaded*100/total);
+        $(this.progress).css('width', percent + '%');
     },
     
     animateBarBg: function() {
@@ -382,15 +118,10 @@ ProgressUpload.prototype = {
     
     reset: function(){
         clearInterval(this.timer)
-        jQuery(this.progress).css('width', '0%');
+        $(this.progress).css('width', '0%');
         this.$p.css('display', 'none');
     }
-}
+};
 
-function bondage(object, method_name) {
-    return function() {
-        return object[method_name].apply(object, arguments);
-    }
-}
 
 })();

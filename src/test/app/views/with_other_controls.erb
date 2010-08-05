@@ -1,9 +1,5 @@
 <div class="instructions">
-  <p>With other controls. Uploads on select.</p>
-  <ul>
-    <li>Simply check that the additional field and the label are not disabled</li>
-    <li>It may happen that they work anyway, but look disabled, except in IE where they won't work at all</li>
-  </ul>
+  <p>Is the "Additional control" enabled and working? (Check IE6)</p>
 </div>
 
 <form action="/player" method="get" id="upload-form">
@@ -11,20 +7,15 @@
     
     <p><label>Additional control <input type="text" name="additional_control"></label></p>
     
-    <span id="upload_button"></span>
-    <input type="text" id="upload_filename" disabled="true" class="panda_upload_filename" />
-    <div id="upload_progress" class="panda_upload_progress"></div>
     <input type="hidden" id="returned_video_id" name="panda_video_id" />
+    <div id="upload_progress" class="panda_upload_progress"></div>
 
     <p><input type="submit" value="Save" /></p>
 </form>
 <script type="text/javascript">
 $('#returned_video_id').pandaUploader(<%= @panda.signed_params("POST", "/videos.json").to_json %>, {
-    upload_button_id: 'upload_button',
-    upload_filename_id: 'upload_filename',
     upload_progress_id: 'upload_progress',
     api_url: '<%= @panda.api_url %>',
-    uploader_dir: '/panda_uploader',
-    strategy: 'upload_on_select',
+    uploader_dir: '/panda_uploader'
 });
 </script>

@@ -1,4 +1,4 @@
-PANDA_UPLOADER_VERSION = 0.8.4
+PANDA_UPLOADER_VERSION = 1.0
 PACKAGE_NAME = panda_uploader
 SRC_ROOT = src
 SRC_DIR = ${SRC_ROOT}/src
@@ -10,7 +10,16 @@ PANDA_DIST_DIR = ${DIST_DIR}/${PACKAGE_NAME}
 PU_TAR = ${DIST_DIR}/${PACKAGE_NAME}.tar.gz
 PU_CAT = ${DIST_DIR}/jquery.panda-uploader-${PANDA_UPLOADER_VERSION}.cat.js
 PU_MIN = ${PANDA_DIST_DIR}/jquery.panda-uploader-${PANDA_UPLOADER_VERSION}.min.js
-PU_SIMPLE = ${SRC_DIR}/jquery.panda-uploader.js
+PU_FILES = ${SRC_DIR}/panda_uploader/base.js\
+	${SRC_DIR}/panda_uploader/base_widget.js\
+	${SRC_DIR}/panda_uploader/smart_widget.js\
+	${SRC_DIR}/panda_uploader/flash_widget.js\
+	${SRC_DIR}/panda_uploader/html5_widget.js\
+	${SRC_DIR}/panda_uploader/base_strategy.js\
+	${SRC_DIR}/panda_uploader/upload_on_submit.js\
+	${SRC_DIR}/panda_uploader/upload_on_select.js\
+	${SRC_DIR}/jquery.panda-uploader.js
+
 TMP_PU_VERSION = ${SRC_DIR}/jquery.panda-uploader-${PANDA_UPLOADER_VERSION}.js
 GENERATED = ${PU_MIN} ${PU_CAT} ${PU_TAR} ${TMP_PU_VERSION}
 
@@ -19,7 +28,7 @@ MINJAR = java -jar ${BUILD_DIR}/google-compiler-20100226.jar
 MODULES = ${SRC_DIR}/swfobject.js\
 	${SRC_DIR}/swfupload.js\
 	${SRC_DIR}/jquery.swfupload.js\
-	${SRC_DIR}/jquery.panda-uploader-${PANDA_UPLOADER_VERSION}.js
+	${TMP_PU_VERSION}
 
 all: versionize min tar copy_to_test
 	@@rm -f ${TMP_PU_VERSION}
@@ -40,7 +49,7 @@ versionize:
 	@@echo  "// version: ${PANDA_UPLOADER_VERSION}" > ${TMP_PU_VERSION}
 	@@echo  "// name: ${PACKAGE_NAME}" >> ${TMP_PU_VERSION}
 	@@echo  "" >> ${TMP_PU_VERSION}
-	@@cat ${PU_SIMPLE} >> ${TMP_PU_VERSION}
+	@@cat ${PU_FILES} >> ${TMP_PU_VERSION}
   
 ${PU_TAR}: ${PU_MIN}
 	@@echo "Packaging as " ${PU_TAR}
@@ -53,7 +62,7 @@ ${PU_MIN}: ${PU_CAT}
 	@@rm -f ${PU_CAT}
 	
 
-${PU_CAT}: ${PU_SIMPLE}
+${PU_CAT}: ${PU_FILES}
 	@@echo "Building" ${PU_CAT}
 	@@cat ${MODULES} > ${PU_CAT}
 
