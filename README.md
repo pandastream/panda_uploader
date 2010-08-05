@@ -21,7 +21,7 @@ First of all
 
 Copy the `panda_uploader` directory to your app's public path.
 
-Include the following declaration in your page, after loading jQuery. Replace `VERSION` with the correct number:
+Include the following declaration in your page, after loading jQuery. **Replace `VERSION` with the correct number**:
 
     <script src="/panda_uploader/jquery.panda-uploader-VERSION.min.js" type="text/javascript"></script> 
 
