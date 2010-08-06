@@ -30,7 +30,7 @@ MODULES = ${SRC_DIR}/swfobject.js\
 	${SRC_DIR}/jquery.swfupload.js\
 	${TMP_PU_VERSION}
 
-all: versionize min tar copy_to_test
+all: versionize min tar copy_to_test before_end
 	@@rm -f ${TMP_PU_VERSION}
 	@@echo "Panda uploader build complete."
 
@@ -43,6 +43,7 @@ min: ${PU_MIN}
 copy_to_test:
 	@@rm -rf ${TEST_DIR}/app/public/panda_uploader
 	@@cp -pr ${PANDA_DIST_DIR} ${TEST_DIR}/app/public/panda_uploader
+	@@cp ${PU_CAT} ${TEST_DIR}/app/public/panda_uploader/
 
 versionize:
 	@@echo "Generate version" ${PANDA_UPLOADER_VERSION}
@@ -59,8 +60,9 @@ ${PU_MIN}: ${PU_CAT}
 	@@echo "Minifying" ${PU_CAT}
 	@@${MINJAR} --js ${PU_CAT} --warning_level QUIET > ${PU_MIN}
 	@@echo "Copying minified file to " ${PU_MIN}
+
+before_end:
 	@@rm -f ${PU_CAT}
-	
 
 ${PU_CAT}: ${PU_FILES}
 	@@echo "Building" ${PU_CAT}

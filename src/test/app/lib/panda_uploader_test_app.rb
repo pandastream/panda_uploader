@@ -41,9 +41,9 @@ class PandaUploaderTestApp < Sinatra::Base
   end
 
   helpers do
-    def panda_uploader_link_tag
+    def panda_uploader_link_tag(version = 'cat')
       dirpath = File.join(APP_ROOT, *%w{public panda_uploader})
-      filename = Dir.entries(dirpath).find{|entry| entry =~ %r{jquery.panda-uploader-([\.\d]|beta)+.min.js} }
+      filename = Dir.entries(dirpath).find{|entry| entry =~ %r{jquery.panda-uploader-([\.\d]|beta)+.#{version}.js} }
       %{<script src="/panda_uploader/#{filename}"></script>}
     end
   end
