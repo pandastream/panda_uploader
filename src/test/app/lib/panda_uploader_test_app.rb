@@ -2,6 +2,7 @@ require 'sinatra/base'
 require 'panda'
 require 'json'
 require 'pp'
+require 'yaml'
 
 class PandaUploaderTestApp < Sinatra::Base
 
