@@ -75,7 +75,10 @@ The following is the simplest working form that will upload a video:
         'timestamp': '2010-02-02T17:04:46+00:00',
         'signature': 'dC/M34sNc7v+oyhFRfVLEKpkVMNyhhyuyCECAQiR6nrUw='
     };
-    jQuery("#returned_video_id").pandaUploader(panda_access_details);
+    jQuery("#returned_video_id").pandaUploader(panda_access_details, {
+        // Uncomment the line below if your account is in the EU
+        // api_host: 'api.eu.pandastream.com'
+    });
     </script>
 
 This will render a fairly ugly form. We'll worry about the looks later. For now:
