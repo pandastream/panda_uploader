@@ -32,7 +32,15 @@ PandaUploader.HTML5Widget.prototype.start = function() {
     this.xhr.setRequestHeader("X-Requested-With", "XMLHttpRequest");
     this.xhr.setRequestHeader("X-File-Name", file.fileName);
     this.xhr.setRequestHeader("X-Query-Params", json_string);
-    this.xhr.send(file);
+
+    if ('getAsBinary' in file) {
+      // Firefox 3.5
+      this.xhr.sendAsBinary(file.getAsBinary());
+    }
+    else {
+      // W3C-blessed interface
+      this.xhr.send(file);
+    }
 };
 
 PandaUploader.HTML5Widget.prototype.abort = function() {
