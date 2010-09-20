@@ -27,7 +27,8 @@ jQuery.fn.pandaUploader = function(signed_params, options) {
         progress_handler: null,
         uploader_dir: "/panda_uploader",
         upload_strategy: null,
-        widget: null
+        widget: null,
+        allowed_extensions: ['3g2', '3gp', 'asf', 'asx', 'avi', 'bdm', 'bsf', 'cpi', 'divx', 'dmsm', 'dream', 'dvdmedia', 'dvr-ms', 'f4v', 'fbr', 'flv', 'hdmov', 'm2p', 'm4v', 'mkv', 'mod', 'moi', 'mov', 'mp4', 'mpeg', 'mpg', 'mts', 'mxf', 'ogm', 'psh', 'rm', 'rmvb', 'scm', 'smil', 'srt', 'stx', 'swf', 'tix', 'trp', 'ts', 'vob', 'vro', 'wmv', 'wtv', 'xvid', 'yuv']
     }, options);
     options['api_url'] = options['api_url'] || 'http://' + options['api_host'] + '/v2';
     

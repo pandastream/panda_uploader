@@ -1999,7 +1999,7 @@ PandaUploader.FlashWidget.prototype.init = function() {
     this.swfupload = this.query.swfupload(jQuery.extend({
         upload_url: this.options.api_url + '/videos.json',
         file_size_limit : 0,
-        file_types : "*.*",
+        file_types: this.allowedFileTypes(),
         file_types_description : "All Files",
         file_upload_limit : 0,
         flash_url : this.options.uploader_dir + "/swfupload.swf",
@@ -2075,6 +2075,16 @@ PandaUploader.FlashWidget.prototype.setValue = function(value) {
 
 PandaUploader.FlashWidget.prototype.getValue = function() {
     return this.swfupload.val();
+};
+
+PandaUploader.FlashWidget.prototype.allowedFileTypes = function() {
+    if (! this.options.allowed_extensions) {
+        return '*.*';
+    }
+    var ret = '';
+    return jQuery.map(this.options.allowed_extensions, function(e){
+        return '*.' + e;
+    }).join(';');
 };
 
 PandaUploader.HTML5Widget = function() {
@@ -2371,7 +2381,8 @@ jQuery.fn.pandaUploader = function(signed_params, options) {
         progress_handler: null,
         uploader_dir: "/panda_uploader",
         upload_strategy: null,
-        widget: null
+        widget: null,
+        allowed_extensions: ['3g2', '3gp', 'asf', 'asx', 'avi', 'bdm', 'bsf', 'cpi', 'divx', 'dmsm', 'dream', 'dvdmedia', 'dvr-ms', 'f4v', 'fbr', 'flv', 'hdmov', 'm2p', 'm4v', 'mkv', 'mod', 'moi', 'mov', 'mp4', 'mpeg', 'mpg', 'mts', 'mxf', 'ogm', 'psh', 'rm', 'rmvb', 'scm', 'smil', 'srt', 'stx', 'swf', 'tix', 'trp', 'ts', 'vob', 'vro', 'wmv', 'wtv', 'xvid', 'yuv']
     }, options);
     options['api_url'] = options['api_url'] || 'http://' + options['api_host'] + '/v2';
     
