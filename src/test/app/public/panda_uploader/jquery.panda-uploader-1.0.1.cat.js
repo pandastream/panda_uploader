@@ -1817,7 +1817,7 @@ SWFUpload.Console.writeLine = function (message) {
 		}
 	};
 	
-})(jQuery);// version: 1.0
+})(jQuery);// version: 1.0.1
 // name: panda_uploader
 
 function PandaUploader(){}
