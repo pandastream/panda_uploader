@@ -24,8 +24,7 @@ PandaUploader.HTML5Widget.prototype.init = function() {
 
 PandaUploader.HTML5Widget.prototype.start = function() {
     var file = this.getFile();
-    var params = this.getSignedParams();
-    var json_string = '{"access_key":"' + params.access_key + '", "cloud_id":"' + params.cloud_id + '", "timestamp":"' + params.timestamp + '", "signature":"' + params.signature + '"}';
+    var json_string = PandaUploader.toJSON(this.getSignedParams());
     this.xhr.open('POST', this.options.api_url + '/videos.json', true);
     this.xhr.setRequestHeader("Cache-Control", "no-cache");
     this.xhr.setRequestHeader("Content-Type", "application/octet-stream");
