@@ -16,8 +16,7 @@ PandaUploader.HTML5Widget.prototype.init = function() {
     this.xhr.upload.addEventListener('abort', this.boundHandler('onabort'), false);
     this.bindRSCEvent();
 
-    this.query.after('<input type="file" />');
-    jQuery(this.getField()).change(this.boundHandler('onchange'));
+    this.createField();
     
     this.triggerEvent('onwidgetload');
 };
@@ -63,6 +62,11 @@ PandaUploader.HTML5Widget.prototype.enable = function() {
     jQuery(this.getField()).removeAttr('disabled');
 };
 
+PandaUploader.HTML5Widget.prototype.createField = function() {
+    this.query.after('<input type="file" />');
+    jQuery(this.getField()).change(PandaUploader.bind(this, 'onchange'))
+}
+
 PandaUploader.HTML5Widget.prototype.getField = function() {
     return this.query.next().get(0);
 };
@@ -92,4 +96,23 @@ PandaUploader.HTML5Widget.prototype.onreadystatechange = function(event) {
 
 PandaUploader.HTML5Widget.prototype.bindRSCEvent = function() {
   jQuery(this.xhr).one('readystatechange', PandaUploader.bind(this, 'onreadystatechange'));
+}
+
+PandaUploader.HTML5Widget.prototype.onchange = function() {
+    var ok = false;
+    var that = this;
+    jQuery.each(this.options.allowed_extensions, function(i, ext) {
+        var re = new RegExp('\\.' + ext + '$');
+        if (re.test(that.getFile().fileName)) {
+            ok = true;
+        }
+    });
+    if (ok) {
+        this.triggerEvent('onchange');
+    }
+    else {
+        this.query.next('[type=file]').remove();
+        this.createField();
+        PandaUploader.alert("You did not select a video file. Please select a valid file.");
+    }
 }
