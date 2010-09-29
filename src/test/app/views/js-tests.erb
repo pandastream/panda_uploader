@@ -203,3 +203,13 @@ PandaUploader.alert = function(msg) {
     }, 100);
   });
 });</script>
+
+<script>$(document).ready(function(){
+  test("JSON encoding", function() {
+    var result = PandaUploader.toJSON({1: 'one', '2': 'second element'});
+    equal(result, '{"1":"one","2":"second element"}', "works");
+
+    var result = PandaUploader.toJSON({"funny":'" and "'});
+    equal(result, "{\"funny\":\"\\\" and \\\"\"}", "works with funny characters");
+  });
+});</script>

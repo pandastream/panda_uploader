@@ -1817,7 +1817,7 @@ SWFUpload.Console.writeLine = function (message) {
 		}
 	};
 	
-})(jQuery);// version: 1.0
+})(jQuery);// version: 1.0.1
 // name: panda_uploader
 
 function PandaUploader(){}
@@ -1899,6 +1899,18 @@ PandaUploader.parseJSON = function(json_str) {
       return eval('(' + json_str + ')');
   }
 };
+
+PandaUploader.toJSON = function(hash) {
+    var pairs = [];
+    $.each(hash, function(key, value) {
+        pairs.push('"' + escape(key) + '":"' + escape(value) + '"');
+    });
+    return '{' + pairs.join(',') + '}';
+    
+    function escape(string) {
+        return string.replace(new RegExp('"', 'g'), '\\"');
+    }
+}
 
 PandaUploader.BaseWidget = function() {
 };
@@ -2111,8 +2123,7 @@ PandaUploader.HTML5Widget.prototype.init = function() {
 
 PandaUploader.HTML5Widget.prototype.start = function() {
     var file = this.getFile();
-    var params = this.getSignedParams();
-    var json_string = '{"access_key":"' + params.access_key + '", "cloud_id":"' + params.cloud_id + '", "timestamp":"' + params.timestamp + '", "signature":"' + params.signature + '"}';
+    var json_string = PandaUploader.toJSON(this.getSignedParams());
     this.xhr.open('POST', this.options.api_url + '/videos.json', true);
     this.xhr.setRequestHeader("Cache-Control", "no-cache");
     this.xhr.setRequestHeader("Content-Type", "application/octet-stream");
@@ -2204,6 +2215,7 @@ PandaUploader.HTML5Widget.prototype.onchange = function() {
         PandaUploader.alert("You did not select a video file. Please select a valid file.");
     }
 }
+
 PandaUploader.BaseStrategy = function() {
 };
 PandaUploader.BaseStrategy.prototype = {

@@ -77,3 +77,15 @@ PandaUploader.parseJSON = function(json_str) {
       return eval('(' + json_str + ')');
   }
 };
+
+PandaUploader.toJSON = function(hash) {
+    var pairs = [];
+    $.each(hash, function(key, value) {
+        pairs.push('"' + escape(key) + '":"' + escape(value) + '"');
+    });
+    return '{' + pairs.join(',') + '}';
+    
+    function escape(string) {
+        return string.replace(new RegExp('"', 'g'), '\\"');
+    }
+}
