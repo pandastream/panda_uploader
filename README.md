@@ -143,6 +143,7 @@ At the moment, the following arguments are supported:
 * **`uploader_dir`**: path were the uploader files are located in the web server. By default "`/panda_uploader`"
 * **`upload_strategy`**: see below.
 * **`widget`**: force use of HTML5-based or Flash-based widget. By default, HTML5 widget is used if supported, falling back to Flash if not. See below.
+* **`allowed_extensions`**: an array of strings. These are the file extensions that will be allowed by the uploader. See below.
 * and several events: `onwidgetload`, `onchange`, `onprogress`, `onreadystatechange`, `onsuccess`, `onload`. See below.
 
 
@@ -227,6 +228,23 @@ If you want the HTML5 widget to be user if possible, but still want to be able t
     jQuery("#returned_video_id").pandaUploader(panda_access_details, {
         widget: new PandaUploader.SmartWidget(html5_options, flash_options)
     });
+
+
+### Allowed extensions
+
+The setting `allowed_extensions` tells the uploader what file extensions are acceptable. By default, many common file exceptions are accepted, but you may tweak this list.
+
+If you don't want any limitation, set it to `null`:
+
+  $('#returned_video_id').pandaUploader(panda_access_details, {
+      allowed_extensions: null
+  });
+
+If you wish to customize the list of allowed file extensions, put them in an array like follows:
+
+  $('#returned_video_id').pandaUploader(panda_access_details, {
+      allowed_extensions: ['mp4', 'wmv', 'mkv']
+  });
 
 
 ### Custom events
