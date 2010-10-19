@@ -144,7 +144,7 @@ At the moment, the following arguments are supported:
 * **`upload_strategy`**: see below.
 * **`widget`**: force use of HTML5-based or Flash-based widget. By default, HTML5 widget is used if supported, falling back to Flash if not. See below.
 * **`allowed_extensions`**: an array of strings. These are the file extensions that will be allowed by the uploader. See below.
-* and several events: `onwidgetload`, `onchange`, `onprogress`, `onreadystatechange`, `onsuccess`, `onload`. See below.
+* and several events: `onwidgetload`, `onchange`, `onprogress`, `onreadystatechange`, `onsuccess`, `onload`, `onerror`. See below.
 
 
 ### Upload strategies
@@ -257,6 +257,7 @@ This plugin also provides a number of events where you can plug your own actions
 * onreadystatechange: called when the server responds to preflight ([see W3C spec](http://www.w3.org/TR/XMLHttpRequest2)) and upload requests
 * onload: file upload completed (successfully or not). Results are not yet available.
 * onsuccess: operation completed successfully
+* onerror: the upload finished with an error
 
 Example:
 
