@@ -12,9 +12,8 @@ PandaUploader.HTML5Widget.prototype.init = function() {
     this.xhr.upload.addEventListener('loadstart', this.boundHandler('onloadstart'), false);
     this.xhr.upload.addEventListener('progress', this.boundHandler('onprogress'), false);
     this.xhr.upload.addEventListener('load', this.boundHandler('onload'), false);
-    this.xhr.upload.addEventListener('error', this.boundHandler('onerror'), false);
+    this.xhr.upload.addEventListener('error', PandaUploader.bind(this, 'onerror'), false);
     this.xhr.upload.addEventListener('abort', this.boundHandler('onabort'), false);
-    this.bindRSCEvent();
 
     this.query.after('<input type="file" />');
     jQuery(this.getField()).change(this.boundHandler('onchange'));
@@ -31,7 +30,9 @@ PandaUploader.HTML5Widget.prototype.start = function() {
     this.xhr.setRequestHeader("X-Requested-With", "XMLHttpRequest");
     this.xhr.setRequestHeader("X-File-Name", file.fileName);
     this.xhr.setRequestHeader("X-Query-Params", json_string);
-
+    this.bindRSCEvent();
+    
+    this.errorCalled = false;
     if ('getAsBinary' in file) {
       // Firefox 3.5
       this.xhr.sendAsBinary(file.getAsBinary());
@@ -66,6 +67,18 @@ PandaUploader.HTML5Widget.prototype.getField = function() {
     return this.query.next().get(0);
 };
 
+PandaUploader.HTML5Widget.prototype.onerror = function(event) {
+    this.notifyError(event);
+};
+
+PandaUploader.HTML5Widget.prototype.notifyError = function(event) {
+    if (this.errorCalled) {
+        return;
+    }
+    this.errorCalled = true;
+    this.triggerEvent('onerror', [event, this.getFile()]);
+}
+
 PandaUploader.HTML5Widget.prototype.onreadystatechange = function(event) {
     this.triggerEvent('onreadystatechange', arguments);
 
@@ -85,6 +98,9 @@ PandaUploader.HTML5Widget.prototype.onreadystatechange = function(event) {
         this.triggerEvent('onsuccess', [event]);
     }
     else {
+      if (status != '200') {
+        this.notifyError(event);
+      }
       this.bindRSCEvent();
     }
 }
