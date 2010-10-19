@@ -2176,12 +2176,8 @@ PandaUploader.HTML5Widget.prototype.onreadystatechange = function(event) {
 
     try {
         status = event.target.status;
-console.log('ok')
-console.log(status)
-console.log(event.target.responseText)
     }
     catch(e) {
-console.log('exception')
         this.bindRSCEvent();
         return;
     }
