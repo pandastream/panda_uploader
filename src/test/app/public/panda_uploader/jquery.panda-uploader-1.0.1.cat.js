@@ -2161,12 +2161,12 @@ PandaUploader.HTML5Widget.prototype.onerror = function(event) {
     this.notifyError(event);
 };
 
-PandaUploader.HTML5Widget.prototype.notifyError = function() {
+PandaUploader.HTML5Widget.prototype.notifyError = function(event) {
     if (this.errorCalled) {
         return;
     }
     this.errorCalled = true;
-    this.triggerEvent('onerror', arguments);
+    this.triggerEvent('onerror', [event, this.getFile()]);
 }
 
 PandaUploader.HTML5Widget.prototype.onreadystatechange = function(event) {
@@ -2189,7 +2189,7 @@ PandaUploader.HTML5Widget.prototype.onreadystatechange = function(event) {
     }
     else {
       if (status != '200') {
-        this.notifyError();
+        this.notifyError(event);
       }
       this.bindRSCEvent();
     }
