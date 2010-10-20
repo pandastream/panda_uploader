@@ -236,15 +236,15 @@ The setting `allowed_extensions` tells the uploader what file extensions are acc
 
 If you don't want any limitation, set it to `null`:
 
-  $('#returned_video_id').pandaUploader(panda_access_details, {
-      allowed_extensions: null
-  });
+    $('#returned_video_id').pandaUploader(panda_access_details, {
+        allowed_extensions: null
+    });
 
 If you wish to customize the list of allowed file extensions, put them in an array like follows:
 
-  $('#returned_video_id').pandaUploader(panda_access_details, {
-      allowed_extensions: ['mp4', 'wmv', 'mkv']
-  });
+    $('#returned_video_id').pandaUploader(panda_access_details, {
+        allowed_extensions: ['mp4', 'wmv', 'mkv']
+    });
 
 
 ### Custom events
