@@ -72,12 +72,11 @@ function ProgressUpload(options) {
         background: 'url(' + this.options.uploader_dir + '/progress_bg.gif) repeat scroll left top'
     });
     this.count = 0;
-    this.realTotal = 0;
+    this.fileSize = 0;
 };
 
 ProgressUpload.prototype = {
     start: function(file) {
-        this.realTotal = 0;
         this.count = 0
         if (this.$p.size() == 0) {
             return;
@@ -92,20 +91,18 @@ ProgressUpload.prototype = {
             height: '100%',
             backgroundImage: 'url(' + this.options.uploader_dir + '/progress_fg.gif)'
         });
-        this.setProgress(file, 0, file.size);
+        this.fileSize = file.size;
+        this.setProgress(file, 0, this.fileSize);
         this.$p.css('display', 'block');
         var self = this;
         this.timer = setInterval(function(){ self.animateBarBg() }, 20);
     },
     
     setProgress: function(file, loaded, total) {
-        if (total > this.realTotal) {
-            this.realTotal = total;
-        }
         if ( ! this.progress) {
             return;
         }
-        var percent = Math.ceil(loaded*100/this.realTotal);
+        var percent = Math.ceil(loaded*100/this.fileSize);
         if (percent > 100) {
             percent = 100;
         }
