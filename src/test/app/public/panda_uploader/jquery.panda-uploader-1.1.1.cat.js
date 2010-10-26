@@ -2132,13 +2132,13 @@ PandaUploader.HTML5Widget.prototype.start = function() {
     this.bindRSCEvent();
     
     this.errorCalled = false;
-    if ('getAsBinary' in file) {
-      // Firefox 3.5
-      this.xhr.sendAsBinary(file.getAsBinary());
+    if ('name' in file) {
+        // W3C-blessed interface
+        this.xhr.send(file);
     }
     else {
-      // W3C-blessed interface
-      this.xhr.send(file);
+        // Firefox 3.5
+        this.xhr.sendAsBinary(file.getAsBinary());
     }
 };
 
@@ -2476,10 +2476,12 @@ function ProgressUpload(options) {
         background: 'url(' + this.options.uploader_dir + '/progress_bg.gif) repeat scroll left top'
     });
     this.count = 0;
+    this.realTotal = 0;
 };
 
 ProgressUpload.prototype = {
     start: function(file) {
+        this.realTotal = 0;
         this.count = 0
         if (this.$p.size() == 0) {
             return;
@@ -2501,10 +2503,16 @@ ProgressUpload.prototype = {
     },
     
     setProgress: function(file, loaded, total) {
+        if (total > this.realTotal) {
+            this.realTotal = total;
+        }
         if ( ! this.progress) {
             return;
         }
-        var percent = Math.ceil(loaded*100/total);
+        var percent = Math.ceil(loaded*100/this.realTotal);
+        if (percent > 100) {
+            percent = 100;
+        }
         jQuery(this.progress).css('width', percent + '%');
     },
     

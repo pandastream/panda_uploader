@@ -72,10 +72,12 @@ function ProgressUpload(options) {
         background: 'url(' + this.options.uploader_dir + '/progress_bg.gif) repeat scroll left top'
     });
     this.count = 0;
+    this.realTotal = 0;
 };
 
 ProgressUpload.prototype = {
     start: function(file) {
+        this.realTotal = 0;
         this.count = 0
         if (this.$p.size() == 0) {
             return;
@@ -97,10 +99,16 @@ ProgressUpload.prototype = {
     },
     
     setProgress: function(file, loaded, total) {
+        if (total > this.realTotal) {
+            this.realTotal = total;
+        }
         if ( ! this.progress) {
             return;
         }
-        var percent = Math.ceil(loaded*100/total);
+        var percent = Math.ceil(loaded*100/this.realTotal);
+        if (percent > 100) {
+            percent = 100;
+        }
         jQuery(this.progress).css('width', percent + '%');
     },
     

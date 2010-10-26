@@ -32,13 +32,13 @@ PandaUploader.HTML5Widget.prototype.start = function() {
     this.bindRSCEvent();
     
     this.errorCalled = false;
-    if ('getAsBinary' in file) {
-      // Firefox 3.5
-      this.xhr.sendAsBinary(file.getAsBinary());
+    if ('name' in file) {
+        // W3C-blessed interface
+        this.xhr.send(file);
     }
     else {
-      // W3C-blessed interface
-      this.xhr.send(file);
+        // Firefox 3.5
+        this.xhr.sendAsBinary(file.getAsBinary());
     }
 };
 
