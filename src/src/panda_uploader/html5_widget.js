@@ -114,18 +114,17 @@ PandaUploader.HTML5Widget.prototype.bindRSCEvent = function() {
 }
 
 PandaUploader.HTML5Widget.prototype.onchange = function() {
-    if (this.fileExtensionIsAllowed()) {
+    if (this.validateFileExtension() && this.validateFileSize()) {
         this.triggerEvent('onchange');
     }
     else {
         this.query.next('[type=file]').remove();
         this.createField();
-        PandaUploader.alert("You did not select a video file. Please select a valid file.");
     }
     
 }
 
-PandaUploader.HTML5Widget.prototype.fileExtensionIsAllowed = function() {
+PandaUploader.HTML5Widget.prototype.validateFileExtension = function() {
     var ok = false;
     var that = this;
     jQuery.each(this.options.allowed_extensions, function(i, ext) {
@@ -134,5 +133,17 @@ PandaUploader.HTML5Widget.prototype.fileExtensionIsAllowed = function() {
             ok = true;
         }
     });
+    if ( ! ok) {
+        PandaUploader.alert("You did not select a video file. Please select a valid file.");
+    }
+    return ok;
+}
+
+PandaUploader.HTML5Widget.prototype.validateFileSize = function() {
+    var size = this.getFile().size || this.getFile().fileSize;
+    var ok = size < 5368709120;
+    if ( ! ok) {
+        PandaUploader.alert("The file you are trying to upload is too large. The limit is 5GB");
+    }
     return ok;
 }
