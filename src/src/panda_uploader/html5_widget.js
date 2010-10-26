@@ -114,6 +114,18 @@ PandaUploader.HTML5Widget.prototype.bindRSCEvent = function() {
 }
 
 PandaUploader.HTML5Widget.prototype.onchange = function() {
+    if (this.fileExtensionIsAllowed()) {
+        this.triggerEvent('onchange');
+    }
+    else {
+        this.query.next('[type=file]').remove();
+        this.createField();
+        PandaUploader.alert("You did not select a video file. Please select a valid file.");
+    }
+    
+}
+
+PandaUploader.HTML5Widget.prototype.fileExtensionIsAllowed = function() {
     var ok = false;
     var that = this;
     jQuery.each(this.options.allowed_extensions, function(i, ext) {
@@ -122,12 +134,5 @@ PandaUploader.HTML5Widget.prototype.onchange = function() {
             ok = true;
         }
     });
-    if (ok) {
-        this.triggerEvent('onchange');
-    }
-    else {
-        this.query.next('[type=file]').remove();
-        this.createField();
-        PandaUploader.alert("You did not select a video file. Please select a valid file.");
-    }
+    return ok;
 }
