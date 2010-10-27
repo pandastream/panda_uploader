@@ -26,8 +26,8 @@ class PandaUploaderTestApp < Sinatra::Base
     @video_id = params[:panda_video_id]
     encodings = @panda.get("/videos/#{@video_id}/encodings.json")
     @num_encodings = encodings.size
-    @pretty_printed_encodings = ''
-    PP.pp(encodings, @pretty_printed_encodings)
+    @pretty_printed_encodings = pretty_dump(encodings)
+    @pretty_printed_additional_args = params.size > 1 ? pretty_dump(params.reject{|k, v| k == 'panda_video_id' }) : ''
     erb :player
   end
 
@@ -45,6 +45,12 @@ class PandaUploaderTestApp < Sinatra::Base
       dirpath = File.join(APP_ROOT, *%w{public panda_uploader})
       filename = Dir.entries(dirpath).find{|entry| entry =~ %r{jquery.panda-uploader-([\.\d]|beta)+.#{version}.js} }
       %{<script src="/panda_uploader/#{filename}"></script>}
+    end
+    
+    def pretty_dump(o)
+      ret = ''
+      PP.pp(o, ret)
+      ret
     end
   end
 

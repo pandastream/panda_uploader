@@ -2,5 +2,11 @@
 
 <p>Video was uploaded with ID <code><%= @video_id %></code></p>
 
+<% unless @pretty_printed_additional_args.empty? %>
+  <h2>Additional form fields</h2>
+  <pre><%= @pretty_printed_additional_args %></pre>
+<% end %>
+
+<h2>Encoding details</h2>
 <p>This video will be transcoded into <big><%= @num_encodings %></big> different encodings.</p>
 <pre><%= @pretty_printed_encodings %></pre>
