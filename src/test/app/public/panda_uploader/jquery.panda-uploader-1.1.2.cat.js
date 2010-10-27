@@ -1822,6 +1822,28 @@ SWFUpload.Console.writeLine = function (message) {
 
 function PandaUploader(){}
 
+PandaUploader.getHttpStatusText = function(statusCode) {
+    return {
+        400: "Bad Request",
+        401: "Unauthorized",
+        404: "Not Found",
+        412: "Precondition Failed",
+        415: "Unsupported Media Type",
+        500: "Internal Server Error"
+    }[statusCode*1]
+};
+
+PandaUploader.getPandaError = function(statusCode) {
+    return {
+        400: "BadRequest",
+        401: "NotAuthorized",
+        404: "RecordNotFound",
+        412: "CannotDelete",
+        415: "FormatNotRecognised",
+        500: "PandaError"
+    }[statusCode*1]
+}
+
 PandaUploader.supportFileAPI = function() {
     var fi = document.createElement('INPUT');
     fi.type = 'file';
@@ -2028,7 +2050,7 @@ PandaUploader.FlashWidget.prototype.init = function() {
     this.swfupload.bind('uploadStart', PandaUploader.bind(this, 'uploadStart'));
     this.swfupload.bind('uploadProgress', PandaUploader.bind(this, 'uploadProgress'));
     this.swfupload.bind('uploadSuccess', PandaUploader.bind(this, 'uploadSuccess'));
-    this.swfupload.bind('uploadError', this.boundHandler('onerror'));
+    this.swfupload.bind('uploadError', PandaUploader.bind(this, 'uploadError'));
 };
 
 
@@ -2058,6 +2080,30 @@ PandaUploader.FlashWidget.prototype.uploadSuccess = function(evt, file, response
     };
     this.triggerEvent('onreadystatechange', [event]);
     this.triggerEvent('onsuccess', [event]);
+};
+
+PandaUploader.FlashWidget.prototype.uploadError = function(evt, file, swfCode, httpCode) {
+    this.triggerEvent('onerror', [createW3CEvent(evt, httpCode), createW3CFile(file)]);
+    
+    function createW3CEvent(evt) {
+        var httpMsg  = PandaUploader.getHttpStatusText(httpCode);
+        var pandaMsg = PandaUploader.getPandaError(httpCode);
+        return {
+            target: {
+                status: httpCode,
+                statusText: httpMsg,
+                responseText: '{"message":"' + httpMsg + '",error:"' + pandaMsg + '"}'
+            }
+        }
+    }
+    
+    function createW3CFile(file) {
+        return {
+            name: file.name,
+            size: file.size,
+            type: file.type
+        }
+    }
 };
 
 PandaUploader.FlashWidget.prototype.getFile = function() {

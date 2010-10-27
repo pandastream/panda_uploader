@@ -1,5 +1,27 @@
 function PandaUploader(){}
 
+PandaUploader.getHttpStatusText = function(statusCode) {
+    return {
+        400: "Bad Request",
+        401: "Unauthorized",
+        404: "Not Found",
+        412: "Precondition Failed",
+        415: "Unsupported Media Type",
+        500: "Internal Server Error"
+    }[statusCode*1]
+};
+
+PandaUploader.getPandaError = function(statusCode) {
+    return {
+        400: "BadRequest",
+        401: "NotAuthorized",
+        404: "RecordNotFound",
+        412: "CannotDelete",
+        415: "FormatNotRecognised",
+        500: "PandaError"
+    }[statusCode*1]
+}
+
 PandaUploader.supportFileAPI = function() {
     var fi = document.createElement('INPUT');
     fi.type = 'file';
