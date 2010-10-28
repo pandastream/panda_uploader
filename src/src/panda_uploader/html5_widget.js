@@ -102,7 +102,7 @@ PandaUploader.HTML5Widget.prototype.onreadystatechange = function(event) {
         this.triggerEvent('onsuccess', [event]);
     }
     else {
-      if (status != '200') {
+      if (status != '200' && event.target.responseText) {
         this.notifyError(event);
       }
       this.bindRSCEvent();
