@@ -1,3 +1,18 @@
+<style>
+h2 {
+  margin-top: 0;
+}
+.test-wrap {
+  width: 45%;
+  float: left;
+}
+
+#html5-test {
+  border-right: 2px dashed #ccc;
+  margin-right: 5%;
+}
+</style>
+
 <script type="text/javascript">
 function commonSettings(enclosure) {
   return {
@@ -55,7 +70,8 @@ function recordEvent(name, within) {
   <p>Upload a file and have a look at the events count below the form.</p>
 </div>
 
-<div id="html5-test">
+<div class="test-wrap" id="html5-test">
+  <h2>HTML5 test</h2>
   <form action="/player" method="get">
     <label>Upload a video<br/></label>
 
@@ -64,16 +80,17 @@ function recordEvent(name, within) {
 
     <p><input type="submit" value="Save" /></p>
   </form>
+  <script type="text/javascript">
+  var html5_settings = {
+    upload_progress_id: 'html5-progress'
+  };
+  jQuery.extend(html5_settings, commonSettings('#html5-test'));
+  $('#html5-field').pandaUploader(<%= @panda.signed_params("POST", "/videos.json").to_json %>, html5_settings);
+  </script>
 </div>
-<script type="text/javascript">
-var html5_settings = {
-  upload_progress_id: 'html5-progress'
-};
-jQuery.extend(html5_settings, commonSettings('#html5-test'));
-$('#html5-field').pandaUploader(<%= @panda.signed_params("POST", "/videos.json").to_json %>, html5_settings);
-</script>
 
-<div id="flash-test">
+<div class="test-wrap" id="flash-test">
+  <h2>Flash test</h2>
   <form action="/player" method="get">
     <label>Upload a video<br/></label>
 
@@ -82,18 +99,12 @@ $('#html5-field').pandaUploader(<%= @panda.signed_params("POST", "/videos.json")
 
     <p><input type="submit" value="Save" /></p>
   </form>
-</div>
-<script type="text/javascript">
-var flash_settings = {
-  upload_progress_id: 'flash-progress',
-  widget: new PandaUploader.FlashWidget()
-};
-jQuery.extend(flash_settings, commonSettings('#flash-test'));
-$('#flash-field').pandaUploader(<%= @panda.signed_params("POST", "/videos.json").to_json %>, flash_settings);
-</script>
-
-<div id="score">
-  <p>Number of custom events called: <span id="points">0</span></p>
-  <table>
-  </table>
+  <script type="text/javascript">
+  var flash_settings = {
+    upload_progress_id: 'flash-progress',
+    widget: new PandaUploader.FlashWidget()
+  };
+  jQuery.extend(flash_settings, commonSettings('#flash-test'));
+  $('#flash-field').pandaUploader(<%= @panda.signed_params("POST", "/videos.json").to_json %>, flash_settings);
+  </script>
 </div>
