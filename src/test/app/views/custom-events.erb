@@ -11,6 +11,11 @@ h2 {
   border-right: 2px dashed #ccc;
   margin-right: 5%;
 }
+
+#qunit-wrap {
+  padding-top: 2em;
+  clear: both;
+}
 </style>
 
 <script type="text/javascript">
@@ -37,7 +42,7 @@ function createHandler(name, within) {
     recordEvent(name, within);
     var handler = window[name];
     if (handler) {
-      handler.apply(window, arguments)
+      handler.apply(window, [within, arguments])
     }
   }
 }
@@ -63,12 +68,33 @@ function recordEvent(name, within) {
     return $(within).find('table.event-record');
   }
 }
-</script>
 
-<div class="instructions">
-  <p>Checking if custom events fire.</p>
-  <p>Upload a file and have a look at the events count below the form.</p>
-</div>
+$(document).ready(function(){
+  asyncTest("Error event", 5, function() {
+  });
+});
+function onerror(selector, args) {
+  var evt = args[0];
+  var file = args[1];
+
+  // Event
+  ok((evt.target.status+'').match(/^[45]\d\d$/), "Event has target.status 4xx or 5xx. (Actually: " + evt.target.status + ")");
+  ok(evt.target.statusText, "Event has target.statusText");
+  ok(parseJSON(evt.target.responseText), "Event has a JSON target.statusText");
+
+  // File
+  ok(file.name, "File has a name");
+  ok(file.size*1, "File has a size");
+  
+  start();
+}
+
+function parseJSON(json) {
+  // OH NOES!!! I'm using eval()!!!
+  return eval('(' + json + ')');
+}
+
+</script>
 
 <div class="test-wrap" id="html5-test">
   <h2>HTML5 test</h2>
@@ -107,4 +133,13 @@ function recordEvent(name, within) {
   jQuery.extend(flash_settings, commonSettings('#flash-test'));
   $('#flash-field').pandaUploader(<%= @panda.signed_params("POST", "/videos.json").to_json %>, flash_settings);
   </script>
+</div>
+
+<div id="qunit-wrap">
+  <link href="/qunit/qunit.css" rel="stylesheet" type="text/css" />
+  <script src="/qunit/qunit.js"></script>
+  <h1 id="qunit-header"><code>panda_uploader</code> JS unit tests</h1>
+  <h2 id="qunit-banner"></h2>
+  <h2 id="qunit-userAgent"></h2>
+  <ol id="qunit-tests"></ol>
 </div>
