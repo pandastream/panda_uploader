@@ -3,11 +3,11 @@
   <p>Upload a file and have a look at the events count below the form.</p>
 </div>
 
-<form action="/player" method="get" id="upload-form">
+<form action="/player" method="get">
     <label>Upload a video<br/></label>
 
-    <input type="hidden" id="returned_video_id" name="panda_video_id" />
-    <div id="upload_progress" class="panda_upload_progress"></div>
+    <input type="hidden" id="html5-field" name="panda_video_id" />
+    <div id="html5-progress" class="panda_upload_progress"></div>
 
     <p><input type="submit" value="Save" /></p>
 </form>
@@ -17,23 +17,46 @@
   </table>
 </div>
 
-<script type="text/javascript">
-$('#returned_video_id').pandaUploader(<%= @panda.signed_params("POST", "/videos.json").to_json %>, {
-    upload_progress_id: 'upload_progress',
-    api_url: '<%= @panda.api_url %>',
-    uploader_dir: '/panda_uploader',
-    upload_strategy: new PandaUploader.UploadOnSelect(),
-    // widget: new PandaUploader.FlashWidget(),
-    onwidgetload: handle('onwidgetload'),
-    onchange: handle('onchange'),
-    onerror: handle('onerror'),
-    onabort: handle('onabort'),
-    onprogress: handle('onprogress'),
-    onreadystatechange: handle('onreadystatechange'),
-    onloadstart: handle('onloadstart'),
-    onsuccess: handle('onsuccess')
-});
 
+<form action="/player" method="get">
+    <label>Upload a video<br/></label>
+
+    <input type="hidden" id="flash-field" name="panda_video_id" />
+    <div id="flash-progress" class="panda_upload_progress"></div>
+
+    <p><input type="submit" value="Save" /></p>
+</form>
+
+<script type="text/javascript">
+var common_settings = {
+  api_url: '<%= @panda.api_url %>',
+  uploader_dir: '/panda_uploader',
+  // upload_strategy: new PandaUploader.UploadOnSelect(),
+  onwidgetload: handle('onwidgetload'),
+  onchange: handle('onchange'),
+  onerror: handle('onerror'),
+  onabort: handle('onabort'),
+  onprogress: handle('onprogress'),
+  onreadystatechange: handle('onreadystatechange'),
+  onloadstart: handle('onloadstart'),
+  onsuccess: handle('onsuccess')
+};
+
+var html5_settings = {
+  upload_strategy: new PandaUploader.UploadOnSelect(),
+  upload_progress_id: 'html5-progress'
+};
+jQuery.extend(html5_settings, common_settings);
+$('#html5-field').pandaUploader(<%= @panda.signed_params("POST", "/videos.json").to_json %>, html5_settings);
+
+var flash_settings = {
+  upload_strategy: new PandaUploader.UploadOnSelect(),
+  upload_progress_id: 'flash-progress',
+  widget: new PandaUploader.FlashWidget()
+};
+jQuery.extend(flash_settings, common_settings);
+$('#flash-field').pandaUploader(<%= @panda.signed_params("POST", "/videos.json").to_json %>, flash_settings);
+console.log(html5_settings)
 function handle(name) {
   return function () {
     scoreEvent(name);
@@ -42,14 +65,6 @@ function handle(name) {
       handler.apply(window, arguments)
     }
   }
-}
-
-function onloadstart() {
-  console.log('onload', arguments)
-}
-
-function onprogress() {
-  console.log('onprogress', arguments)
 }
 
 function scoreEvent(name) {
