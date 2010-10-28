@@ -1,65 +1,25 @@
-<div class="instructions">
-  <p>Checking if custom events fire.</p>
-  <p>Upload a file and have a look at the events count below the form.</p>
-</div>
-
-<form action="/player" method="get">
-    <label>Upload a video<br/></label>
-
-    <input type="hidden" id="html5-field" name="panda_video_id" />
-    <div id="html5-progress" class="panda_upload_progress"></div>
-
-    <p><input type="submit" value="Save" /></p>
-</form>
-<div id="score">
-  <p>Number of custom events called: <span id="points">0</span></p>
-  <table>
-  </table>
-</div>
-
-
-<form action="/player" method="get">
-    <label>Upload a video<br/></label>
-
-    <input type="hidden" id="flash-field" name="panda_video_id" />
-    <div id="flash-progress" class="panda_upload_progress"></div>
-
-    <p><input type="submit" value="Save" /></p>
-</form>
-
 <script type="text/javascript">
-var common_settings = {
-  api_url: '<%= @panda.api_url %>',
-  uploader_dir: '/panda_uploader',
-  // upload_strategy: new PandaUploader.UploadOnSelect(),
-  onwidgetload: handle('onwidgetload'),
-  onchange: handle('onchange'),
-  onerror: handle('onerror'),
-  onabort: handle('onabort'),
-  onprogress: handle('onprogress'),
-  onreadystatechange: handle('onreadystatechange'),
-  onloadstart: handle('onloadstart'),
-  onsuccess: handle('onsuccess')
-};
+function commonSettings(enclosure) {
+  return {
+    api_url: '<%= @panda.api_url %>',
+    uploader_dir: '/panda_uploader',
+    upload_strategy: new PandaUploader.UploadOnSelect(),
+    onwidgetload: createHandler('onwidgetload', enclosure),
+    onchange: createHandler('onchange', enclosure),
+    onerror: createHandler('onerror', enclosure),
+    onabort: createHandler('onabort', enclosure),
+    onprogress: createHandler('onprogress', enclosure),
+    onreadystatechange: createHandler('onreadystatechange', enclosure),
+    onloadstart: createHandler('onloadstart', enclosure),
+    onload: createHandler('onload', enclosure),
+    onsuccess: createHandler('onsuccess', enclosure)
+  };
+}
 
-var html5_settings = {
-  upload_strategy: new PandaUploader.UploadOnSelect(),
-  upload_progress_id: 'html5-progress'
-};
-jQuery.extend(html5_settings, common_settings);
-$('#html5-field').pandaUploader(<%= @panda.signed_params("POST", "/videos.json").to_json %>, html5_settings);
 
-var flash_settings = {
-  upload_strategy: new PandaUploader.UploadOnSelect(),
-  upload_progress_id: 'flash-progress',
-  widget: new PandaUploader.FlashWidget()
-};
-jQuery.extend(flash_settings, common_settings);
-$('#flash-field').pandaUploader(<%= @panda.signed_params("POST", "/videos.json").to_json %>, flash_settings);
-console.log(html5_settings)
-function handle(name) {
+function createHandler(name, within) {
   return function () {
-    scoreEvent(name);
+    recordEvent(name, within);
     var handler = window[name];
     if (handler) {
       handler.apply(window, arguments)
@@ -67,14 +27,73 @@ function handle(name) {
   }
 }
 
-function scoreEvent(name) {
-  var points = $('#points').text()*1;
-  $('#points').text(points+1);
-  var selector = '#score table tr.' + name;
-  if ($(selector).size() == 0) {
-    $('#score table').append('<tr class="' + name + '"><th>' + name + '</th><td class="count">0</td></tr>');
+function recordEvent(name, within) {
+  var $table = findTable();
+  if ($table.length == 0) {
+    $('<table class="event-record"></table>').appendTo(within);
+    $table = findTable();
   }
-  var count = $(selector).find('td.count').text()*1;
-  $(selector).find('td.count').text(count + 1)
+
+  var $latest_cells = $table.find('tr:last td');
+  var latest_event = $latest_cells.eq(0).text();
+  if (name == latest_event) {
+    var $latest_counter = $latest_cells.eq(1);
+    $latest_counter.text($latest_counter.text()*1 + 1);
+  }
+  else  {
+    $table.append('<tr><td>' + name + '</td><td>1</td></tr>');
+  }
+  
+  function findTable() {
+    return $(within).find('table.event-record');
+  }
 }
 </script>
+
+<div class="instructions">
+  <p>Checking if custom events fire.</p>
+  <p>Upload a file and have a look at the events count below the form.</p>
+</div>
+
+<div id="html5-test">
+  <form action="/player" method="get">
+    <label>Upload a video<br/></label>
+
+    <input type="hidden" id="html5-field" name="panda_video_id" />
+    <div id="html5-progress" class="panda_upload_progress"></div>
+
+    <p><input type="submit" value="Save" /></p>
+  </form>
+</div>
+<script type="text/javascript">
+var html5_settings = {
+  upload_progress_id: 'html5-progress'
+};
+jQuery.extend(html5_settings, commonSettings('#html5-test'));
+$('#html5-field').pandaUploader(<%= @panda.signed_params("POST", "/videos.json").to_json %>, html5_settings);
+</script>
+
+<div id="flash-test">
+  <form action="/player" method="get">
+    <label>Upload a video<br/></label>
+
+    <input type="hidden" id="flash-field" name="panda_video_id" />
+    <div id="flash-progress" class="panda_upload_progress"></div>
+
+    <p><input type="submit" value="Save" /></p>
+  </form>
+</div>
+<script type="text/javascript">
+var flash_settings = {
+  upload_progress_id: 'flash-progress',
+  widget: new PandaUploader.FlashWidget()
+};
+jQuery.extend(flash_settings, commonSettings('#flash-test'));
+$('#flash-field').pandaUploader(<%= @panda.signed_params("POST", "/videos.json").to_json %>, flash_settings);
+</script>
+
+<div id="score">
+  <p>Number of custom events called: <span id="points">0</span></p>
+  <table>
+  </table>
+</div>
