@@ -39,7 +39,7 @@ function commonSettings(enclosure) {
 
 function createHandler(name, within) {
   return function () {
-    recordEvent(name, within);
+    recordEvent(name, within, arguments);
     var handler = window[name];
     if (handler) {
       handler.apply(window, [within, arguments])
@@ -47,7 +47,12 @@ function createHandler(name, within) {
   }
 }
 
-function recordEvent(name, within) {
+var recorded_events = []
+function recordEvent(name, within, args) {
+  // Store for later reference
+  recorded_events.push([name, args]);
+
+  // Display on table
   var $table = findTable();
   if ($table.length == 0) {
     $('<table class="event-record"></table>').appendTo(within);
@@ -68,25 +73,44 @@ function recordEvent(name, within) {
     return $(within).find('table.event-record');
   }
 }
+function getEvents(etype) {
+  var ret = [];
+  $.each(recorded_events, function() {
+    if (this[0] == etype) {
+      ret.push(this[1]);
+    }
+  });
+  return ret;
+}
 
 $(document).ready(function(){
-  asyncTest("Error event", 4, function() {
+  $('#btn-upload-error').click(function() {
+    test("error event", 5, function() {
+      var error_event_calls = getEvents('onerror');
+
+      // Callback
+      equals(1, error_event_calls.length, "Error event was called only once");
+
+      var evt = error_event_calls[0][0];
+      var file = error_event_calls[0][1];
+
+      // Event
+      equals('error', evt.type, "Event has type 'error'");
+      ok(evt.timeStamp, "Event has a timestamp");
+
+      // File
+      ok(file.name, "File has a name");
+      ok(file.size*1, "File has a size");
+    });
+    
+    test("readystatuschange event", function(){
+      var error_event_calls = getEvents('onreadystatuschange');
+      var evt = error_event_calls[0][0];
+    });
+    
+    QUnit.start();
   });
 });
-function onerror(selector, args) {
-  var evt = args[0];
-  var file = args[1];
-
-  // Event
-  equals('error', evt.type, "Event has type 'error'");
-  ok(evt.timeStamp, "Event has a timestamp");
-
-  // File
-  ok(file.name, "File has a name");
-  ok(file.size*1, "File has a size");
-  
-  start();
-}
 
 function parseJSON(json) {
   // OH NOES!!! I'm using eval()!!!
@@ -135,6 +159,8 @@ function parseJSON(json) {
 </div>
 
 <div id="qunit-wrap">
+  <p><input type="submit" id="btn-upload-error" value="Test: upload error" /></p>
+
   <link href="/qunit/qunit.css" rel="stylesheet" type="text/css" />
   <script src="/qunit/qunit.js"></script>
   <h1 id="qunit-header"><code>panda_uploader</code> JS unit tests</h1>
