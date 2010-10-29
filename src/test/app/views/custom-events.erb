@@ -70,7 +70,7 @@ function recordEvent(name, within) {
 }
 
 $(document).ready(function(){
-  asyncTest("Error event", 5, function() {
+  asyncTest("Error event", 4, function() {
   });
 });
 function onerror(selector, args) {
@@ -78,9 +78,8 @@ function onerror(selector, args) {
   var file = args[1];
 
   // Event
-  ok((evt.target.status+'').match(/^[45]\d\d$/), "Event has target.status 4xx or 5xx. (Actually: " + evt.target.status + ")");
-  ok(evt.target.statusText, "Event has target.statusText");
-  ok(parseJSON(evt.target.responseText), "Event has a JSON target.statusText");
+  equals('error', evt.type, "Event has type 'error'");
+  ok(evt.timeStamp, "Event has a timestamp");
 
   // File
   ok(file.name, "File has a name");

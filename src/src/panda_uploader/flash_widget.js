@@ -78,14 +78,9 @@ PandaUploader.FlashWidget.prototype.uploadError = function(evt, file, swfCode, h
     this.triggerEvent('onerror', [createW3CEvent(evt, httpCode), createW3CFile(file)]);
     
     function createW3CEvent(evt) {
-        var httpMsg  = PandaUploader.getHttpStatusText(httpCode);
-        var pandaMsg = PandaUploader.getPandaError(httpCode);
         return {
-            target: {
-                status: httpCode,
-                statusText: httpMsg,
-                responseText: '{"message":"' + httpMsg + '",error:"' + pandaMsg + '"}'
-            }
+            type: 'error',
+            timeStamp: evt.timeStamp
         }
     }
     

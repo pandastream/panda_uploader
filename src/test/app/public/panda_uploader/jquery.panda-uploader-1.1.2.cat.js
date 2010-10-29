@@ -2086,14 +2086,9 @@ PandaUploader.FlashWidget.prototype.uploadError = function(evt, file, swfCode, h
     this.triggerEvent('onerror', [createW3CEvent(evt, httpCode), createW3CFile(file)]);
     
     function createW3CEvent(evt) {
-        var httpMsg  = PandaUploader.getHttpStatusText(httpCode);
-        var pandaMsg = PandaUploader.getPandaError(httpCode);
         return {
-            target: {
-                status: httpCode,
-                statusText: httpMsg,
-                responseText: '{"message":"' + httpMsg + '",error:"' + pandaMsg + '"}'
-            }
+            type: 'error',
+            timeStamp: evt.timeStamp
         }
     }
     
@@ -2177,7 +2172,7 @@ PandaUploader.HTML5Widget.prototype.start = function() {
     this.xhr.setRequestHeader("X-Query-Params", json_string);
     this.bindRSCEvent();
     
-    this.errorCalled = false;
+    this.errorFaked = false;
     if ('name' in file) {
         // W3C-blessed interface
         this.xhr.send(file);
@@ -2221,11 +2216,19 @@ PandaUploader.HTML5Widget.prototype.onerror = function(event) {
     this.notifyError(event);
 };
 
-PandaUploader.HTML5Widget.prototype.notifyError = function(event) {
-    if (this.errorCalled) {
+PandaUploader.HTML5Widget.prototype.fakeError = function(event) {
+    if (this.errorFaked) {
         return;
     }
-    this.errorCalled = true;
+    this.errorFaked = true;
+
+    this.notifyError({
+        timeStamp: +new Date(),
+        type: 'error'
+    });
+}
+
+PandaUploader.HTML5Widget.prototype.notifyError = function(event) {
     this.triggerEvent('onerror', [event, this.getFile()]);
 }
 
@@ -2249,7 +2252,7 @@ PandaUploader.HTML5Widget.prototype.onreadystatechange = function(event) {
     }
     else {
       if (status != '200' && event.target.responseText) {
-        this.notifyError(event);
+        this.fakeError(event);
       }
       this.bindRSCEvent();
     }
