@@ -2274,7 +2274,7 @@ PandaUploader.HTML5Widget.prototype.validateFileExtension = function() {
     var ok = false;
     var that = this;
     jQuery.each(this.options.allowed_extensions, function(i, ext) {
-        var re = new RegExp('\\.' + ext + '$');
+        var re = new RegExp('\\.' + ext + '$', 'i');
         if (re.test(that.getFile().fileName)) {
             ok = true;
         }
