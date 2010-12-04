@@ -111,3 +111,23 @@ PandaUploader.toJSON = function(hash) {
         return string.replace(new RegExp('"', 'g'), '\\"');
     }
 }
+
+PandaUploader.sizeInBytes = function(size) {
+  var m = size.match(/([0-9]+)([GKM]?B)?/);
+console.log(size, m);
+  if ( ! m) {
+    return null
+  }
+
+  var value = m[1];
+  var units = m[2];
+  var ex = 1;
+  switch(units) {
+  case 'B': ex = 0; break;
+  case 'MB': ex = 2; break;
+  case 'GB': ex = 3; break;
+  }
+console.log(value, ex)
+  return value*Math.pow(1024, ex);
+}
+
