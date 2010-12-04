@@ -144,6 +144,7 @@ At the moment, the following arguments are supported:
 * **`upload_strategy`**: see below.
 * **`widget`**: force use of HTML5-based or Flash-based widget. By default, HTML5 widget is used if supported, falling back to Flash if not. See below.
 * **`allowed_extensions`**: an array of strings. These are the file extensions that will be allowed by the uploader. See below.
+* **`file_size_limit`**: maximum size of the files to upload. By default, units are expected to be Kilobytes. Other units can be specified by passing a string such as "25MB" or "1GB". Valid units are B, KB, MB and GB.
 * and several events: `onwidgetload`, `onchange`, `onprogress`, `onreadystatechange`, `onsuccess`, `onload`, `onerror`. See below.
 
 
