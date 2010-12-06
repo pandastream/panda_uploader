@@ -1817,7 +1817,7 @@ SWFUpload.Console.writeLine = function (message) {
 		}
 	};
 	
-})(jQuery);// version: 1.2
+})(jQuery);// version: 1.2.1
 // name: panda_uploader
 
 function PandaUploader(){}
@@ -1935,7 +1935,7 @@ PandaUploader.toJSON = function(hash) {
 }
 
 PandaUploader.sizeInBytes = function(size) {
-  var m = size.match(/([0-9]+)([GKM]?B)?/);
+  var m = size.match(new RegExp("([0-9]+)([GKM]?B)?"));
 
   if ( ! m) {
     return null
@@ -2309,10 +2309,8 @@ PandaUploader.HTML5Widget.prototype.validateFileExtension = function() {
 
 PandaUploader.HTML5Widget.prototype.validateFileSize = function() {
     var size = this.getFile().size || this.getFile().fileSize;
-console.log(this.options.file_size_limit, size);
     var textual_limit = this.options.file_size_limit || '5GB';
     var ok = size < PandaUploader.sizeInBytes(textual_limit);
-console.log(this.options.file_size_limit, size, PandaUploader.sizeInBytes(this.options.file_size_limit), ok)
     if ( ! ok) {
         PandaUploader.alert("The file you are trying to upload is too large. The limit is " + textual_limit);
     }

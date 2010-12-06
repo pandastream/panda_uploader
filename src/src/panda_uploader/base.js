@@ -113,7 +113,7 @@ PandaUploader.toJSON = function(hash) {
 }
 
 PandaUploader.sizeInBytes = function(size) {
-  var m = size.match(/([0-9]+)([GKM]?B)?/);
+  var m = size.match(new RegExp("([0-9]+)([GKM]?B)?"));
 
   if ( ! m) {
     return null
