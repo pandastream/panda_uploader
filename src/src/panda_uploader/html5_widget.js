@@ -141,9 +141,10 @@ PandaUploader.HTML5Widget.prototype.validateFileExtension = function() {
 
 PandaUploader.HTML5Widget.prototype.validateFileSize = function() {
     var size = this.getFile().size || this.getFile().fileSize;
-    var ok = size < 5368709120;
+    var textual_limit = this.options.file_size_limit || '5GB';
+    var ok = size < PandaUploader.sizeInBytes(textual_limit);
     if ( ! ok) {
-        PandaUploader.alert("The file you are trying to upload is too large. The limit is 5GB");
+        PandaUploader.alert("The file you are trying to upload is too large. The limit is " + textual_limit);
     }
     return ok;
 }

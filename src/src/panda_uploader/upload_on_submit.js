@@ -94,6 +94,10 @@ PandaUploader.UploadOnSubmit.prototype.onabort = function() {
 };
 
 PandaUploader.UploadOnSubmit.prototype.onsubmit = function(event) {
-    this.widget.start();
-    return false;
+    if (this.widget.getFile()) {
+        this.widget.start();
+        return false;
+    } else {
+        return true;
+    }
 };

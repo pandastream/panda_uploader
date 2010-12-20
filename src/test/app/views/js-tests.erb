@@ -98,6 +98,18 @@ PandaUploader.alert = function(msg) {
   });
 });</script>
 
+<h3>Size units</h3>
+<div id="size-units">
+<script>$(document).ready(function(){
+  test("Size units", function () {
+    equal(PandaUploader.sizeInBytes('2GB'), 2147483648, "2GB should be 2147483648 bytes");
+    equal(PandaUploader.sizeInBytes('100MB'), 104857600, "100MB should be 104857600 bytes");
+    equal(PandaUploader.sizeInBytes('50KB'), 51200, "50KB should be 51200 bytes");
+    equal(PandaUploader.sizeInBytes('123B'), 123, "123B should be 123 bytes");
+    equal(PandaUploader.sizeInBytes('1'), 1024, "If units are not specified, KB should be assumed");
+  });
+});</script>
+
 <h3>HTML5 widget</h3>
 <div id="html5-widget">
   <form>

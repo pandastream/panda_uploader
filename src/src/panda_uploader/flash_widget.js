@@ -1,10 +1,12 @@
 
 PandaUploader.FlashWidget = function(options) {
   options = typeof options == 'undefined' ? {} : options;
+
   this.add_filename_field = true;
   if (typeof options.add_filename_field != 'undefined') {
     this.add_filename_field = options.add_filename_field;
   }
+
   this.swfupload_options = options === undefined ? {} : options;
 }
 
@@ -24,7 +26,7 @@ PandaUploader.FlashWidget.prototype.init = function() {
 
     this.swfupload = this.query.swfupload(jQuery.extend({
         upload_url: this.options.api_url + '/videos.json',
-        file_size_limit : 0,
+        file_size_limit : this.options.file_size_limit,
         file_types: this.allowedFileTypes(),
         file_types_description : "All Files",
         file_upload_limit : 0,

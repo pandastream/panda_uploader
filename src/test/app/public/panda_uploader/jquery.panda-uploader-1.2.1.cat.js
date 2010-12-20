@@ -1817,7 +1817,7 @@ SWFUpload.Console.writeLine = function (message) {
 		}
 	};
 	
-})(jQuery);// version: 1.1.3
+})(jQuery);// version: 1.2.1
 // name: panda_uploader
 
 function PandaUploader(){}
@@ -1934,6 +1934,26 @@ PandaUploader.toJSON = function(hash) {
     }
 }
 
+PandaUploader.sizeInBytes = function(size) {
+  var m = size.match(new RegExp("([0-9]+)([GKM]?B)?"));
+
+  if ( ! m) {
+    return null
+  }
+
+  var value = m[1];
+  var units = m[2];
+  var ex = 1;
+  switch(units) {
+  case 'B': ex = 0; break;
+  case 'MB': ex = 2; break;
+  case 'GB': ex = 3; break;
+  }
+
+  return value*Math.pow(1024, ex);
+}
+
+
 PandaUploader.BaseWidget = function() {
 };
 PandaUploader.BaseWidget.prototype = {
@@ -2009,10 +2029,12 @@ PandaUploader.SmartWidget = function(html5_opts, flash_opts) {
 };
 PandaUploader.FlashWidget = function(options) {
   options = typeof options == 'undefined' ? {} : options;
+
   this.add_filename_field = true;
   if (typeof options.add_filename_field != 'undefined') {
     this.add_filename_field = options.add_filename_field;
   }
+
   this.swfupload_options = options === undefined ? {} : options;
 }
 
@@ -2032,7 +2054,7 @@ PandaUploader.FlashWidget.prototype.init = function() {
 
     this.swfupload = this.query.swfupload(jQuery.extend({
         upload_url: this.options.api_url + '/videos.json',
-        file_size_limit : 0,
+        file_size_limit : this.options.file_size_limit,
         file_types: this.allowedFileTypes(),
         file_types_description : "All Files",
         file_upload_limit : 0,
@@ -2287,9 +2309,10 @@ PandaUploader.HTML5Widget.prototype.validateFileExtension = function() {
 
 PandaUploader.HTML5Widget.prototype.validateFileSize = function() {
     var size = this.getFile().size || this.getFile().fileSize;
-    var ok = size < 5368709120;
+    var textual_limit = this.options.file_size_limit || '5GB';
+    var ok = size < PandaUploader.sizeInBytes(textual_limit);
     if ( ! ok) {
-        PandaUploader.alert("The file you are trying to upload is too large. The limit is 5GB");
+        PandaUploader.alert("The file you are trying to upload is too large. The limit is " + textual_limit);
     }
     return ok;
 }
@@ -2435,8 +2458,12 @@ PandaUploader.UploadOnSubmit.prototype.onabort = function() {
 };
 
 PandaUploader.UploadOnSubmit.prototype.onsubmit = function(event) {
-    this.widget.start();
-    return false;
+    if (this.widget.getFile()) {
+        this.widget.start();
+        return false;
+    } else {
+        return true;
+    }
 };
 PandaUploader.UploadOnSelect = function() {
     PandaUploader.BaseStrategy.apply(this, arguments);
