@@ -1817,7 +1817,7 @@ SWFUpload.Console.writeLine = function (message) {
 		}
 	};
 	
-})(jQuery);// version: 1.2.1
+})(jQuery);// version: 1.2.2
 // name: panda_uploader
 
 function PandaUploader(){}
@@ -2146,6 +2146,10 @@ PandaUploader.FlashWidget.prototype.enable = function() {
 
 PandaUploader.FlashWidget.prototype.abort = function() {
     this.swfupload.swfupload('cancelUpload', '', false);
+    if (this.add_filename_field) {
+      jQuery('#' + this.filename_field_id).val('');
+    }
+    
     this.triggerEvent('onabort');
 };
 
@@ -2211,6 +2215,8 @@ PandaUploader.HTML5Widget.prototype.start = function() {
 };
 
 PandaUploader.HTML5Widget.prototype.abort = function() {
+    $(this.getField()).remove()
+    this.createField()
     this.xhr.abort();
 }
 
