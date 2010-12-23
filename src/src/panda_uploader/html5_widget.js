@@ -43,6 +43,8 @@ PandaUploader.HTML5Widget.prototype.start = function() {
 };
 
 PandaUploader.HTML5Widget.prototype.abort = function() {
+    $(this.getField()).remove()
+    this.createField()
     this.xhr.abort();
 }
 

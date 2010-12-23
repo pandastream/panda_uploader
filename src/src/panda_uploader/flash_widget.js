@@ -118,6 +118,10 @@ PandaUploader.FlashWidget.prototype.enable = function() {
 
 PandaUploader.FlashWidget.prototype.abort = function() {
     this.swfupload.swfupload('cancelUpload', '', false);
+    if (this.add_filename_field) {
+      jQuery('#' + this.filename_field_id).val('');
+    }
+    
     this.triggerEvent('onabort');
 };
 
