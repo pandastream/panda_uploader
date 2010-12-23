@@ -133,6 +133,13 @@ PandaUploader.FlashWidget.prototype.getValue = function() {
     return this.swfupload.val();
 };
 
+PandaUploader.FlashWidget.prototype.getFilename = function() {
+    if(this.file)
+        return this.file.name;
+    else
+        return null;
+};
+
 PandaUploader.FlashWidget.prototype.allowedFileTypes = function() {
     if (! this.options.allowed_extensions) {
         return '*.*';

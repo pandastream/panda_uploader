@@ -61,5 +61,9 @@ PandaUploader.BaseWidget.prototype = {
     
     getValue: function() {
         throw "Unimplemented method getValue()";
+    },
+    
+    getFilename: function() {
+        throw "Unimplemented method getFilename()";
     }
 };

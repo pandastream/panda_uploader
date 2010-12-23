@@ -73,6 +73,14 @@ PandaUploader.HTML5Widget.prototype.getField = function() {
     return this.query.next().get(0);
 };
 
+PandaUploader.HTML5Widget.prototype.getFilename = function() {
+    var file = this.getFile()
+    if (file)
+        return file.name || file.fileName;
+    else
+        return null;
+};
+
 PandaUploader.HTML5Widget.prototype.onerror = function(event) {
     this.notifyError(event);
 };
