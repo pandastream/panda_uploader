@@ -91,6 +91,11 @@ PandaUploader.alert = function(msg) {
     return alert(msg);
 };
 
+PandaUploader.log = function() {
+    // override method to print debug information
+};
+
+
 PandaUploader.parseJSON = function(json_str) {
   if (jQuery && jQuery.parseJSON) {
       return jQuery.parseJSON(json_str);

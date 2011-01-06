@@ -54,6 +54,8 @@ PandaUploader.FlashWidget.prototype.fileQueued = function(evt, file) {
     this.triggerEvent('onchange');
 };
 PandaUploader.FlashWidget.prototype.uploadStart = function(_file) {
+    PandaUploader.log('Flash widget: start event: file ', _file.name)
+    
     this.swfupload.data('__swfu').setPostParams(this.getSignedParams());
     this.triggerEvent('onloadstart');
 };
@@ -66,6 +68,9 @@ PandaUploader.FlashWidget.prototype.uploadSuccess = function(evt, file, response
     var resObj = PandaUploader.parseJSON(response);
     this.setValue(resObj.id);
 
+    PandaUploader.log('Flash widget: success event: status ', 200)
+    PandaUploader.log('Flash widget: success event: response ', response)
+    
     var event = {
         target: {
             status: '200',
@@ -78,6 +83,9 @@ PandaUploader.FlashWidget.prototype.uploadSuccess = function(evt, file, response
 
 PandaUploader.FlashWidget.prototype.uploadError = function(evt, file, swfCode, httpCode) {
     this.triggerEvent('onerror', [createW3CEvent(evt, httpCode), createW3CFile(file)]);
+
+    PandaUploader.log('Flash widget: error event: status ', httpCode)
+    PandaUploader.log('Flash widget: error event: response unavailable with flash')
     
     function createW3CEvent(evt) {
         var httpMsg  = PandaUploader.getHttpStatusText(httpCode);
@@ -122,6 +130,7 @@ PandaUploader.FlashWidget.prototype.abort = function() {
       jQuery('#' + this.filename_field_id).val('');
     }
     
+    PandaUploader.log('Flash widget: abort event')
     this.triggerEvent('onabort');
 };
 

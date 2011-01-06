@@ -95,7 +95,7 @@ ProgressUpload.prototype = {
         this.setProgress(file, 0, this.fileSize);
         this.$p.css('display', 'block');
         var self = this;
-        this.timer = setInterval(function(){ self.animateBarBg() }, 20);
+        this.timer = setInterval(function(){ self.animateBarBg() }, 30);
     },
     
     setProgress: function(file, loaded, total) {
@@ -111,15 +111,11 @@ ProgressUpload.prototype = {
     
     animateBarBg: function() {
         this.count++;
-        var bpos = this.$p.css("background-position");
-        var currentOffset = bpos ? bpos.split(' ') : 0;
         if (this.count == 37) {
             this.count = 0;
-            this.$p.css("background-position", (currentOffset + 36) + "px 0px");
         }
-        else {
-            this.$p.css("background-position", (currentOffset - 1) + "px 0px");
-        }
+        
+        this.$p.css("background-position", this.count + "px 0px");
     },
     
     reset: function(){

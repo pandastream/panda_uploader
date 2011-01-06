@@ -32,6 +32,9 @@ PandaUploader.HTML5Widget.prototype.start = function() {
     this.bindRSCEvent();
     
     this.errorCalled = false;
+    
+    PandaUploader.log('HTML5 widget: start event: file ', file.name || file.fileName)
+
     if ('name' in file) {
         // W3C-blessed interface
         this.xhr.send(file);
@@ -43,6 +46,8 @@ PandaUploader.HTML5Widget.prototype.start = function() {
 };
 
 PandaUploader.HTML5Widget.prototype.abort = function() {
+    PandaUploader.log('HTML5 widget: abort event')
+    
     $(this.getField()).remove()
     this.createField()
     this.xhr.abort();
@@ -82,6 +87,7 @@ PandaUploader.HTML5Widget.prototype.getFilename = function() {
 };
 
 PandaUploader.HTML5Widget.prototype.onerror = function(event) {
+    PandaUploader.log('HTML5 widget: onerror event: ', event)
     this.notifyError(event);
 };
 
@@ -94,6 +100,7 @@ PandaUploader.HTML5Widget.prototype.notifyError = function(event) {
 }
 
 PandaUploader.HTML5Widget.prototype.onreadystatechange = function(event) {
+
     this.triggerEvent('onreadystatechange', arguments);
 
     var status = null;
@@ -104,6 +111,13 @@ PandaUploader.HTML5Widget.prototype.onreadystatechange = function(event) {
     catch(e) {
         this.bindRSCEvent();
         return;
+    }
+
+    if (status == '200' && !event.target.responseText) {
+        PandaUploader.log('HTML5 widget: onreadystatechange event: cors request status', status)
+    }else{
+        PandaUploader.log('HTML5 widget: onreadystatechange event: status', status)
+        PandaUploader.log('HTML5 widget: onreadystatechange event: response: ', event.target.responseText)
     }
 
     if (status == '200' && event.target.responseText) {

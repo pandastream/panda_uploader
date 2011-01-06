@@ -25,6 +25,7 @@ PandaUploader.BaseStrategy.prototype = {
     // Upload progresses. Called zero or more times
     onprogress: function(event) {
         try {
+            PandaUploader.log("onprogress event: loaded: ", event.loaded, ', total: ', event.total)
             if (this.widget.options.progress_handler) {
                 this.widget.options.progress_handler.setProgress(this.widget.getFile(), event.loaded, event.total);
             }
