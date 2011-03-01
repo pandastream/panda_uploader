@@ -16,7 +16,7 @@ Warning: compatibility with older versions
 
 This release is not compatible with versions prior to 1.0. If you want to use the old versions instead, please use the code from the v0.X versions. Of these, the latest can be download directly from this link:
 
-[http://github.com/newbamboo/panda_uploader/zipball/v0.8.4](http://github.com/newbamboo/panda_uploader/zipball/v0.8.4)
+[http://github.com/newbamboo/panda_uploader/zipball/v1.2.3](http://github.com/newbamboo/panda_uploader/zipball/v1.2.3)
 
 First of all
 ------------
