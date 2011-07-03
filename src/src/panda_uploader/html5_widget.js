@@ -54,7 +54,7 @@ PandaUploader.HTML5Widget.prototype.abort = function() {
 }
 
 PandaUploader.HTML5Widget.prototype.getFile = function() {
-    return jQuery(this.getField()).get(0).files[0];
+    return jQuery(this.getField()).find('input[type="file"]').get(0).files[0];
 };
 
 PandaUploader.HTML5Widget.prototype.setValue = function(value) {
