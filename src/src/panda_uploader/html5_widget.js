@@ -150,10 +150,10 @@ PandaUploader.HTML5Widget.prototype.onchange = function() {
 
 PandaUploader.HTML5Widget.prototype.validateFileExtension = function() {
     var ok = false;
-    var that = this;
+    var filename = this.getFilename();
     jQuery.each(this.options.allowed_extensions, function(i, ext) {
         var re = new RegExp('\\.' + ext + '$', 'i');
-        if (re.test(that.getFile().fileName)) {
+        if (re.test(filename)) {
             ok = true;
         }
     });
