@@ -70,7 +70,7 @@ PandaUploader.HTML5Widget.prototype.enable = function() {
 };
 
 PandaUploader.HTML5Widget.prototype.createField = function() {
-    this.query.after('<input type="file" />');
+    this.query.after('<input id="panda-file-upload-field" type="file" />');
     jQuery(this.getField()).change(PandaUploader.bind(this, 'onchange'))
 }
 
